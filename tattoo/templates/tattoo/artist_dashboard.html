@@ -1,0 +1,147 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Dashboard - {{ artist.nickname }} - Artist Panel{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="ap-welcome mb-4">
+    <div class="ap-welcome-text">
+        <h2>Halo, {{ artist.nickname }}! <i class="bi bi-hand-wave" style="color:var(--gold);"></i></h2>
+        <p class="text-muted mb-0">Selamat datang kembali di panel artist. Berikut ringkasan aktivitasmu.</p>
+    </div>
+    <div class="ap-welcome-cta">
+        <a href="{% url 'artist_portfolio' %}" class="ap-btn-sm"><i class="bi bi-plus-lg"></i> Tambah Karya</a>
+        <a href="{% url 'artist_detail' artist.id %}" class="ap-btn-sm" target="_blank"><i class="bi bi-box-arrow-up-right"></i> Lihat Profil</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="ap-stat ap-stat-pending">
+            <div class="ap-stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div class="ap-stat-body">
+                <div class="ap-stat-num">{{ pending_count }}</div>
+                <div class="ap-stat-label">Menunggu</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="ap-stat ap-stat-active">
+            <div class="ap-stat-icon"><i class="bi bi-gear"></i></div>
+            <div class="ap-stat-body">
+                <div class="ap-stat-num">{{ in_progress_count }}</div>
+                <div class="ap-stat-label">Diproses</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="ap-stat ap-stat-done">
+            <div class="ap-stat-icon"><i class="bi bi-check-circle"></i></div>
+            <div class="ap-stat-body">
+                <div class="ap-stat-num">{{ completed_count }}</div>
+                <div class="ap-stat-label">Selesai</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="ap-stat ap-stat-revenue">
+            <div class="ap-stat-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="ap-stat-body">
+                <div class="ap-stat-num">Rp {{ total_revenue|floatformat:0|intcomma }}</div>
+                <div class="ap-stat-label">Pendapatan</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5><i class="bi bi-calendar-check text-gold"></i> Pesanan Terbaru</h5>
+                <a href="{% url 'artist_booking_list' %}" class="ap-btn-sm">Lihat Semua</a>
+            </div>
+            <div class="ap-card-body p-0">
+                {% for b in recent_bookings %}
+                <a href="{% url 'artist_booking_detail' b.id %}" class="ap-row-link">
+                    <div class="ap-row-left">
+                        <div class="ap-row-title">{{ b.user.username }}</div>
+                        <div class="ap-row-meta">
+                            <span><i class="bi bi-tag"></i> {{ b.service.name|truncatechars:28 }}</span>
+                            <span><i class="bi bi-calendar3"></i> {{ b.booking_date|date:"d M Y" }}</span>
+                            <span><i class="bi bi-clock"></i> {{ b.booking_time|time:"H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="ap-row-right">
+                        <span class="ap-pill status-{{ b.status }}">{{ b.get_status_display }}</span>
+                        {% if b.payment_status != 'unpaid' %}
+                        <span class="ap-pill pay-{{ b.payment_status }}">{{ b.get_payment_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% empty %}
+                <div class="ap-empty">
+                    <i class="bi bi-inbox"></i>
+                    <p>Belum ada pesanan masuk</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5><i class="bi bi-star text-gold"></i> Ulasan Terbaru</h5>
+            </div>
+            <div class="ap-card-body p-0">
+                {% for r in latest_reviews %}
+                <div class="ap-review-row">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="small">{{ r.user.username }}</strong>
+                        <span class="text-gold" style="font-size:0.75rem;">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= r.rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% if r.comment %}<p class="ap-review-comment">{{ r.comment|truncatechars:90 }}</p>{% endif %}
+                    <small class="text-muted">{{ r.created_at|date:"d M Y" }}</small>
+                </div>
+                {% empty %}
+                <div class="ap-empty">
+                    <i class="bi bi-chat-square-text"></i>
+                    <p>Belum ada ulasan</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="ap-card mt-4">
+            <div class="ap-card-head">
+                <h5><i class="bi bi-pie-chart text-gold"></i> Ringkasan</h5>
+            </div>
+            <div class="ap-card-body">
+                <div class="ap-summary-row">
+                    <span>Total Pesanan</span>
+                    <strong>{{ total_bookings }}</strong>
+                </div>
+                <div class="ap-summary-row">
+                    <span>Dikonfirmasi</span>
+                    <strong class="text-gold">{{ confirmed_count }}</strong>
+                </div>
+                <div class="ap-summary-row">
+                    <span>Dibatalkan</span>
+                    <strong class="text-danger">{{ cancelled_count }}</strong>
+                </div>
+                {% if total_bookings > 0 %}
+                <div class="ap-summary-row">
+                    <span>Konversi</span>
+                    <strong>{{ confirmed_count|add:completed_count }} / {{ total_bookings }}</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

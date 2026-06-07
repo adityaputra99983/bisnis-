@@ -1,0 +1,337 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+
+{% block title %}Daftar - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5 register-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9" data-aos="fade-up">
+
+                <!-- STEP 1: ROLE PICKER -->
+                <div class="register-step register-step-role" data-step="role" {% if form.errors %}hidden{% endif %}>
+                    <div class="step-intro text-center mb-4">
+                        <span class="step-pill">Langkah 1 dari 2</span>
+                        <h2 class="step-title">Bergabung dengan Bali Tattoo</h2>
+                        <p class="step-sub">Pilih jenis akunmu di bawah — kami akan sesuaikan formulir berikutnya.</p>
+                    </div>
+
+                    <div class="role-picker">
+                        <button type="button" class="role-pick-card customer-pick" data-pick="customer">
+                            <div class="rpc-glow"></div>
+                            <div class="rpc-head">
+                                <div class="rpc-icon"><i class="bi bi-person-hearts"></i></div>
+                                <span class="rpc-tag">Customer</span>
+                            </div>
+                            <h3 class="rpc-title">Saya ingin <span>tattoo</span></h3>
+                            <p class="rpc-desc">Pesan layanan tattoo dari artist profesional kami di studio atau panggilan ke rumah.</p>
+                            <ul class="rpc-list">
+                                <li><i class="bi bi-check-circle-fill"></i> Booking cepat & mudah</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Pantau status pesanan</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Bayar online aman</li>
+                            </ul>
+                            <div class="rpc-cta">
+                                <span>Lanjutkan sebagai Customer</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </button>
+
+                        <button type="button" class="role-pick-card artist-pick" data-pick="artist">
+                            <div class="rpc-glow"></div>
+                            <div class="rpc-ribbon">Profesional</div>
+                            <div class="rpc-head">
+                                <div class="rpc-icon"><i class="bi bi-palette2"></i></div>
+                                <span class="rpc-tag">Tattoo Artist</span>
+                            </div>
+                            <h3 class="rpc-title">Saya <span>tattoo artist</span></h3>
+                            <p class="rpc-desc">Buat profil profesional, pamerkan karya, dan terima order dari customer di seluruh Bali.</p>
+                            <ul class="rpc-list">
+                                <li><i class="bi bi-check-circle-fill"></i> Tampil di daftar artist utama</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Showcase portfolio & spesialisasi</li>
+                                <li><i class="bi bi-check-circle-fill"></i> Terima booking otomatis</li>
+                            </ul>
+                            <div class="rpc-cta">
+                                <span>Lanjutkan sebagai Artist</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </button>
+                    </div>
+
+                    <p class="text-center mt-4 text-muted small">
+                        Sudah punya akun? <a href="{% url 'login' %}" class="text-gold">Login di sini</a>
+                    </p>
+                </div>
+
+                <!-- STEP 2: FORM (single-form, theme switches via body class) -->
+                <div class="register-step register-step-form" data-step="form" {% if not form.errors %}hidden{% endif %}>
+                    <form method="POST" enctype="multipart/form-data" id="registerForm" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Hidden role radio -->
+                        <div hidden>
+                            {% for radio in form.role %}{{ radio.tag }}{% endfor %}
+                        </div>
+
+                        <button type="button" class="step-back-btn" data-back>
+                            <i class="bi bi-arrow-left"></i> Ganti jenis akun
+                        </button>
+
+                        <div class="auth-card themed-card">
+                            <!-- HERO (varies per role via class) -->
+                            <div class="th-hero">
+                                <div class="th-hero-icon">
+                                    <i class="bi bi-person-hearts hero-icon-customer"></i>
+                                    <i class="bi bi-palette2 hero-icon-artist"></i>
+                                </div>
+                                <span class="step-pill role-badge">
+                                    <span class="badge-customer">Langkah 2 dari 2 · Customer</span>
+                                    <span class="badge-artist">Langkah 2 dari 2 · Tattoo Artist</span>
+                                </span>
+                                <h2 class="th-title">
+                                    <span class="title-customer">Hampir Selesai!</span>
+                                    <span class="title-artist">Bangun Profil Profesionalmu</span>
+                                </h2>
+                                <p class="th-sub">
+                                    <span class="sub-customer">Cuma 4 isian, langsung bisa booking artist favoritmu.</span>
+                                    <span class="sub-artist">Lengkapi info berikut — profilmu langsung tampil di daftar artist utama.</span>
+                                </p>
+                            </div>
+
+                            <!-- Mini progress (artist only) -->
+                            <div class="th-progress artist-only" aria-hidden="true">
+                                <div class="avp-step is-active" data-target="th-section-account">
+                                    <div class="avp-num">1</div>
+                                    <div class="avp-label">Akun</div>
+                                </div>
+                                <div class="avp-line"></div>
+                                <div class="avp-step" data-target="th-section-profile">
+                                    <div class="avp-num">2</div>
+                                    <div class="avp-label">Profil</div>
+                                </div>
+                                <div class="avp-line"></div>
+                                <div class="avp-step" data-target="th-section-skills">
+                                    <div class="avp-num">3</div>
+                                    <div class="avp-label">Keahlian</div>
+                                </div>
+                            </div>
+
+                            <!-- Section: Account (shared) -->
+                            <div class="th-section" id="th-section-account">
+                                <h6 class="th-section-title">
+                                    <span class="ths-num">1</span>
+                                    <span class="customer-only"><i class="bi bi-person-circle"></i> Info Akun</span>
+                                    <span class="artist-only"><i class="bi bi-shield-lock"></i> Info Login Akun</span>
+                                </h6>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="bi bi-person"></i> Username</label>
+                                        {{ form.username }}
+                                        {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="bi bi-envelope"></i> Email</label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">
+                                            <i class="bi bi-telephone"></i> {{ form.phone.label }}
+                                            <span class="optional-pill">opsional</span>
+                                        </label>
+                                        {{ form.phone }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="bi bi-lock"></i> Password</label>
+                                        {{ form.password1 }}
+                                        {% if form.password1.errors %}<div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="bi bi-lock-fill"></i> Konfirmasi</label>
+                                        {{ form.password2 }}
+                                        {% if form.password2.errors %}<div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section: Profile (artist only) -->
+                            <div class="th-section artist-only" id="th-section-profile">
+                                <h6 class="th-section-title">
+                                    <span class="ths-num">2</span>
+                                    <i class="bi bi-person-vcard"></i> Identitas & Profil Artist
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.artist_full_name.label }}</label>
+                                        {{ form.artist_full_name }}
+                                        {% if form.artist_full_name.errors %}<div class="text-danger small mt-1">{{ form.artist_full_name.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">{{ form.artist_nickname.label }}</label>
+                                        {{ form.artist_nickname }}
+                                        {% if form.artist_nickname.errors %}<div class="text-danger small mt-1">{{ form.artist_nickname.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">{{ form.artist_experience_years.label }}</label>
+                                        {{ form.artist_experience_years }}
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label">{{ form.artist_instagram.label }}</label>
+                                        {{ form.artist_instagram }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">{{ form.artist_bio.label }}</label>
+                                        {{ form.artist_bio }}
+                                        {% if form.artist_bio.errors %}<div class="text-danger small mt-1">{{ form.artist_bio.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label"><i class="bi bi-camera"></i> {{ form.artist_photo.label }}</label>
+                                        {{ form.artist_photo }}
+                                        <div class="text-muted small mt-1">Disarankan: foto wajah jelas, format JPG/PNG.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section: Skills (artist only) -->
+                            <div class="th-section artist-only" id="th-section-skills">
+                                <h6 class="th-section-title">
+                                    <span class="ths-num">3</span>
+                                    <i class="bi bi-stars"></i> Keahlian & Mode Layanan
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-7">
+                                        <label class="form-label">{{ form.artist_service_area.label }}</label>
+                                        {{ form.artist_service_area }}
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">{{ form.artist_mobile_fee.label }}</label>
+                                        {{ form.artist_mobile_fee }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label d-block mb-2">Mode Layanan <span class="text-gold">*</span></label>
+                                        <div class="d-flex flex-wrap gap-3">
+                                            <div class="form-check mode-check">
+                                                {{ form.artist_available_studio }}
+                                                <label class="form-check-label" for="{{ form.artist_available_studio.id_for_label }}">
+                                                    <i class="bi bi-shop"></i> Studio
+                                                </label>
+                                            </div>
+                                            <div class="form-check mode-check">
+                                                {{ form.artist_available_mobile }}
+                                                <label class="form-check-label" for="{{ form.artist_available_mobile.id_for_label }}">
+                                                    <i class="bi bi-house-heart"></i> Panggil ke Rumah
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% if form.artist_available_studio.errors %}<div class="text-danger small mt-1">{{ form.artist_available_studio.errors.0 }}</div>{% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">{{ form.artist_specialties.label }}</label>
+                                        <div class="specialty-grid">
+                                            {% for checkbox in form.artist_specialties %}
+                                                <label class="specialty-chip">
+                                                    {{ checkbox.tag }}
+                                                    <span><i class="bi bi-palette"></i> {{ checkbox.choice_label }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger small mx-3 mt-3">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <button type="submit" class="btn btn-themed th-submit">
+                                <i class="bi bi-check2-circle customer-only"></i>
+                                <i class="bi bi-rocket-takeoff artist-only"></i>
+                                <span class="customer-only">Buat Akun Customer</span>
+                                <span class="artist-only">Aktifkan Profil Artist</span>
+                            </button>
+
+                            <p class="th-foot">
+                                <span class="customer-only">Dengan mendaftar, kamu setuju dengan ketentuan kami.</span>
+                                <span class="artist-only">Profilmu langsung dapat ditemukan customer di halaman <strong>Artist</strong>.</span>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(function () {
+    const stepRole = document.querySelector('[data-step="role"]');
+    const stepForm = document.querySelector('[data-step="form"]');
+    const card = stepForm?.querySelector('.themed-card');
+    if (!stepRole || !stepForm || !card) return;
+
+    const roleRadios = stepForm.querySelectorAll('input[name="role"]');
+    const pickCards = stepRole.querySelectorAll('.role-pick-card');
+    const backBtn = stepForm.querySelector('[data-back]');
+
+    function showStep(name) {
+        if (name === 'role') {
+            stepForm.hidden = true;
+            stepRole.hidden = false;
+        } else {
+            stepRole.hidden = true;
+            stepForm.hidden = false;
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setRole(role) {
+        roleRadios.forEach((r) => { r.checked = (r.value === role); });
+        const isArtist = role === 'artist';
+        card.classList.toggle('mode-artist', isArtist);
+        card.classList.toggle('mode-customer', !isArtist);
+        document.body.classList.toggle('reg-role-artist', isArtist);
+        document.body.classList.toggle('reg-role-customer', !isArtist);
+    }
+
+    pickCards.forEach((cardEl) => {
+        cardEl.addEventListener('click', () => {
+            setRole(cardEl.dataset.pick);
+            showStep('form');
+        });
+    });
+
+    if (backBtn) backBtn.addEventListener('click', () => showStep('role'));
+
+    const checkedRole = stepForm.querySelector('input[name="role"]:checked');
+    setRole(checkedRole ? checkedRole.value : 'customer');
+
+    // Active progress indicator (artist only)
+    const progressSteps = card.querySelectorAll('.th-progress .avp-step');
+    const sectionMap = {};
+    progressSteps.forEach((step) => {
+        const id = step.dataset.target;
+        const sec = document.getElementById(id);
+        if (sec) sectionMap[id] = { step, section: sec };
+        step.addEventListener('click', () => {
+            const target = document.getElementById(id);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const id = entry.target.id;
+                if (entry.isIntersecting && sectionMap[id]) {
+                    progressSteps.forEach((s) => s.classList.remove('is-active'));
+                    sectionMap[id].step.classList.add('is-active');
+                }
+            });
+        }, { rootMargin: '-40% 0px -50% 0px' });
+        Object.values(sectionMap).forEach(({ section }) => observer.observe(section));
+    }
+})();
+</script>
+{% endblock %}

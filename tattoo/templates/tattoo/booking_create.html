@@ -1,0 +1,468 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block navbar_navigation %}
+{% endblock %}
+
+{% block navbar_booking_button %}
+{% endblock %}
+
+{% block body_class %}class="booking-page-minimal-nav"{% endblock %}
+
+{% block title %}Booking Tattoo - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="page-header booking-page-header" data-aos="fade-down">
+    <div class="container">
+        <div class="booking-hero-panel">
+            <div class="booking-hero-copy">
+                <span class="booking-hero-kicker">Premium Booking Flow</span>
+                <h1>Booking <span class="text-gold">Tattoo</span></h1>
+                <p class="lead">Booking dibuat lebih simpel, elegan, dan nyaman diisi. Pilih layanan, artist, jadwal, lalu cek estimasi biaya secara real-time.</p>
+                <div class="booking-hero-points">
+                    <div class="booking-hero-point">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <span>Artist terverifikasi</span>
+                    </div>
+                    <div class="booking-hero-point">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <span>Estimasi harga otomatis</span>
+                    </div>
+                    <div class="booking-hero-point">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Konfirmasi aman sebelum pembayaran</span>
+                    </div>
+                </div>
+            </div>
+            <div class="booking-hero-glance">
+                <div class="booking-hero-stat">
+                    <span class="booking-hero-stat-label">Alur</span>
+                    <strong>5 Langkah</strong>
+                    <small>Lebih terstruktur dan mudah diikuti</small>
+                </div>
+                <div class="booking-hero-stat">
+                    <span class="booking-hero-stat-label">Mode</span>
+                    <strong>Studio / Mobile</strong>
+                    <small>Pilih datang ke studio atau panggil artist</small>
+                </div>
+                <div class="booking-hero-stat">
+                    <span class="booking-hero-stat-label">Ringkasan</span>
+                    <strong>Live Update</strong>
+                    <small>Biaya dan detail booking langsung tersinkron</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 booking-create-page">
+    <div class="container">
+
+        <div class="booking-shell-top" data-aos="fade-up">
+            <div>
+                <span class="booking-shell-kicker">Booking Experience</span>
+                <h2 class="booking-shell-title">Isi detail pesanan dengan tampilan yang lebih rapi</h2>
+                <p class="booking-shell-subtitle mb-0">Setiap bagian dibuat fokus per langkah agar lebih cepat diisi dan lebih enak dilihat.</p>
+            </div>
+            <div class="booking-shell-note">
+                <i class="bi bi-stars"></i>
+                <span>Ringkasan biaya di samping akan update otomatis saat kamu memilih layanan, artist, dan mode booking.</span>
+            </div>
+        </div>
+
+        <div class="booking-flow-progress" data-aos="fade-up">
+            <div class="bfp-step" data-step-indicator="1">
+                <div class="bfp-num">1</div>
+                <div class="bfp-text">Layanan</div>
+            </div>
+            <div class="bfp-line"></div>
+            <div class="bfp-step" data-step-indicator="2">
+                <div class="bfp-num">2</div>
+                <div class="bfp-text">Artist</div>
+            </div>
+            <div class="bfp-line"></div>
+            <div class="bfp-step" data-step-indicator="3">
+                <div class="bfp-num">3</div>
+                <div class="bfp-text">Mode</div>
+            </div>
+            <div class="bfp-line"></div>
+            <div class="bfp-step" data-step-indicator="4">
+                <div class="bfp-num">4</div>
+                <div class="bfp-text">Jadwal</div>
+            </div>
+            <div class="bfp-line"></div>
+            <div class="bfp-step" data-step-indicator="5">
+                <div class="bfp-num">5</div>
+                <div class="bfp-text">Catatan</div>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="booking-form" class="booking-main-form" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-4 booking-layout">
+
+                <div class="col-lg-8">
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" data-aos="fade-up">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <!-- ===== STEP 1: LAYANAN ===== -->
+                    <div class="booking-step-card" data-step="1" data-aos="fade-up">
+                        <div class="bsc-head">
+                            <div class="bsc-badge-wrap">
+                                <div class="bsc-badge">1</div>
+                            </div>
+                            <div class="bsc-head-copy">
+                                <span class="bsc-kicker">Step 01</span>
+                                <h3 class="bsc-title">Apa yang kamu inginkan?</h3>
+                                <p class="bsc-sub">Pilih jenis tattoo dan paket yang cocok untukmu.</p>
+                            </div>
+                        </div>
+
+                        <div class="bsc-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.service.id_for_label }}">
+                                        <i class="bi bi-palette-fill text-gold"></i> {{ form.service.label }}
+                                        <span class="text-gold">*</span>
+                                    </label>
+                                    {{ form.service }}
+                                    {% if form.service.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.service.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-hint">Jenis tattoo yang ingin kamu buat.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.package.id_for_label }}">
+                                        <i class="bi bi-box-seam text-gold"></i> {{ form.package.label }}
+                                        <small class="text-muted">(opsional)</small>
+                                    </label>
+                                    {{ form.package }}
+                                    {% if form.package.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.package.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-hint" id="package-hint">Paket akan muncul setelah memilih layanan.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 2: ARTIST ===== -->
+                    <div class="booking-step-card" data-step="2" data-aos="fade-up">
+                        <div class="bsc-head">
+                            <div class="bsc-badge-wrap">
+                                <div class="bsc-badge">2</div>
+                            </div>
+                            <div class="bsc-head-copy">
+                                <span class="bsc-kicker">Step 02</span>
+                                <h3 class="bsc-title">Siapa artist-nya?</h3>
+                                <p class="bsc-sub">Pilih artist yang paling pas dengan style yang kamu mau.</p>
+                            </div>
+                        </div>
+
+                        <div class="bsc-body">
+                            <label class="form-label" for="{{ form.artist.id_for_label }}">
+                                <i class="bi bi-person-badge text-gold"></i> {{ form.artist.label }}
+                                <span class="text-gold">*</span>
+                            </label>
+                            {{ form.artist }}
+                            {% if form.artist.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.artist.errors.0 }}</div>
+                            {% endif %}
+
+                            <div class="artist-quick-info" id="artist-info" style="display:none;">
+                                <div class="aqi-item">
+                                    <i class="bi bi-shop"></i>
+                                    <span>Layanan Studio: <strong id="aqi-studio">-</strong></span>
+                                </div>
+                                <div class="aqi-item">
+                                    <i class="bi bi-house-heart"></i>
+                                    <span>Panggil ke Rumah: <strong id="aqi-mobile">-</strong></span>
+                                </div>
+                                <div class="aqi-item">
+                                    <i class="bi bi-cash-coin"></i>
+                                    <span>Biaya panggilan: <strong id="aqi-fee">-</strong></span>
+                                </div>
+                            </div>
+
+                            <small class="form-hint mt-2 d-block">
+                                Belum tahu mau pilih siapa?
+                                <a href="{% url 'artist_list' %}" target="_blank" class="text-gold">Lihat semua artist</a>
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 3: MODE LAYANAN ===== -->
+                    <div class="booking-step-card" data-step="3" data-aos="fade-up">
+                        <div class="bsc-head">
+                            <div class="bsc-badge-wrap">
+                                <div class="bsc-badge">3</div>
+                            </div>
+                            <div class="bsc-head-copy">
+                                <span class="bsc-kicker">Step 03</span>
+                                <h3 class="bsc-title">Bagaimana cara layanannya?</h3>
+                                <p class="bsc-sub">Mau datang ke studio atau kami yang datang ke tempatmu?</p>
+                            </div>
+                        </div>
+
+                        <div class="bsc-body">
+                            <div class="mode-selector booking-mode-grid">
+                                {% for radio in form.mode %}
+                                    <div class="mode-option">
+                                        {{ radio.tag }}
+                                        <label for="{{ radio.id_for_label }}" class="mode-label">
+                                            {% if radio.choice_label == "Datang ke Studio" %}
+                                                <i class="bi bi-shop"></i>
+                                                <span class="mode-title">{{ radio.choice_label }}</span>
+                                                <small class="mode-desc">Datang langsung ke studio premium kami</small>
+                                            {% else %}
+                                                <i class="bi bi-house-heart"></i>
+                                                <span class="mode-title">{{ radio.choice_label }}</span>
+                                                <small class="mode-desc">Artist datang ke villa / hotel / rumahmu</small>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.mode.errors %}
+                                <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.mode.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 4: JADWAL ===== -->
+                    <div class="booking-step-card" data-step="4" data-aos="fade-up">
+                        <div class="bsc-head">
+                            <div class="bsc-badge-wrap">
+                                <div class="bsc-badge">4</div>
+                            </div>
+                            <div class="bsc-head-copy">
+                                <span class="bsc-kicker">Step 04</span>
+                                <h3 class="bsc-title">Kapan kamu mau?</h3>
+                                <p class="bsc-sub">Pilih tanggal dan jam yang paling pas buatmu.</p>
+                            </div>
+                        </div>
+
+                        <div class="bsc-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.booking_date.id_for_label }}">
+                                        <i class="bi bi-calendar-date text-gold"></i> {{ form.booking_date.label }}
+                                        <span class="text-gold">*</span>
+                                    </label>
+                                    {{ form.booking_date }}
+                                    {% if form.booking_date.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.booking_date.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-hint">Hari ini atau setelahnya.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="{{ form.booking_time.id_for_label }}">
+                                        <i class="bi bi-clock text-gold"></i> {{ form.booking_time.label }}
+                                        <span class="text-gold">*</span>
+                                    </label>
+                                    {{ form.booking_time }}
+                                    {% if form.booking_time.errors %}
+                                        <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.booking_time.errors.0 }}</div>
+                                    {% endif %}
+                                    <small class="form-hint">Studio buka 10:00 – 22:00 WITA.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== STEP 5: DETAIL TAMBAHAN ===== -->
+                    <div class="booking-step-card" data-step="5" data-aos="fade-up">
+                        <div class="bsc-head">
+                            <div class="bsc-badge-wrap">
+                                <div class="bsc-badge">5</div>
+                            </div>
+                            <div class="bsc-head-copy">
+                                <span class="bsc-kicker">Step 05</span>
+                                <h3 class="bsc-title">Detail tambahan</h3>
+                                <p class="bsc-sub">Tambahkan referensi atau catatan supaya artist lebih paham.</p>
+                            </div>
+                        </div>
+
+                        <div class="bsc-body">
+                            <div id="location-field" class="form-group-block mb-3" style="display: none;">
+                                <label class="form-label" for="{{ form.location_address.id_for_label }}">
+                                    <i class="bi bi-geo-alt-fill text-gold"></i> {{ form.location_address.label }}
+                                    <span class="text-gold">*</span>
+                                </label>
+                                {{ form.location_address }}
+                                {% if form.location_address.errors %}
+                                    <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.location_address.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-hint">Wajib diisi untuk "Panggil ke Rumah". Sertakan patokan jika perlu.</small>
+                            </div>
+
+                            <div class="form-group-block mb-3">
+                                <label class="form-label" for="{{ form.design_reference.id_for_label }}">
+                                    <i class="bi bi-image text-gold"></i> {{ form.design_reference.label }}
+                                    <small class="text-muted">(opsional)</small>
+                                </label>
+                                {{ form.design_reference }}
+                                {% if form.design_reference.errors %}
+                                    <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.design_reference.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-hint">Format JPG / PNG, max 5MB. Bisa di-skip jika belum ada.</small>
+                            </div>
+
+                            <div class="form-group-block">
+                                <label class="form-label" for="{{ form.notes.id_for_label }}">
+                                    <i class="bi bi-chat-left-text text-gold"></i> {{ form.notes.label }}
+                                    <small class="text-muted">(opsional)</small>
+                                </label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                    <div class="field-error"><i class="bi bi-exclamation-circle"></i> {{ form.notes.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-hint">Ceritakan style, ukuran perkiraan, lokasi di tubuh, dll.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ===== SIDEBAR: RINGKASAN BOOKING ===== -->
+                <div class="col-lg-4">
+                    <aside class="booking-summary-sidebar" data-aos="fade-left">
+                        <div class="booking-summary-card">
+                            <div class="bsum-topbar">
+                                <span class="bsum-pill">Live Summary</span>
+                                <span class="bsum-topbar-note"><i class="bi bi-lightning-charge-fill"></i> Auto update</span>
+                            </div>
+                            <div class="bsum-head">
+                                <i class="bi bi-receipt-cutoff text-gold"></i>
+                                <h5 class="mb-0">Ringkasan Booking</h5>
+                            </div>
+
+                            <div class="bsum-highlight">
+                                <span class="bsum-highlight-label">Estimasi Total</span>
+                                <strong data-summary="total">Rp 0</strong>
+                                <small>Total akan mengikuti pilihan layanan, paket, mode, dan biaya panggilan artist.</small>
+                            </div>
+
+                            <div class="bsum-body">
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-palette2"></i> Layanan</span>
+                                    <span class="bsum-value" data-summary="service">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-box-seam"></i> Paket</span>
+                                    <span class="bsum-value" data-summary="package">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-person-badge"></i> Artist</span>
+                                    <span class="bsum-value" data-summary="artist">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-signpost-split"></i> Mode</span>
+                                    <span class="bsum-value" data-summary="mode">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-hourglass-split"></i> Durasi</span>
+                                    <span class="bsum-value" data-summary="duration">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-calendar3"></i> Tanggal</span>
+                                    <span class="bsum-value" data-summary="date">—</span>
+                                </div>
+                                <div class="bsum-row">
+                                    <span class="bsum-label"><i class="bi bi-clock-history"></i> Jam</span>
+                                    <span class="bsum-value" data-summary="time">—</span>
+                                </div>
+                            </div>
+
+                            <hr class="bsum-divider">
+
+                            <div class="bsum-prices">
+                                <div class="bsum-price-row">
+                                    <span>Biaya Layanan</span>
+                                    <span data-summary="base-price">Rp 0</span>
+                                </div>
+                                <div class="bsum-price-row" data-summary-block="travel" style="display:none;">
+                                    <span>Biaya Panggilan</span>
+                                    <span data-summary="travel-fee">Rp 0</span>
+                                </div>
+                                <div class="bsum-price-total">
+                                    <span>Total</span>
+                                    <span data-summary="total">Rp 0</span>
+                                </div>
+                            </div>
+
+                            <div class="bsum-cta">
+                                <button type="submit" class="btn btn-gold w-100 btn-lg">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span class="booking-submit-label">Konfirmasi Booking Sekarang</span>
+                                </button>
+                                <div class="booking-submit-note">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span>Klik tombol ini untuk mengirim booking kamu. Setelah itu artist akan meninjau dan mengonfirmasi pesananmu.</span>
+                                </div>
+                                <a href="{% url 'service_list' %}" class="btn btn-ghost-sm w-100 mt-2">
+                                    <i class="bi bi-arrow-left"></i> Batal & lihat layanan
+                                </a>
+                            </div>
+
+                            <div class="bsum-help">
+                                <i class="bi bi-shield-check text-gold"></i>
+                                <small>
+                                    Pesanan akan menunggu konfirmasi artist sebelum pembayaran.
+                                    Kamu bisa membatalkan sebelum dikonfirmasi.
+                                </small>
+                            </div>
+
+                            <div class="bsum-trust-list">
+                                <div class="bsum-trust-item">
+                                    <i class="bi bi-stars"></i>
+                                    <span>Tampilan lebih fokus dan nyaman diisi</span>
+                                </div>
+                                <div class="bsum-trust-item">
+                                    <i class="bi bi-credit-card-2-front"></i>
+                                    <span>Pembayaran dilakukan setelah ada konfirmasi</span>
+                                </div>
+                                <div class="bsum-trust-item">
+                                    <i class="bi bi-phone"></i>
+                                    <span>Cocok untuk booking cepat di desktop maupun mobile</span>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</section>
+
+<script id="booking-form-data" type="application/json">
+{
+    "services": [
+        {% for s in services %}
+        {"id": {{ s.id }}, "name": "{{ s.name|escapejs }}", "price": {{ s.price|floatformat:0 }}, "duration": "{{ s.duration|escapejs }}"}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "packages": [
+        {% for p in packages %}
+        {"id": {{ p.id }}, "service_id": {{ p.service_id }}, "name": "{{ p.name|escapejs }}", "price": {{ p.price|floatformat:0 }}, "duration": "{{ p.duration|escapejs }}"}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "artists": [
+        {% for a in artists %}
+        {"id": {{ a.id }}, "nickname": "{{ a.nickname|escapejs }}", "name": "{{ a.name|escapejs }}", "studio": {{ a.is_available_studio|yesno:"true,false" }}, "mobile": {{ a.is_available_mobile|yesno:"true,false" }}, "mobile_fee": {{ a.mobile_fee|floatformat:0 }}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+
+<script src="{% static 'tattoo/js/booking.js' %}?v=1.0"></script>
+{% endblock %}

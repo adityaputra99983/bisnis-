@@ -1,0 +1,129 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+
+{% block title %}Tattoo Artists - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="page-header" data-aos="fade-down">
+    <div class="container text-center">
+        <h1 data-t="all_artists">Artist <span class="text-gold">Tattoo</span></h1>
+        <p class="lead" data-t="artist_sub">Bertemu dengan seniman tinta profesional terbaik di Bali</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Explorer Bar -->
+        <div class="search-filter-bar mb-5" data-aos="fade-up">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <div class="search-box">
+                        <i class="bi bi-person-search"></i>
+                        <input type="text" id="artistSearch" class="form-control" placeholder="Cari artist favoritmu..." data-t="artist_find">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-gold w-100" data-t="available_studio">Studio</button>
+                        <button class="btn btn-outline-gold w-100" data-t="available_mobile">Mobile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4" id="artistGrid">
+            {% for item in artists_data %}
+                <div class="col-md-4 col-lg-3 artist-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
+                    {% with artist=item.artist %}
+                    <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
+                        <div class="artist-card h-100">
+                            <div class="artist-card-img-wrap">
+                                {% if artist.photo %}
+                                    <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-card-img">
+                                {% else %}
+                                    <div class="artist-card-img-placeholder">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="artist-card-body">
+                                <h5 class="artist-name">{{ artist.nickname }}</h5>
+                                <p class="text-gold small mb-2"><i class="bi bi-shield-check"></i> {{ artist.experience_years }} <span data-t="years">Tahun</span> <span data-t="experience">Pengalaman</span></p>
+                                <p class="artist-expertise text-muted small">{{ artist.short_bio|default:artist.bio|truncatechars:60 }}</p>
+                                
+                                {% if item.avg_rating %}
+                                <div class="artist-rating mt-2">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>{{ item.avg_rating }} <span class="text-muted">({{ item.review_count }})</span></span>
+                                </div>
+                                {% endif %}
+
+                                {% if artist.specialties.all %}
+                                <div class="artist-specialties mt-2">
+                                    {% for service in artist.specialties.all|slice:":3" %}
+                                        <span class="specialty-chip">{{ service.name }}</span>
+                                    {% endfor %}
+                                    {% if artist.specialties.all|length > 3 %}
+                                        <span class="specialty-chip specialty-more">+{{ artist.specialties.all|length|add:"-3" }}</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="artist-tags mt-3">
+                                    {% if artist.is_available_studio %}
+                                        <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="available_studio">Studio</span></span>
+                                    {% endif %}
+                                    {% if artist.is_available_mobile %}
+                                        <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="available_mobile">Mobile</span></span>
+                                    {% endif %}
+                                </div>
+                                <span class="btn btn-gold w-100 mt-3" data-t="see_profile">Lihat Profil</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endwith %}
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-person-x" style="font-size: 3rem; color: var(--text-muted);"></i>
+                    <p class="text-muted mt-3" data-t="no_artists_found">Belum ada artist tersedia</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('artistSearch');
+    const artistItems = document.querySelectorAll('.artist-item');
+    const filterBtns = document.querySelectorAll('.search-filter-bar .btn-outline-gold');
+
+    searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        artistItems.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(term) ? 'block' : 'none';
+        });
+    });
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const mode = this.innerText.trim().toLowerCase();
+            artistItems.forEach(item => {
+                const tags = item.querySelector('.artist-tags');
+                if (mode === 'studio' && tags) {
+                    item.style.display = tags.innerText.toLowerCase().includes('studio') ? 'block' : 'none';
+                } else if (mode === 'mobile' && tags) {
+                    item.style.display = tags.innerText.toLowerCase().includes('mobile') ? 'block' : 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

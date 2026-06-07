@@ -1,0 +1,90 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+
+{% block title %}Portofolio - Artist Panel{% endblock %}
+{% block page_title %}Portofolio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <p class="text-muted mb-0">Kelola karya terbaik kamu untuk menarik customer</p>
+    <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#addPortfolioModal">
+        <i class="bi bi-plus-lg"></i> Tambah Karya
+    </button>
+</div>
+
+{% if portfolios %}
+<div class="ap-portfolio-grid">
+    {% for item in portfolios %}
+    <div class="ap-portfolio-card">
+        <div class="ap-por-img">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+            {% endif %}
+            <div class="ap-por-overlay">
+                <form method="post" action="{% url 'artist_portfolio_delete' item.id %}" class="d-inline" onsubmit="return confirm('Hapus karya ini?')">
+                    {% csrf_token %}
+                    <button type="submit" class="ap-por-del" title="Hapus"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="ap-por-body">
+            <h6>{{ item.title }}</h6>
+            {% if item.service %}<span class="ap-por-tag">{{ item.service.name }}</span>{% endif %}
+            <small class="text-muted d-block mt-1">{{ item.created_at|date:"d M Y" }}</small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="ap-empty-state">
+    <i class="bi bi-images"></i>
+    <h5>Belum ada portofolio</h5>
+    <p class="text-muted">Tambahkan karya kamu untuk menarik lebih banyak customer</p>
+    <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#addPortfolioModal">
+        <i class="bi bi-plus-lg"></i> Tambah Karya Pertama
+    </button>
+</div>
+{% endif %}
+
+<div class="modal fade" id="addPortfolioModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content ap-modal">
+            <div class="modal-header ap-modal-head">
+                <h5 class="modal-title"><i class="bi bi-image text-gold"></i> Tambah Karya Baru</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="ap-form-label">Judul Karya</label>
+                        <input type="text" name="title" class="ap-input" required placeholder="Misal: Dragon Tattoo Full Back">
+                    </div>
+                    <div class="mb-3">
+                        <label class="ap-form-label">Deskripsi (opsional)</label>
+                        <textarea name="description" class="ap-input ap-textarea" rows="3" placeholder="Cerita tentang karya ini"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="ap-form-label">Kategori Layanan</label>
+                        <select name="service" class="ap-input">
+                            <option value="">— Pilih Layanan —</option>
+                            {% for s in all_services %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="ap-form-label">Gambar</label>
+                        <input type="file" name="image" class="ap-input-file" accept="image/*" required>
+                        <small class="text-muted d-block mt-1">Format: JPG, PNG. Maks 5MB</small>
+                    </div>
+                </div>
+                <div class="modal-footer ap-modal-foot">
+                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-gold"><i class="bi bi-upload"></i> Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

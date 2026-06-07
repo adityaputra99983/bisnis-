@@ -1,0 +1,123 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}{{ service.name }} - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6" data-aos="fade-right">
+                <div class="service-detail-card">
+                    {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-100" style="height: 400px; object-fit: cover;">
+                    {% else %}
+                        <div style="height: 400px; background: var(--gradient-card); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-palette" style="font-size: 5rem; color: var(--gold);"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
+                <div class="service-detail-card p-5">
+                    <div class="d-flex gap-2 mb-3">
+                        <span class="service-difficulty diff-{{ service.difficulty }}">{{ service.get_difficulty_display }}</span>
+                        <span class="service-duration"><i class="bi bi-clock"></i> {{ service.duration }}</span>
+                    </div>
+                    <h1>{{ service.name }}</h1>
+                    <p class="text-muted lead">{{ service.short_desc }}</p>
+                    <hr class="text-muted">
+                    <p class="text-secondary" style="line-height: 1.8;">{{ service.description|linebreaks }}</p>
+                    <div class="detail-pricing-section mt-5">
+                        <div class="dp-header">
+                            <span class="dp-label" data-t="starts_from">{{ service.price_label|default:"HARGA MULAI DARI" }}</span>
+                            <div class="dp-main-price">Rp {{ service.price|floatformat:0 }}</div>
+                        </div>
+                        
+                        <div class="dp-international">
+                            <div class="dp-int-header">
+                                <span><i class="bi bi-globe"></i> <span data-t="est_kurs">ESTIMASI KURS INTERNASIONAL</span></span>
+                                <div class="dp-pulse"></div>
+                            </div>
+                            <div class="dp-grid">
+                                {{ service.price|multi_currency_detail }}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-actions mt-4">
+                            <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking-large">
+                                <i class="bi bi-calendar-check"></i> <span data-t="booking_btn">LANJUTKAN BOOKING</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if packages %}
+            <div class="mt-5" data-aos="fade-up">
+                <h2 class="section-title">Paket <span class="text-gold">Tersedia</span></h2>
+                <div class="section-divider"></div>
+                <div class="row g-4 mt-3">
+                    {% for package in packages %}
+                        <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                            <div class="package-card {% if package.is_recommended %}recommended{% endif %} h-100">
+                                {% if package.is_recommended %}
+                                    <span class="package-recommended-badge">Rekomendasi</span>
+                                {% endif %}
+                                <h5>{{ package.name }}</h5>
+                                {% if package.description %}
+                                    <p class="text-muted small">{{ package.description }}</p>
+                                {% endif %}
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                    <div class="package-currencies">
+                                        <div class="package-price">Rp {{ package.price|floatformat:0 }}</div>
+                                        {{ package.price|multi_currency_detail }}
+                                    </div>
+                                    </div>
+                                    <span class="text-muted small"><i class="bi bi-clock"></i> {{ package.duration }}</span>
+                                </div>
+                                <a href="{% url 'booking_create' %}?service={{ service.id }}&package={{ package.id }}"
+                                   class="btn btn-outline-gold btn-sm w-100 mt-3">
+                                    <i class="bi bi-calendar-check"></i> Pilih Paket Ini
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if artists %}
+            <div class="mt-5" data-aos="fade-up">
+                <h2 class="section-title">Artist untuk <span class="text-gold">{{ service.name }}</span></h2>
+                <div class="section-divider"></div>
+                <div class="row g-4 mt-3">
+                    {% for artist in artists %}
+                        <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                            <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
+                                <div class="artist-card">
+                                    {% if artist.photo %}
+                                        <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-card-img" style="height: 200px;">
+                                    {% else %}
+                                        <div class="artist-card-img-placeholder" style="height: 200px;">
+                                            <i class="bi bi-person-badge" style="font-size: 3rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="artist-card-body">
+                                        <h5>{{ artist.nickname }}</h5>
+                                        <p class="artist-realname">{{ artist.name }}</p>
+                                        <span class="btn btn-outline-gold w-100 btn-sm">Lihat Profil</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

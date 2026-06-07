@@ -1,0 +1,131 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}Layanan Tattoo - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="page-header" data-aos="fade-down">
+    <div class="container text-center">
+        <h1 data-t="all_services">Semua <span class="text-gold">Layanan</span></h1>
+        <p class="lead" data-t="popular_sub">Paling banyak dicari dan direkomendasikan</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Search & Filter Bar -->
+        <div class="search-filter-bar mb-5" data-aos="fade-up">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="serviceSearch" class="form-control" placeholder="Cari layanan tattoo..." data-t="service_find">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="all" data-t="all_services">Semua Layanan</option>
+                        {% for cat in categories %}
+                            <option value="cat-{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-gold w-100 h-100" data-t="intl">Internasional</button>
+                </div>
+            </div>
+        </div>
+
+        {% for category in categories %}
+        <div class="category-block mb-5" id="cat-{{ category.id }}" data-aos="fade-up">
+            <div class="category-header d-flex align-items-center mb-4">
+                <div class="cat-icon-circle me-3">
+                    <i class="bi {{ category.icon }}"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0">{{ category.name }}</h2>
+                    <p class="text-muted mb-0">{{ category.services.count }} <span data-t="services_label">layanan tersedia</span></p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for service in category.services.all %}
+                <div class="col-md-6 col-lg-4 service-item" data-category="cat-{{ category.id }}">
+                    <div class="luxury-service-card">
+                        <div class="lc-img-wrap">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="lc-img">
+                            {% else %}
+                                <div class="lc-placeholder"><i class="bi bi-palette"></i></div>
+                            {% endif %}
+                            <div class="lc-img-overlay"></div>
+                            {% if service.is_popular %}
+                                <span class="lc-badge" data-t="popular_badge">Populer</span>
+                            {% endif %}
+                            <div class="lc-tags">
+                                <span class="tag tag-clock"><i class="bi bi-clock"></i> {{ service.duration }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="lc-content">
+                            <h3 class="lc-title">{{ service.name }}</h3>
+                            <p class="lc-desc">{{ service.description|truncatewords:20 }}</p>
+                            
+                            <div class="lc-pricing-panel">
+                                <div class="lc-pricing-header">
+                                    <span><i class="bi bi-currency-exchange"></i> <span data-t="est_kurs">Estimasi Kurs</span></span>
+                                    <span class="lc-pricing-badge" data-t="intl">Internasional</span>
+                                </div>
+                                <div class="lc-grid">
+                                    {{ service.price|multi_currency_detail }}
+                                </div>
+                            </div>
+                            
+                            <div class="lc-actions">
+                                <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline" data-t="see_detail">Detail</a>
+                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking" data-t="booking">Booking</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">Belum ada layanan tersedia di kategori ini.</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('serviceSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const serviceItems = document.querySelectorAll('.service-item');
+
+    function filterServices() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCat = categoryFilter.value;
+
+        serviceItems.forEach(item => {
+            const title = item.querySelector('.lc-title').innerText.toLowerCase();
+            const desc = item.querySelector('.lc-desc').innerText.toLowerCase();
+            const cat = item.getAttribute('data-category');
+
+            const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm);
+            const matchesCat = selectedCat === 'all' || cat === selectedCat;
+
+            if (matchesSearch && matchesCat) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterServices);
+    categoryFilter.addEventListener('change', filterServices);
+});
+</script>
+{% endblock %}

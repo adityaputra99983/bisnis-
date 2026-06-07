@@ -1,0 +1,938 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}<span data-t="pay_title">Pilih Metode Pembayaran</span> - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5 pay-section-page">
+    <div class="container">
+
+        {% if instructions %}
+            {# ============================================ #}
+            {#   VIEW: INSTRUKSI TRANSFER                  #}
+            {# ============================================ #}
+            <div class="pay-instr-shell" data-aos="fade-up">
+
+                {# Countdown banner #}
+                <div class="pay-countdown" data-aos="fade-down" id="pay-countdown">
+                    <div class="pay-countdown-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="pay-countdown-text">
+                        <span class="pay-countdown-label" data-t="pay_instr_subtitle">Selesaikan pembayaran dalam</span>
+                        <span class="pay-countdown-time" id="pay-countdown-time">23:59:59</span>
+                    </div>
+                    <div class="pay-countdown-bar"><div class="pay-countdown-fill" id="pay-countdown-fill"></div></div>
+                </div>
+
+                {# Method hero #}
+                <div class="pay-instr-hero" data-aos="fade-up">
+                    <a href="{% url 'payment_initiate' booking.id %}" class="pay-back-pill">
+                        <i class="bi bi-arrow-left"></i>
+                        <span data-t="pay_change_method">Ganti metode</span>
+                    </a>
+
+                    <div class="pay-instr-method">
+                        <div class="pay-instr-logo-wrap">
+                            <img src="{% static 'tattoo/img/payments/' %}{{ instructions.method_logo }}"
+                                 alt="{{ instructions.method_label }}" class="pay-instr-logo">
+                        </div>
+                        <div>
+                            <div class="pay-instr-eyebrow" data-t="pay_method_eyebrow">Metode Pembayaran</div>
+                            <h1 class="pay-instr-name">{{ instructions.method_label }}</h1>
+                            <div class="pay-instr-id">
+                                <i class="bi bi-receipt"></i>
+                                <span>TRX: <strong>{{ instructions.transaction_id }}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pay-instr-amount-card">
+                        <div class="pay-instr-amount-label" data-t="total_pay">Total Bayar</div>
+                        <div class="pay-instr-amount" data-region-price="{{ instructions.amount }}">Rp {{ instructions.amount|floatformat:0 }}</div>
+                    </div>
+                </div>
+
+                {# Payment details #}
+                <div class="pay-instr-card" data-aos="fade-up" data-aos-delay="50">
+                    <div class="pay-instr-card-head">
+                        <i class="bi bi-credit-card-2-front text-gold"></i>
+                        <h3 data-t="pay_instr_details">Detail Pembayaran</h3>
+                    </div>
+
+                    {% if instructions.type == 'bank_transfer' %}
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_bank">Bank Tujuan</div>
+                            <div class="pay-instr-field-value pay-instr-field-strong">{{ instructions.bank_name }}</div>
+                        </div>
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_account">No. Rekening</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-strong">{{ instructions.account_number }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.account_number }}" data-label="Rekening">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_name">Atas Nama</div>
+                            <div class="pay-instr-field-value">{{ instructions.account_name }}</div>
+                        </div>
+                        <div class="pay-instr-field pay-instr-field-highlight">
+                            <div class="pay-instr-field-label" data-t="pay_instr_amount">Jumlah Transfer</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-gold" data-region-price="{{ instructions.amount }}">Rp {{ instructions.amount|floatformat:0 }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.amount }}" data-label="Nominal">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    {% elif instructions.type == 'ewallet' %}
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_provider">Aplikasi</div>
+                            <div class="pay-instr-field-value pay-instr-field-strong">{{ instructions.provider }}</div>
+                        </div>
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_number">Nomor Tujuan</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-strong">{{ instructions.number }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.number }}" data-label="Nomor">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_name">Atas Nama</div>
+                            <div class="pay-instr-field-value">{{ instructions.name }}</div>
+                        </div>
+                        <div class="pay-instr-field pay-instr-field-highlight">
+                            <div class="pay-instr-field-label" data-t="pay_instr_amount">Jumlah Transfer</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-gold" data-region-price="{{ instructions.amount }}">Rp {{ instructions.amount|floatformat:0 }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.amount }}" data-label="Nominal">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    {% elif instructions.type == 'retail' %}
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_store">Bayar di</div>
+                            <div class="pay-instr-field-value pay-instr-field-strong">{{ instructions.provider }}</div>
+                        </div>
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_code">Kode Pembayaran</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-strong">{{ instructions.payment_code }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.payment_code }}" data-label="Kode">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pay-instr-field pay-instr-field-highlight">
+                            <div class="pay-instr-field-label" data-t="pay_instr_amount">Jumlah Bayar</div>
+                            <div class="pay-instr-field-row">
+                                <div class="pay-instr-field-value pay-mono pay-instr-field-gold" data-region-price="{{ instructions.amount }}">Rp {{ instructions.amount|floatformat:0 }}</div>
+                                <button type="button" class="pay-copy-btn" data-copy="{{ instructions.amount }}" data-label="Nominal">
+                                    <i class="bi bi-clipboard"></i>
+                                    <span data-t="pay_copy">Salin</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% elif instructions.type == 'qris' %}
+                        <div class="pay-instr-qris-wrap">
+                            {% if instructions.qris_image %}
+                            <div class="pay-instr-qris-image-wrap">
+                                <img src="{{ instructions.qris_image }}" alt="QRIS Code" class="pay-instr-qris-image">
+                            </div>
+                            {% else %}
+                            <div class="pay-instr-qris-image-wrap pay-instr-qris-placeholder">
+                                <i class="bi bi-qr-code"></i>
+                                <span>Hubungi artist untuk QR Code</span>
+                            </div>
+                            {% endif %}
+                            <div class="pay-instr-qris-info">
+                                <div class="pay-instr-field">
+                                    <div class="pay-instr-field-label">Merchant</div>
+                                    <div class="pay-instr-field-value pay-instr-field-strong">{{ instructions.merchant_name }}</div>
+                                </div>
+                                <div class="pay-instr-field pay-instr-field-highlight">
+                                    <div class="pay-instr-field-label">Jumlah Bayar</div>
+                                    <div class="pay-instr-field-row">
+                                        <div class="pay-instr-field-value pay-mono pay-instr-field-gold" data-region-price="{{ instructions.total_with_fee }}">Rp {{ instructions.total_with_fee|floatformat:0 }}</div>
+                                        <button type="button" class="pay-copy-btn" data-copy="{{ instructions.total_with_fee }}" data-label="Nominal">
+                                            <i class="bi bi-clipboard"></i> <span>Salin</span>
+                                        </button>
+                                    </div>
+                                    {% if instructions.fee_percent and instructions.fee_percent > 0 %}
+                                    <div class="pay-instr-field-meta">
+                                        <i class="bi bi-info-circle"></i>
+                                        <span>Termasuk biaya QRIS {{ instructions.fee_percent }}%</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif instructions.type == 'credit_card' %}
+                        <div class="pay-instr-card-hero">
+                            <div class="pay-instr-card-hero-left">
+                                <div class="pay-instr-card-hero-icon"><i class="bi bi-credit-card-2-front-fill"></i></div>
+                                <div>
+                                    <div class="pay-instr-card-hero-eyebrow">Kamu membayar dengan</div>
+                                    <div class="pay-instr-card-hero-title">
+                                        {% if selected_brand == 'visa' %}
+                                            <img src="{% static 'tattoo/img/payments/visa.svg' %}" alt="Visa" class="pay-instr-card-hero-brand"> Visa
+                                        {% elif selected_brand == 'mastercard' %}
+                                            <img src="{% static 'tattoo/img/payments/mastercard.svg' %}" alt="Mastercard" class="pay-instr-card-hero-brand"> Mastercard
+                                        {% elif selected_brand == 'jcb' %}
+                                            <img src="{% static 'tattoo/img/payments/jcb.svg' %}" alt="JCB" class="pay-instr-card-hero-brand"> JCB
+                                        {% elif selected_brand == 'amex' %}
+                                            <img src="{% static 'tattoo/img/payments/amex.svg' %}" alt="Amex" class="pay-instr-card-hero-brand"> American Express
+                                        {% else %}
+                                            <span class="pay-instr-card-hero-brands">
+                                                {% for brand in instructions.card_brands %}
+                                                <img src="{% static 'tattoo/img/payments/' %}{{ brand }}.svg" alt="{{ brand }}" class="pay-instr-card-hero-brand">
+                                                {% endfor %}
+                                            </span>
+                                            Kartu Kredit / Debit
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pay-instr-card-hero-badges">
+                                <span class="pay-instr-card-hero-badge"><i class="bi bi-shield-lock-fill"></i> 3D Secure</span>
+                                <span class="pay-instr-card-hero-badge"><i class="bi bi-pci"></i> PCI-DSS</span>
+                            </div>
+                        </div>
+
+                        <div class="pay-instr-card-security">
+                            <div class="pay-instr-card-security-item">
+                                <i class="bi bi-shield-check"></i>
+                                <div>
+                                    <strong>Verifikasi 3D Secure</strong>
+                                    <span>Bank kamu akan kirim OTP untuk konfirmasi — siapa pun yang punya OTP, dia yang bayar</span>
+                                </div>
+                            </div>
+                            <div class="pay-instr-card-security-item">
+                                <i class="bi bi-eye-slash"></i>
+                                <div>
+                                    <strong>Data kartu tidak disimpan</strong>
+                                    <span>Nomor kartu kamu tidak pernah kami simpan di server kami</span>
+                                </div>
+                            </div>
+                            <div class="pay-instr-card-security-item">
+                                <i class="bi bi-lock-fill"></i>
+                                <div>
+                                    <strong>Koneksi terenkripsi SSL</strong>
+                                    <span>Semua data ditransmisikan via HTTPS dengan TLS 1.3</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_card_method">Cara Pembayaran Kartu</div>
+                            <div class="pay-instr-field-value pay-instr-field-strong">
+                                {% if instructions.processing_method == 'edc' %}
+                                    <i class="bi bi-credit-card-2-back text-gold"></i> <span data-t="pay_card_edc">EDC Machine di Studio</span>
+                                {% elif instructions.processing_method == 'link' %}
+                                    <i class="bi bi-link-45deg text-gold"></i> <span data-t="pay_card_link">Payment Link Aman</span>
+                                {% else %}
+                                    <i class="bi bi-chat-dots text-gold"></i> <span data-t="pay_card_manual">Konfirmasi Manual via WhatsApp</span>
+                                {% endif %}
+                            </div>
+                            <div class="pay-instr-field-meta pay-instr-field-meta-proc">
+                                {% if instructions.processing_method == 'edc' %}
+                                    <i class="bi bi-info-circle"></i> Bayar langsung di studio dengan menggesek / tap kartu di mesin EDC
+                                {% elif instructions.processing_method == 'link' %}
+                                    <i class="bi bi-info-circle"></i> Link pembayaran sekali pakai & terenkripsi — hanya bisa dipakai untuk transaksi ini
+                                {% else %}
+                                    <i class="bi bi-info-circle"></i> Artist akan konfirmasi via WhatsApp untuk proses pembayaran kartu yang aman
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if instructions.processing_method == 'link' and instructions.payment_link %}
+                        <div class="pay-instr-field">
+                            <div class="pay-instr-field-label" data-t="pay_instr_link">Link Pembayaran Aman</div>
+                            <div class="pay-instr-field-row">
+                                <a href="{{ instructions.payment_link }}" target="_blank" rel="noopener" class="pay-instr-link-btn">
+                                    <i class="bi bi-shield-lock"></i>
+                                    <span data-t="pay_open_link">Buka Halaman Pembayaran Aman</span>
+                                </a>
+                            </div>
+                            <div class="pay-instr-field-meta">
+                                <i class="bi bi-globe"></i> Halaman pembayaran dibuka di tab baru dengan HTTPS
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="pay-instr-field pay-instr-field-highlight">
+                            <div class="pay-instr-field-label" data-t="pay_instr_amount">Jumlah yang Ditagihkan</div>
+                            <div class="pay-instr-field-value pay-mono pay-instr-field-gold" data-region-price="{{ instructions.total_with_fee }}">Rp {{ instructions.total_with_fee|floatformat:0 }}</div>
+                            {% if instructions.fee_percent and instructions.fee_percent > 0 %}
+                            <div class="pay-instr-field-meta">
+                                <i class="bi bi-info-circle"></i>
+                                <span data-t="pay_instr_fee_note">Termasuk biaya proses kartu {{ instructions.fee_percent }}%</span>
+                            </div>
+                            {% else %}
+                            <div class="pay-instr-field-meta">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Tidak ada biaya tambahan untuk pembayaran kartu</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Steps #}
+                <div class="pay-steps-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="pay-instr-card-head">
+                        <i class="bi bi-list-ol text-gold"></i>
+                        <h3 data-t="pay_instr_steps_title">Cara Pembayaran</h3>
+                    </div>
+                    <ol class="pay-steps">
+                        {% for step in instructions.instructions %}
+                        <li class="pay-step">
+                            <div class="pay-step-num">{{ forloop.counter }}</div>
+                            <div class="pay-step-text">{{ step }}</div>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+
+                {# ============================================ #}
+                {#   STATE 1: BUKTI SEBELUMNYYA DITOLAK         #}
+                {# ============================================ #}
+                {% if rejected_note %}
+                <div class="pay-alert pay-alert-danger" data-aos="fade-up">
+                    <div class="pay-alert-icon"><i class="bi bi-x-octagon-fill"></i></div>
+                    <div class="pay-alert-body">
+                        <strong>Bukti pembayaran sebelumnya ditolak</strong>
+                        <p>Alasan dari artist: <em>{{ rejected_note }}</em></p>
+                        <p class="mb-0 small">Silakan upload foto struk / bukti bayar yang baru di form konfirmasi di bawah.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# ============================================ #}
+                {#   STATE 2: SEDANG MENUNGGU VERIFIKASI        #}
+                {# ============================================ #}
+                {% if verification_pending %}
+                <div class="pay-alert pay-alert-info" data-aos="fade-up">
+                    <div class="pay-alert-icon"><i class="bi bi-hourglass-split"></i></div>
+                    <div class="pay-alert-body">
+                        <strong>Menunggu verifikasi artist</strong>
+                        <p>Bukti pembayaran kamu sudah kami terima dan sedang diverifikasi oleh artist.</p>
+                        <p class="mb-0 small">Estimasi verifikasi 1–2 jam pada jam kerja. Kamu akan menerima notifikasi setelah booking dikonfirmasi.</p>
+                    </div>
+                </div>
+                <div class="pay-pending-card" data-aos="fade-up">
+                    {% if booking.payment_proof %}
+                    <div class="pay-pending-proof">
+                        <i class="bi bi-image"></i>
+                        <a href="{{ booking.payment_proof.url }}" target="_blank">Lihat bukti pembayaran yang diupload</a>
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'booking_detail' booking.id %}" class="btn btn-outline-gold w-100 mt-3">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Detail Pesanan
+                    </a>
+                </div>
+
+                {# ============================================ #}
+                {#   STATE 3: FORM KONFIRMASI (default)         #}
+                {# ============================================ #}
+                {% else %}
+                <form method="post" action="{% url 'payment_confirm' booking.id %}"
+                      class="pay-confirm-form"
+                      enctype="multipart/form-data"
+                      data-aos="fade-up"
+                      data-aos-delay="150"
+                      {% if instructions.requires_proof %}data-requires-proof="1"{% endif %}>
+                    {% csrf_token %}
+                    <input type="hidden" name="method" value="{{ instructions.method }}">
+
+                    {% if instructions.requires_proof %}
+                    <div class="pay-proof-card">
+                        <div class="pay-proof-head">
+                            <i class="bi bi-cloud-arrow-up-fill text-gold"></i>
+                            <div>
+                                <h4>Upload Bukti Pembayaran</h4>
+                                <p>Wajib upload foto struk / bukti bayar untuk metode {{ instructions.method_label }}.</p>
+                            </div>
+                        </div>
+
+                        <div class="pay-proof-upload">
+                            <label for="payProofFile" class="pay-proof-drop">
+                                <input type="file" id="payProofFile" name="payment_proof"
+                                       accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
+                                       required>
+                                <div class="pay-proof-drop-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                                <div class="pay-proof-drop-text">
+                                    <strong>Klik untuk pilih foto struk</strong>
+                                    <span>atau drag &amp; drop di sini</span>
+                                </div>
+                                <div class="pay-proof-drop-meta">JPG / PNG / WEBP · maks 5 MB</div>
+                            </label>
+                            <div class="pay-proof-preview" id="payProofPreview" hidden>
+                                <img id="payProofPreviewImg" src="#" alt="Preview bukti">
+                                <button type="button" class="pay-proof-remove" id="payProofRemove">
+                                    <i class="bi bi-x-lg"></i> Ganti foto
+                                </button>
+                            </div>
+                        </div>
+
+                        <label class="pay-sop-check">
+                            <input type="checkbox" name="sop_agreement" value="1" required>
+                            <span>
+                                Saya menyatakan bahwa bukti pembayaran yang saya upload adalah
+                                <strong>benar dan sah</strong> dari transaksi di
+                                <strong>{{ instructions.method_label }}</strong>.
+                                Saya memahami bahwa bukti palsu akan menyebabkan pesanan
+                                dibatalkan dan akun dapat ditangguhkan.
+                            </span>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="pay-cta-shimmer" id="payCtaSubmit">
+                        <span class="pay-cta-bg"></span>
+                        <span class="pay-cta-content">
+                            {% if instructions.requires_proof %}
+                                <i class="bi bi-send-check-fill"></i>
+                                <span>Kirim Bukti Pembayaran</span>
+                            {% else %}
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span data-t="pay_i_paid">Saya sudah bayar</span>
+                            {% endif %}
+                            <i class="bi bi-arrow-right pay-cta-arrow"></i>
+                        </span>
+                    </button>
+                    <p class="pay-confirm-note">
+                        <i class="bi bi-info-circle"></i>
+                        {% if instructions.requires_proof %}
+                            <span>Setelah mengirim bukti, booking akan berstatus <strong>Menunggu Verifikasi</strong>. Artist akan memverifikasi dalam 1–2 jam pada jam kerja.</span>
+                        {% else %}
+                            <span data-t="pay_i_paid_note">Klik tombol di atas setelah kamu menyelesaikan pembayaran. Booking akan otomatis dikonfirmasi.</span>
+                        {% endif %}
+                    </p>
+                </form>
+                {% endif %}
+
+                {# Help footer #}
+                <div class="pay-help-footer" data-aos="fade-up" data-aos-delay="200">
+                    <div class="pay-help-icon"><i class="bi bi-headset"></i></div>
+                    <div class="pay-help-text">
+                        <strong>Ada masalah dengan pembayaran?</strong>
+                        <span>Tim kami siap bantu via WhatsApp 24/7</span>
+                    </div>
+                    <a href="https://wa.me/6281234567890?text=Halo,%20saya%20butuh%20bantuan%20pembayaran%20%23{{ booking.id }}"
+                       target="_blank" class="btn btn-outline-gold btn-sm pay-help-btn">
+                        <i class="bi bi-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+
+            </div>
+
+        {% else %}
+            {# ============================================ #}
+            {#   VIEW: METHOD SELECTION                     #}
+            {# ============================================ #}
+
+            <div class="pay-shell" data-aos="fade-up">
+
+                {# Hero #}
+                <div class="pay-hero">
+                    <div class="pay-hero-bg">
+                        <div class="pay-hero-orb pay-hero-orb-1"></div>
+                        <div class="pay-hero-orb pay-hero-orb-2"></div>
+                        <div class="pay-hero-grid"></div>
+                    </div>
+
+                    <div class="pay-hero-content">
+                        <a href="{% url 'booking_detail' booking.id %}" class="pay-back-pill">
+                            <i class="bi bi-arrow-left"></i>
+                            <span data-t="back_to_booking">Kembali</span>
+                        </a>
+
+                        <div class="pay-hero-head">
+                            <div class="pay-hero-icon">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <div>
+                                <div class="pay-hero-eyebrow" data-t="pay_hero_eyebrow">PEMBAYARAN AMAN & TERENKRIPSI</div>
+                                <h1 class="pay-hero-title" data-t="pay_title">Pilih Metode Pembayaran</h1>
+                                <p class="pay-hero-sub" data-t="pay_subtitle">Pilih cara bayar yang paling nyaman untuk kamu</p>
+                            </div>
+                        </div>
+
+                        <div class="pay-amount-card">
+                            <div class="pay-amount-left">
+                                <div class="pay-amount-eyebrow">
+                                    <i class="bi bi-receipt"></i>
+                                    <span data-t="order_summary">Ringkasan Pesanan</span>
+                                    <span class="pay-amount-order">#{{ booking.id }}</span>
+                                </div>
+                                <div class="pay-amount-label" data-t="total_pay">Total Bayar</div>
+                                <div class="pay-amount-value" data-region-price="{{ booking.total_price }}" data-region-price-primary="1">Rp {{ booking.total_price|floatformat:0 }}</div>
+                                <div class="pay-amount-conversions">
+                                    {{ booking.total_price|multi_currency }}
+                                </div>
+                            </div>
+                            <div class="pay-amount-right">
+                                <div class="pay-amount-orb"></div>
+                                <i class="bi bi-stars pay-amount-sparkle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# 2-column body #}
+                <div class="pay-body">
+                    <main class="pay-main">
+
+                        {# Domestic group #}
+                        <div class="pay-group" data-pay-group="domestic">
+                            <div class="pay-group-head">
+                                <div class="pay-group-head-icon">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </div>
+                                <div>
+                                    <h2 class="pay-group-title" data-t="pay_group_domestic">Pembayaran Domestik</h2>
+                                    <p class="pay-group-sub" data-t="pay_group_domestic_sub">Bank, e-wallet, dan convenience store di Indonesia</p>
+                                </div>
+                            </div>
+
+                            {# Bank VA #}
+                            <div class="pay-sub" data-pay-group="bank_va">
+                                <div class="pay-sub-head">
+                                    <i class="bi bi-bank2"></i>
+                                    <span data-t="pay_sub_bank">Virtual Account Bank</span>
+                                    <span class="pay-sub-count">6</span>
+                                </div>
+                                <div class="pay-grid">
+                                    <a href="?method=bca_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bca.svg' %}" alt="BCA"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_bca_va">BCA Virtual Account</div>
+                                            <div class="pay-card-desc" data-t="pm_bca_va_desc">Bayar lewat m-BCA / KlikBCA</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=mandiri_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/mandiri.svg' %}" alt="Mandiri"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_mandiri_va">Mandiri Virtual Account</div>
+                                            <div class="pay-card-desc" data-t="pm_mandiri_va_desc">Bayar lewat Livin' / Mandiri Online</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=bni_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bni.svg' %}" alt="BNI"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_bni_va">BNI Virtual Account</div>
+                                            <div class="pay-card-desc" data-t="pm_bni_va_desc">Bayar lewat BNI Mobile / iBank</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=bri_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bri.svg' %}" alt="BRI"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_bri_va">BRI Virtual Account</div>
+                                            <div class="pay-card-desc" data-t="pm_bri_va_desc">Bayar lewat BRImo / Internet Banking</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-popular">POPULER</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=permata_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/permata.svg' %}" alt="Permata"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_permata_va">Permata Virtual Account</div>
+                                            <div class="pay-card-desc" data-t="pm_permata_va_desc">Bayar lewat PermataMobile / Net</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=cimb_va" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/cimb.svg' %}" alt="CIMB"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_cimb_va">CIMB Niaga VA</div>
+                                            <div class="pay-card-desc" data-t="pm_cimb_va_desc">Bayar lewat OCTO Mobile / CIMB Clicks</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {# QRIS #}
+                            <div class="pay-sub" data-pay-group="qris">
+                                <div class="pay-sub-head">
+                                    <i class="bi bi-qr-code-scan"></i>
+                                    <span>QRIS</span>
+                                    <span class="pay-sub-count">1</span>
+                                </div>
+                                <div class="pay-grid">
+                                    <a href="?method=qris" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/qris.svg' %}" alt="QRIS"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name">QRIS</div>
+                                            <div class="pay-card-desc">Scan QR — semua e-wallet & mobile banking</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-popular">UNIVERSAL</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {# E-Wallet #}
+                            <div class="pay-sub" data-pay-group="ewallet">
+                                <div class="pay-sub-head">
+                                    <i class="bi bi-phone"></i>
+                                    <span data-t="pay_sub_ewallet">E-Wallet</span>
+                                    <span class="pay-sub-count">5</span>
+                                </div>
+                                <div class="pay-grid">
+                                    <a href="?method=gopay" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/gopay.svg' %}" alt="GoPay"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_gopay">GoPay</div>
+                                            <div class="pay-card-desc" data-t="pm_gopay_desc">Bayar dari aplikasi GoJek</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-popular">POPULER</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=shopeepay" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/shopeepay.svg' %}" alt="ShopeePay"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_shopeepay">ShopeePay</div>
+                                            <div class="pay-card-desc" data-t="pm_shopeepay_desc">Bayar dari aplikasi Shopee</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=dana" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/dana.svg' %}" alt="DANA"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_dana">DANA</div>
+                                            <div class="pay-card-desc" data-t="pm_dana_desc">Bayar dari aplikasi DANA</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=ovo" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/ovo.svg' %}" alt="OVO"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_ovo">OVO</div>
+                                            <div class="pay-card-desc" data-t="pm_ovo_desc">Bayar dari aplikasi OVO</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=linkaja" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/linkaja.svg' %}" alt="LinkAja"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_linkaja">LinkAja</div>
+                                            <div class="pay-card-desc" data-t="pm_linkaja_desc">Bayar dari aplikasi LinkAja</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {# Convenience Store #}
+                            <div class="pay-sub" data-pay-group="convenience_store">
+                                <div class="pay-sub-head">
+                                    <i class="bi bi-shop"></i>
+                                    <span data-t="pay_sub_retail">Convenience Store</span>
+                                    <span class="pay-sub-count">2</span>
+                                </div>
+                                <div class="pay-grid">
+                                    <a href="?method=indomaret" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/indomaret.svg' %}" alt="Indomaret"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_indomaret">Indomaret</div>
+                                            <div class="pay-card-desc" data-t="pm_indomaret_desc">Bayar di kasir Indomaret terdekat</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-cash">TUNAI</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                    <a href="?method=alfamart" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/alfamart.svg' %}" alt="Alfamart"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name" data-t="pm_alfamart">Alfamart</div>
+                                            <div class="pay-card-desc" data-t="pm_alfamart_desc">Bayar di kasir Alfamart terdekat</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-cash">TUNAI</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# International - Credit Card #}
+                        <div class="pay-group" data-pay-group="international">
+                            <div class="pay-group-head">
+                                <div class="pay-group-head-icon">
+                                    <i class="bi bi-globe2"></i>
+                                </div>
+                                <div>
+                                    <h2 class="pay-group-title" data-t="pay_group_intl">International Payment</h2>
+                                    <p class="pay-group-sub" data-t="pay_group_intl_sub">Credit/debit card untuk pelanggan internasional</p>
+                                </div>
+                            </div>
+
+                            <div class="pay-sub" data-pay-group="credit_card">
+                                <div class="pay-sub-head">
+                                    <i class="bi bi-credit-card-2-front"></i>
+                                    <span data-t="pay_sub_card">Kartu Kredit / Debit</span>
+                                    <span class="pay-sub-count">4 brand</span>
+                                    <span class="pay-sub-secure" title="Transaksi terenkripsi & 3D Secure">
+                                        <i class="bi bi-shield-lock-fill"></i> Aman
+                                    </span>
+                                </div>
+
+                                <div class="pay-grid">
+                                    <a href="?method=credit_card&brand=visa" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/visa.svg' %}" alt="Visa"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name">Visa</div>
+                                            <div class="pay-card-desc">Kredit & Debit · 3D Secure</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+
+                                    <a href="?method=credit_card&brand=mastercard" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/mastercard.svg' %}" alt="Mastercard"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name">Mastercard</div>
+                                            <div class="pay-card-desc">Kredit & Debit · SecureCode</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-instant">INSTANT</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+
+                                    <a href="?method=credit_card&brand=jcb" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/jcb.svg' %}" alt="JCB"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name">JCB</div>
+                                            <div class="pay-card-desc">Kredit & Debit · 3D Secure</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-cash">MANUAL</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+
+                                    <a href="?method=credit_card&brand=amex" class="pay-card">
+                                        <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/amex.svg' %}" alt="American Express"></div>
+                                        <div class="pay-card-info">
+                                            <div class="pay-card-name">American Express</div>
+                                            <div class="pay-card-desc">Kredit · SafeKey</div>
+                                        </div>
+                                        <span class="pay-card-badge pay-badge-cash">MANUAL</span>
+                                        <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    <aside class="pay-sidebar">
+                        <div class="pay-sticky">
+                            <div class="pay-trust-card">
+                                <div class="pay-trust-icon">
+                                    <i class="bi bi-shield-fill-check"></i>
+                                </div>
+                                <h4 data-t="pay_trust_title">Transaksi 100% Aman</h4>
+                                <p data-t="pay_trust">Transaksi aman & terenkripsi. Pembayaran diproses secara internal.</p>
+                                <div class="pay-trust-badges">
+                                    <span class="pay-trust-badge"><i class="bi bi-lock-fill"></i> SSL</span>
+                                    <span class="pay-trust-badge"><i class="bi bi-shield-check"></i> Verified</span>
+                                </div>
+                            </div>
+
+                            <div class="pay-help-card">
+                                <div class="pay-help-icon"><i class="bi bi-headset"></i></div>
+                                <h4 data-t="pay_help_title">Butuh Bantuan?</h4>
+                                <p data-t="pay_help_desc">Tim customer service kami siap membantu kamu 24/7.</p>
+                                <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-outline-gold btn-sm w-100">
+                                    <i class="bi bi-whatsapp"></i> <span data-t="chat_wa">Chat WhatsApp</span>
+                                </a>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    var enabledMethods = {{ enabled_methods|safe|default:"{}" }};
+
+    // Hide method groups yang di-disable oleh artist
+    Object.keys(enabledMethods).forEach(function(group) {
+        if (!enabledMethods[group]) {
+            var subgroups = document.querySelectorAll('[data-pay-group="' + group + '"]');
+            subgroups.forEach(function(el) { el.style.display = 'none'; });
+        }
+    });
+
+    document.querySelectorAll('.pay-group').forEach(function(group) {
+        var subgroups = group.querySelectorAll('.pay-sub');
+        var allHidden = Array.from(subgroups).every(function(s) { return s.style.display === 'none'; });
+        if (allHidden) group.style.display = 'none';
+    });
+
+    // Copy-to-clipboard dengan feedback toast
+    document.querySelectorAll('.pay-copy-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var text = btn.getAttribute('data-copy');
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(function() {
+                showCopyToast(btn);
+            }).catch(function() {
+                // Fallback
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showCopyToast(btn); } catch (e) {}
+                document.body.removeChild(ta);
+            });
+        });
+    });
+
+    function showCopyToast(btn) {
+        var original = btn.innerHTML;
+        btn.classList.add('is-copied');
+        btn.innerHTML = '<i class="bi bi-check2"></i> <span>Disalin!</span>';
+        setTimeout(function() {
+            btn.classList.remove('is-copied');
+            btn.innerHTML = original;
+        }, 1500);
+    }
+
+    // Bukti pembayaran: preview & validasi client-side
+    var proofInput = document.getElementById('payProofFile');
+    var proofPreview = document.getElementById('payProofPreview');
+    var proofPreviewImg = document.getElementById('payProofPreviewImg');
+    var proofDrop = proofInput ? proofInput.closest('.pay-proof-drop') : null;
+    var proofRemove = document.getElementById('payProofRemove');
+
+    function validateAndPreview(file) {
+        if (!file) return;
+        var okTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+        if (okTypes.indexOf(file.type) === -1) {
+            alert('Format harus JPG / PNG / WEBP.');
+            return false;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Ukuran maksimal 5 MB.');
+            return false;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            proofPreviewImg.src = e.target.result;
+            proofPreview.hidden = false;
+            if (proofDrop) proofDrop.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+        return true;
+    }
+
+    if (proofInput) {
+        proofInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (file && !validateAndPreview(file)) {
+                proofInput.value = '';
+            }
+        });
+        if (proofRemove) {
+            proofRemove.addEventListener('click', function() {
+                proofInput.value = '';
+                proofPreview.hidden = true;
+                proofPreviewImg.src = '#';
+                if (proofDrop) proofDrop.style.display = '';
+            });
+        }
+    }
+
+    // Konfirmasi sebelum submit
+    var confirmForm = document.querySelector('.pay-confirm-form');
+    if (confirmForm) {
+        confirmForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var btn = confirmForm.querySelector('button');
+            var t = (window.GLOBAL_CONFIG && window.GLOBAL_CONFIG.translations) || {};
+            var region = (typeof localStorage !== 'undefined' && localStorage.getItem('bt_region')) || 'IDR';
+            var langMap = { 'IDR': 'IDR', 'EUR': 'EUR', 'RUB': 'RUB', 'USD': 'USD', 'AUD': 'USD', 'SGD': 'USD' };
+            var lang = langMap[region] || 'USD';
+            var dict = (t[lang]) || {};
+
+            var requiresProof = confirmForm.getAttribute('data-requires-proof') === '1';
+            var msg;
+            if (requiresProof) {
+                msg = 'Pastikan foto struk / bukti bayar sudah benar dan jelas terbaca. ' +
+                      'Lanjutkan mengirim bukti pembayaran untuk verifikasi?';
+            } else {
+                msg = dict['pay_confirm_msg'] || 'Konfirmasi bahwa kamu sudah melakukan pembayaran?';
+            }
+
+            if (confirm(msg)) {
+                btn.classList.add('is-loading');
+                btn.disabled = true;
+                confirmForm.submit();
+            }
+        });
+    }
+
+    // Countdown timer (server-time based)
+    var countdownEl = document.getElementById('pay-countdown-time');
+    var fillEl = document.getElementById('pay-countdown-fill');
+    var banner = document.getElementById('pay-countdown');
+    var expiryIso = {% if instructions and instructions.expires_at %}"{{ instructions.expires_at }}"{% else %}null{% endif %};
+
+    if (countdownEl) {
+        var expiryMs = expiryIso ? new Date(expiryIso).getTime() : 0;
+        var totalMs = Math.max(1, expiryMs - Date.now());
+
+        function updateCountdown() {
+            if (!expiryMs) return;
+            var remaining = Math.max(0, expiryMs - Date.now());
+            var h = Math.floor(remaining / 3600000);
+            var m = Math.floor((remaining % 3600000) / 60000);
+            var s = Math.floor((remaining % 60000) / 1000);
+            countdownEl.textContent =
+                String(h).padStart(2, '0') + ':' +
+                String(m).padStart(2, '0') + ':' +
+                String(s).padStart(2, '0');
+            var pct = Math.max(0, Math.min(100, (remaining / totalMs) * 100));
+            if (fillEl) fillEl.style.width = pct + '%';
+            if (remaining === 0) {
+                if (banner) banner.classList.add('is-expired');
+            }
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+})();
+</script>
+{% endblock %}

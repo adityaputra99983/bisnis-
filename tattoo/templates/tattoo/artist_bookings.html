@@ -1,0 +1,52 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Pesanan Masuk - Artist Panel{% endblock %}
+{% block page_title %}Pesanan Masuk{% endblock %}
+
+{% block content %}
+<ul class="ap-filter-tabs mb-4">
+    {% for key, label, icon in filter_tabs %}
+    <li>
+        <a href="{% url 'artist_booking_list' %}?status={{ key }}"
+           class="ap-filter-link {% if current_filter == key %}active{% endif %}">
+            <i class="bi {{ icon }}"></i> {{ label }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% for b in bookings %}
+<a href="{% url 'artist_booking_detail' b.id %}" class="ap-booking-card">
+    <div class="ap-bc-top">
+        <div class="ap-bc-user">
+            <i class="bi bi-person-circle"></i>
+            <div>
+                <strong>{{ b.user.username }}</strong>
+                <span class="text-muted small">{{ b.user.email }}</span>
+            </div>
+        </div>
+        <div class="ap-bc-status">
+            <span class="ap-pill status-{{ b.status }}">{{ b.get_status_display }}</span>
+            <span class="ap-pill pay-{{ b.payment_status }}">{{ b.get_payment_status_display }}</span>
+        </div>
+    </div>
+    <div class="ap-bc-detail">
+        <span><i class="bi bi-tag text-gold"></i> {{ b.service.name }}{% if b.package %} <span class="text-muted">({{ b.package.name }})</span>{% endif %}</span>
+        <span><i class="bi bi-calendar3 text-gold"></i> {{ b.booking_date|date:"l, d M Y" }} — {{ b.booking_time|time:"H:i" }}</span>
+        <span><i class="bi bi-geo-alt text-gold"></i> {% if b.mode == 'studio' %}Di Studio{% else %}{{ b.location_address }}{% endif %}</span>
+    </div>
+    <div class="ap-bc-footer">
+        <span class="fw-bold text-gold">Rp {{ b.total_price|floatformat:0|intcomma }}</span>
+        <span class="text-muted small">{{ b.created_at|date:"d M Y H:i" }}</span>
+    </div>
+</a>
+{% empty %}
+<div class="ap-empty-state">
+    <i class="bi bi-inbox"></i>
+    <h5>Tidak ada pesanan</h5>
+    <p class="text-muted">Belum ada customer yang booking ke kamu</p>
+</div>
+{% endfor %}
+{% endblock %}

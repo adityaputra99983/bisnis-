@@ -1,0 +1,1013 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+
+{% block title %}Payment Gateway - Artist Panel{% endblock %}
+{% block page_title %}Payment Gateway{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'artist_payment_settings' %}" id="apForm" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="ap-welcome mb-4">
+        <div class="ap-welcome-text">
+            <h2 class="mb-1">
+                {% if settings.accept_online_payment %}
+                    <i class="bi bi-shield-fill-check text-gold"></i> Payment Gateway Aktif
+                {% else %}
+                    <i class="bi bi-shield-fill-x text-muted"></i> Payment Gateway Nonaktif
+                {% endif %}
+            </h2>
+            <p class="text-muted mb-0">
+                {% if settings.accept_online_payment %}
+                    {{ enabled_count }} metode pembayaran tersedia untuk customer. Kelola rekening, QRIS, biaya, dan notifikasi.
+                {% else %}
+                    Aktifkan payment gateway untuk menerima pembayaran otomatis dari customer.
+                {% endif %}
+            </p>
+        </div>
+        <div class="ap-welcome-cta">
+            <label class="ap-toggle-label {% if settings.accept_online_payment %}active{% endif %}">
+                <input type="checkbox" name="accept_online_payment" value="1" {% if settings.accept_online_payment %}checked{% endif %}>
+                <span><i class="bi bi-power"></i> {% if settings.accept_online_payment %}Aktif{% else %}Nonaktif{% endif %}</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="ap-stat">
+                <div class="ap-stat-icon" style="background:rgba(59,130,246,0.15);color:#5fa3ff;">
+                    <i class="bi bi-bank"></i>
+                </div>
+                <div class="ap-stat-body">
+                    <div class="ap-stat-num">{{ stats.bank_count }}</div>
+                    <div class="ap-stat-label">Akun Bank</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="ap-stat">
+                <div class="ap-stat-icon" style="background:rgba(168,85,247,0.15);color:#c084fc;">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <div class="ap-stat-body">
+                    <div class="ap-stat-num">{{ stats.ewallet_count }}</div>
+                    <div class="ap-stat-label">E-Wallet</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="ap-stat">
+                <div class="ap-stat-icon" style="background:rgba(0,184,148,0.15);color:#00d2a3;">
+                    <i class="bi bi-qr-code-scan"></i>
+                </div>
+                <div class="ap-stat-body">
+                    <div class="ap-stat-num">{% if settings.enable_qris and settings.qris_image %}✓{% else %}–{% endif %}</div>
+                    <div class="ap-stat-label">QRIS</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="ap-stat">
+                <div class="ap-stat-icon">
+                    <i class="bi bi-credit-card-2-front"></i>
+                </div>
+                <div class="ap-stat-body">
+                    <div class="ap-stat-num">{{ stats.method_count }}/{{ stats.method_total }}</div>
+                    <div class="ap-stat-label">Metode Aktif</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="ap-nav-tabs" id="apNavTabs" role="tablist">
+        <li><button type="button" class="ap-nav-tab active" data-tab="tab-methods" role="tab"><i class="bi bi-grid-3x3-gap"></i><span>Metode</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-accounts" role="tab"><i class="bi bi-bank2"></i><span>Rekening</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-qris" role="tab"><i class="bi bi-qr-code-scan"></i><span>QRIS</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-card" role="tab"><i class="bi bi-credit-card-2-front"></i><span>Kartu</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-fees" role="tab"><i class="bi bi-percent"></i><span>Biaya</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-behavior" role="tab"><i class="bi bi-clock-history"></i><span>Perilaku</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-notify" role="tab"><i class="bi bi-bell"></i><span>Notifikasi</span></button></li>
+        <li><button type="button" class="ap-nav-tab" data-tab="tab-advanced" role="tab"><i class="bi bi-sliders"></i><span>Lanjutan</span></button></li>
+    </ul>
+
+    <!-- TAB: METODE PEMBAYARAN -->
+    <div class="ap-tab-pane active" id="tab-methods" role="tabpanel">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-grid-3x3-gap text-gold"></i> Pilih Metode Pembayaran</h5>
+                <span class="ap-pill ap-pill-gold">{{ stats.method_count }} / {{ stats.method_total }} Aktif</span>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Aktifkan/nonaktifkan metode yang ingin ditawarkan ke customer.</p>
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <label class="ap-method-tile {% if settings.enable_bank_va %}active{% endif %}">
+                            <input type="checkbox" name="enable_bank_va" value="1" {% if settings.enable_bank_va %}checked{% endif %}>
+                            <div class="ap-method-tile-body">
+                                <div class="ap-method-tile-head">
+                                    <div class="ap-method-tile-icon" style="background:rgba(59,130,246,0.15);color:#5fa3ff;">
+                                        <i class="bi bi-bank2"></i>
+                                    </div>
+                                    <div class="ap-method-tile-check"><i class="bi bi-check-circle-fill"></i></div>
+                                </div>
+                                <h6 class="ap-method-tile-name">Virtual Account</h6>
+                                <p class="ap-method-tile-desc">BCA, Mandiri, BNI, BRI, Permata, CIMB</p>
+                                <div class="ap-method-tile-logos">
+                                    <img src="{% static 'tattoo/img/payments/bca.svg' %}" alt="BCA">
+                                    <img src="{% static 'tattoo/img/payments/mandiri.svg' %}" alt="Mandiri">
+                                    <img src="{% static 'tattoo/img/payments/bni.svg' %}" alt="BNI">
+                                    <img src="{% static 'tattoo/img/payments/bri.svg' %}" alt="BRI">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <label class="ap-method-tile {% if settings.enable_ewallet %}active{% endif %}">
+                            <input type="checkbox" name="enable_ewallet" value="1" {% if settings.enable_ewallet %}checked{% endif %}>
+                            <div class="ap-method-tile-body">
+                                <div class="ap-method-tile-head">
+                                    <div class="ap-method-tile-icon" style="background:rgba(168,85,247,0.15);color:#c084fc;">
+                                        <i class="bi bi-phone"></i>
+                                    </div>
+                                    <div class="ap-method-tile-check"><i class="bi bi-check-circle-fill"></i></div>
+                                </div>
+                                <h6 class="ap-method-tile-name">E-Wallet</h6>
+                                <p class="ap-method-tile-desc">GoPay, OVO, DANA, ShopeePay, LinkAja</p>
+                                <div class="ap-method-tile-logos">
+                                    <img src="{% static 'tattoo/img/payments/gopay.svg' %}" alt="GoPay">
+                                    <img src="{% static 'tattoo/img/payments/ovo.svg' %}" alt="OVO">
+                                    <img src="{% static 'tattoo/img/payments/dana.svg' %}" alt="DANA">
+                                    <img src="{% static 'tattoo/img/payments/shopeepay.svg' %}" alt="ShopeePay">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <label class="ap-method-tile {% if settings.enable_qris %}active{% endif %}">
+                            <input type="checkbox" name="enable_qris" value="1" {% if settings.enable_qris %}checked{% endif %}>
+                            <div class="ap-method-tile-body">
+                                <div class="ap-method-tile-head">
+                                    <div class="ap-method-tile-icon" style="background:rgba(0,184,148,0.15);color:#00d2a3;">
+                                        <i class="bi bi-qr-code-scan"></i>
+                                    </div>
+                                    <div class="ap-method-tile-check"><i class="bi bi-check-circle-fill"></i></div>
+                                </div>
+                                <h6 class="ap-method-tile-name">QRIS</h6>
+                                <p class="ap-method-tile-desc">Scan QR — semua e-wallet & mobile banking</p>
+                                <div class="ap-method-tile-logos">
+                                    <span class="ap-method-tile-pill">UNIVERSAL</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <label class="ap-method-tile {% if settings.enable_convenience_store %}active{% endif %}">
+                            <input type="checkbox" name="enable_convenience_store" value="1" {% if settings.enable_convenience_store %}checked{% endif %}>
+                            <div class="ap-method-tile-body">
+                                <div class="ap-method-tile-head">
+                                    <div class="ap-method-tile-icon" style="background:rgba(40,167,69,0.15);color:#5fd57e;">
+                                        <i class="bi bi-shop"></i>
+                                    </div>
+                                    <div class="ap-method-tile-check"><i class="bi bi-check-circle-fill"></i></div>
+                                </div>
+                                <h6 class="ap-method-tile-name">Convenience Store</h6>
+                                <p class="ap-method-tile-desc">Indomaret, Alfamart — bayar tunai</p>
+                                <div class="ap-method-tile-logos">
+                                    <img src="{% static 'tattoo/img/payments/indomaret.svg' %}" alt="Indomaret">
+                                    <img src="{% static 'tattoo/img/payments/alfamart.svg' %}" alt="Alfamart">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <label class="ap-method-tile {% if settings.enable_credit_card %}active{% endif %}">
+                            <input type="checkbox" name="enable_credit_card" value="1" {% if settings.enable_credit_card %}checked{% endif %}>
+                            <div class="ap-method-tile-body">
+                                <div class="ap-method-tile-head">
+                                    <div class="ap-method-tile-icon">
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                    </div>
+                                    <div class="ap-method-tile-check"><i class="bi bi-check-circle-fill"></i></div>
+                                </div>
+                                <h6 class="ap-method-tile-name">Kartu Kredit / Debit</h6>
+                                <p class="ap-method-tile-desc">Visa, Mastercard, JCB, American Express</p>
+                                <div class="ap-method-tile-logos">
+                                    <img src="{% static 'tattoo/img/payments/visa.svg' %}" alt="Visa">
+                                    <img src="{% static 'tattoo/img/payments/mastercard.svg' %}" alt="Mastercard">
+                                    <img src="{% static 'tattoo/img/payments/jcb.svg' %}" alt="JCB">
+                                    <img src="{% static 'tattoo/img/payments/amex.svg' %}" alt="AMEX">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: REKENING & E-WALLET -->
+    <div class="ap-tab-pane" id="tab-accounts" role="tabpanel">
+        <div class="ap-card mb-4">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-bank2 text-gold"></i> Pilih Bank yang Aktif</h5>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Customer hanya akan melihat bank yang kamu aktifkan di halaman pembayaran.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for bank_key, bank_label, bank_logo in bank_options %}
+                    <label class="ap-chip-check">
+                        <input type="checkbox" name="enable_{{ bank_key }}" value="1"
+                            {% if bank_key == 'bca' and settings.enable_bca %}checked{% endif %}
+                            {% if bank_key == 'mandiri' and settings.enable_mandiri %}checked{% endif %}
+                            {% if bank_key == 'bni' and settings.enable_bni %}checked{% endif %}
+                            {% if bank_key == 'bri' and settings.enable_bri %}checked{% endif %}
+                            {% if bank_key == 'permata' and settings.enable_permata %}checked{% endif %}
+                            {% if bank_key == 'cimb' and settings.enable_cimb %}checked{% endif %}>
+                        <span><img src="{% static bank_logo %}" alt="{{ bank_label }}" class="ap-chip-icon">{{ bank_label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-card mb-4">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-phone text-gold"></i> Pilih E-Wallet yang Aktif</h5>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Nonaktifkan e-wallet yang jarang dipakai customer-mu.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for ew_key, ew_label, ew_logo in ewallet_options %}
+                    <label class="ap-chip-check">
+                        <input type="checkbox" name="enable_{{ ew_key }}" value="1"
+                            {% if ew_key == 'gopay' and settings.enable_gopay %}checked{% endif %}
+                            {% if ew_key == 'ovo' and settings.enable_ovo %}checked{% endif %}
+                            {% if ew_key == 'dana' and settings.enable_dana %}checked{% endif %}
+                            {% if ew_key == 'shopeepay' and settings.enable_shopeepay %}checked{% endif %}
+                            {% if ew_key == 'linkaja' and settings.enable_linkaja %}checked{% endif %}>
+                        <span><img src="{% static ew_logo %}" alt="{{ ew_label }}" class="ap-chip-icon">{{ ew_label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="ap-card h-100">
+                    <div class="ap-card-head">
+                        <h5 class="mb-0"><i class="bi bi-bank2 text-gold"></i> Detail Rekening Bank</h5>
+                        <span class="ap-pill ap-pill-blue">{{ stats.bank_count }} / 6</span>
+                    </div>
+                    <div class="ap-card-body">
+                        <p class="text-muted small mb-3">Akun penampungan payout customer.</p>
+                        {% for bank_key, bank_label, bank_logo in bank_options %}
+                        <div class="ap-bank-row">
+                            <div class="ap-bank-row-logo">
+                                <img src="{% static bank_logo %}" alt="{{ bank_label }}">
+                            </div>
+                            <div class="ap-bank-row-fields">
+                                <input type="text" name="bank_{{ bank_key }}_number" class="ap-input mb-2"
+                                    value="{% if bank_key == 'bca' %}{{ settings.bank_bca_number|default:'' }}{% endif %}{% if bank_key == 'mandiri' %}{{ settings.bank_mandiri_number|default:'' }}{% endif %}{% if bank_key == 'bni' %}{{ settings.bank_bni_number|default:'' }}{% endif %}{% if bank_key == 'bri' %}{{ settings.bank_bri_number|default:'' }}{% endif %}{% if bank_key == 'permata' %}{{ settings.bank_permata_number|default:'' }}{% endif %}{% if bank_key == 'cimb' %}{{ settings.bank_cimb_number|default:'' }}{% endif %}"
+                                    placeholder="Nomor rekening">
+                                <input type="text" name="bank_{{ bank_key }}_name" class="ap-input"
+                                    value="{% if bank_key == 'bca' %}{{ settings.bank_bca_name|default:'' }}{% endif %}{% if bank_key == 'mandiri' %}{{ settings.bank_mandiri_name|default:'' }}{% endif %}{% if bank_key == 'bni' %}{{ settings.bank_bni_name|default:'' }}{% endif %}{% if bank_key == 'bri' %}{{ settings.bank_bri_name|default:'' }}{% endif %}{% if bank_key == 'permata' %}{{ settings.bank_permata_name|default:'' }}{% endif %}{% if bank_key == 'cimb' %}{{ settings.bank_cimb_name|default:'' }}{% endif %}"
+                                    placeholder="Nama pemilik rekening">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="ap-card h-100">
+                    <div class="ap-card-head">
+                        <h5 class="mb-0"><i class="bi bi-phone text-gold"></i> Nomor E-Wallet</h5>
+                        <span class="ap-pill" style="background:rgba(168,85,247,0.15);color:#c084fc;">{{ stats.ewallet_count }} / 5</span>
+                    </div>
+                    <div class="ap-card-body">
+                        <p class="text-muted small mb-3">Nomor HP terdaftar di masing-masing e-wallet.</p>
+                        {% for ew_key, ew_label, ew_logo in ewallet_options %}
+                        <div class="ap-bank-row">
+                            <div class="ap-bank-row-logo">
+                                <img src="{% static ew_logo }}" alt="{{ ew_label }}">
+                            </div>
+                            <div class="ap-bank-row-fields">
+                                <input type="tel" name="ewallet_{{ ew_key }}" class="ap-input"
+                                    value="{% if ew_key == 'gopay' %}{{ settings.ewallet_gopay|default:'' }}{% endif %}{% if ew_key == 'ovo' %}{{ settings.ewallet_ovo|default:'' }}{% endif %}{% if ew_key == 'dana' %}{{ settings.ewallet_dana|default:'' }}{% endif %}{% if ew_key == 'shopeepay' %}{{ settings.ewallet_shopeepay|default:'' }}{% endif %}{% if ew_key == 'linkaja' %}{{ settings.ewallet_linkaja|default:'' }}{% endif %}"
+                                    placeholder="08xxxxxxxxxx" inputmode="numeric">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: QRIS -->
+    <div class="ap-tab-pane" id="tab-qris" role="tabpanel">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-qr-code-scan text-gold"></i> Konfigurasi QRIS</h5>
+                <label class="ap-toggle-label ap-toggle-label-sm">
+                    <input type="checkbox" name="enable_qris" value="1" {% if settings.enable_qris %}checked{% endif %}>
+                    <span>{% if settings.enable_qris %}Aktif{% else %}Nonaktif{% endif %}</span>
+                </label>
+            </div>
+            <div class="ap-card-body">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="mb-3">
+                            <label class="ap-form-label" for="qris_merchant_name">Nama Merchant QRIS</label>
+                            <input type="text" id="qris_merchant_name" name="qris_merchant_name" class="ap-input"
+                                value="{{ settings.qris_merchant_name|default:'' }}" placeholder="Contoh: Bali Tattoo Studio">
+                            <small class="text-muted">Nama ini tampil di aplikasi e-wallet customer saat scan QR.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="ap-form-label" for="qris_fee_percent">Biaya QRIS (%)</label>
+                            <div class="input-group">
+                                <input type="number" id="qris_fee_percent" name="qris_fee_percent" class="ap-input"
+                                    value="{{ settings.qris_fee_percent|default:'0.7' }}" min="0" max="10" step="0.01">
+                                <span class="ap-input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">Default 0.7% sesuai standar QRIS. Bisa 0 jika kamu tanggung sendiri.</small>
+                        </div>
+                        <div class="mb-0">
+                            <label class="ap-form-label" for="qris_note">Catatan QRIS (opsional)</label>
+                            <textarea id="qris_note" name="qris_note" class="ap-input ap-textarea" rows="3"
+                                placeholder="Contoh: Scan QR di aplikasi e-wallet kamu. Pastikan nominal sesuai tagihan.">{{ settings.qris_note|default:'' }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="ap-qris-preview">
+                            <div class="ap-qris-preview-head">
+                                <i class="bi bi-qr-code-scan"></i> QR Code QRIS
+                            </div>
+                            <div class="ap-qris-preview-body" id="apQrisImageWrap">
+                                {% if settings.qris_image %}
+                                    <img src="{{ settings.qris_image.url }}" alt="QRIS" class="ap-qris-image" id="apQrisPreviewImg">
+                                {% else %}
+                                    <div class="ap-qris-placeholder" id="apQrisPlaceholder">
+                                        <i class="bi bi-qr-code"></i>
+                                        <span>Belum ada QR</span>
+                                    </div>
+                                    <img src="" alt="QRIS" class="ap-qris-image" id="apQrisPreviewImg" style="display:none">
+                                {% endif %}
+                            </div>
+                            <div class="ap-qris-preview-foot">
+                                <label class="ap-btn-sm" for="qris_image">
+                                    <i class="bi bi-cloud-arrow-up"></i> Upload QR
+                                </label>
+                                <input type="file" id="qris_image" name="qris_image" accept="image/*" class="d-none">
+                                {% if settings.qris_image %}
+                                <label class="ap-btn-sm-outline" title="Hapus QR">
+                                    <input type="checkbox" name="qris_image_clear" value="1" class="d-none" id="apQrisClear">
+                                    <i class="bi bi-trash"></i>
+                                </label>
+                                {% endif %}
+                                <small class="text-muted">PNG / JPG, maks 2MB</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: KARTU KREDIT -->
+    <div class="ap-tab-pane" id="tab-card" role="tabpanel">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-credit-card-2-front text-gold"></i> Konfigurasi Kartu Kredit / Debit</h5>
+                <span class="ap-pill">VISA · MC · JCB · AMEX</span>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Atur bagaimana customer membayar via kartu (diproses manual).</p>
+
+                <div class="mb-4">
+                    <label class="ap-form-label">Metode Proses Pembayaran Kartu</label>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="ap-toggle-label w-100 {% if settings.card_processing_method == 'edc' %}active{% endif %}">
+                                <input type="radio" name="card_processing_method" value="edc" {% if settings.card_processing_method == 'edc' %}checked{% endif %}>
+                                <span class="d-block text-center w-100">
+                                    <i class="bi bi-credit-card-2-back d-block mb-1" style="font-size:1.4rem;"></i>
+                                    <strong>EDC Machine</strong>
+                                    <small class="d-block text-muted">Terminal fisik di studio</small>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="ap-toggle-label w-100 {% if settings.card_processing_method == 'link' %}active{% endif %}">
+                                <input type="radio" name="card_processing_method" value="link" {% if settings.card_processing_method == 'link' %}checked{% endif %}>
+                                <span class="d-block text-center w-100">
+                                    <i class="bi bi-link-45deg d-block mb-1" style="font-size:1.4rem;"></i>
+                                    <strong>Payment Link</strong>
+                                    <small class="d-block text-muted">Customer bayar via URL</small>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="ap-toggle-label w-100 {% if settings.card_processing_method == 'manual' %}active{% endif %}">
+                                <input type="radio" name="card_processing_method" value="manual" {% if settings.card_processing_method == 'manual' %}checked{% endif %}>
+                                <span class="d-block text-center w-100">
+                                    <i class="bi bi-chat-dots d-block mb-1" style="font-size:1.4rem;"></i>
+                                    <strong>Manual</strong>
+                                    <small class="d-block text-muted">Konfirmasi via WhatsApp</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3" id="apCardLinkRow" {% if settings.card_processing_method != 'link' %}style="display:none"{% endif %}>
+                    <label class="ap-form-label" for="card_payment_link">Link Pembayaran Kartu</label>
+                    <input type="url" id="card_payment_link" name="card_payment_link" class="ap-input"
+                        value="{{ settings.card_payment_link|default:'' }}" placeholder="https://payment.example.com/your-shop">
+                    <small class="text-muted">URL payment gateway eksternal (Stripe, Square, dll).</small>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="card_fee_percent">Biaya Proses Kartu (%)</label>
+                        <div class="input-group">
+                            <input type="number" id="card_fee_percent" name="card_fee_percent" class="ap-input"
+                                value="{{ settings.card_fee_percent|default:'0' }}" min="0" max="100" step="0.01">
+                            <span class="ap-input-group-text">%</span>
+                        </div>
+                        <small class="text-muted">0% = tanpa biaya. Biasanya 2.5–3% untuk kartu internasional.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="card_note">Catatan untuk Customer (opsional)</label>
+                        <textarea id="card_note" name="card_note" class="ap-input ap-textarea" rows="3"
+                            placeholder="Contoh: Silakan tap kartu di studio saat kedatangan.">{{ settings.card_note|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: BIAYA & FEE -->
+    <div class="ap-tab-pane" id="tab-fees" role="tabpanel">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-percent text-gold"></i> Struktur Biaya</h5>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Atur biaya tambahan per metode pembayaran (otomatis ditambahkan ke total tagihan customer).</p>
+                <div class="row g-3">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="ap-fee-card">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-bank2 text-primary"></i>
+                                <strong>Virtual Account</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">BCA, Mandiri, BNI, BRI, dll</small>
+                            <div class="input-group">
+                                <input type="number" name="va_fee_percent" class="ap-input"
+                                    value="{{ settings.va_fee_percent|default:'0' }}" min="0" max="100" step="0.01">
+                                <span class="ap-input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="ap-fee-card">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-phone" style="color:#c084fc;"></i>
+                                <strong>E-Wallet</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">GoPay, OVO, DANA, ShopeePay, LinkAja</small>
+                            <div class="input-group">
+                                <input type="number" name="ewallet_fee_percent" class="ap-input"
+                                    value="{{ settings.ewallet_fee_percent|default:'0' }}" min="0" max="100" step="0.01">
+                                <span class="ap-input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="ap-fee-card">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-qr-code-scan" style="color:#00d2a3;"></i>
+                                <strong>QRIS</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">Diset di tab QRIS (default 0.7%)</small>
+                            <input type="number" name="qris_fee_percent" class="ap-input"
+                                value="{{ settings.qris_fee_percent|default:'0.7' }}" min="0" max="10" step="0.01" disabled>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="ap-fee-card">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-shop" style="color:#5fd57e;"></i>
+                                <strong>Convenience Store</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">Indomaret, Alfamart</small>
+                            <div class="input-group">
+                                <input type="number" name="retail_fee_percent" class="ap-input"
+                                    value="{{ settings.retail_fee_percent|default:'0' }}" min="0" max="100" step="0.01">
+                                <span class="ap-input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="ap-fee-card">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-credit-card-2-front"></i>
+                                <strong>Kartu Kredit / Debit</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">Diset di tab Kartu Kredit</small>
+                            <input type="number" name="card_fee_percent" class="ap-input"
+                                value="{{ settings.card_fee_percent|default:'0' }}" min="0" max="100" step="0.01" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="ap-fee-card ap-fee-card-accent">
+                            <div class="ap-fee-head">
+                                <i class="bi bi-cash-stack text-gold"></i>
+                                <strong>Biaya Layanan</strong>
+                            </div>
+                            <small class="text-muted mb-2 d-block">Dikenakan untuk SEMUA metode</small>
+                            <div class="input-group">
+                                <input type="number" name="platform_fee_percent" class="ap-input"
+                                    value="{{ settings.platform_fee_percent|default:'0' }}" min="0" max="100" step="0.01">
+                                <span class="ap-input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: PERILAKU & BATAS -->
+    <div class="ap-tab-pane" id="tab-behavior" role="tabpanel">
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="ap-card">
+                    <div class="ap-card-head">
+                        <h5 class="mb-0"><i class="bi bi-clock-history text-gold"></i> Perilaku Pembayaran</h5>
+                    </div>
+                    <div class="ap-card-body">
+                        <div class="mb-3">
+                            <label class="ap-form-label">Mode Konfirmasi Pembayaran</label>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="ap-toggle-label w-100 {% if settings.confirmation_mode == 'manual' %}active{% endif %}">
+                                        <input type="radio" name="confirmation_mode" value="manual" {% if settings.confirmation_mode == 'manual' %}checked{% endif %}>
+                                        <span class="d-block w-100"><i class="bi bi-hand-index me-1"></i> <strong>Manual</strong> — customer klik konfirmasi</span>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="ap-toggle-label w-100 {% if settings.confirmation_mode == 'auto' %}active{% endif %}">
+                                        <input type="radio" name="confirmation_mode" value="auto" {% if settings.confirmation_mode == 'auto' %}checked{% endif %}>
+                                        <span class="d-block w-100"><i class="bi bi-lightning-charge me-1"></i> <strong>Otomatis</strong> — butuh webhook</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="ap-form-label" for="payment_expiry_hours">Batas Waktu Bayar (jam)</label>
+                                <div class="input-group">
+                                    <input type="number" id="payment_expiry_hours" name="payment_expiry_hours" class="ap-input"
+                                        value="{{ settings.payment_expiry_hours|default:'24' }}" min="1" max="168" step="1">
+                                    <span class="ap-input-group-text">jam</span>
+                                </div>
+                                <small class="text-muted">1–168 jam. Booking expire otomatis.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="ap-form-label" for="min_payment_amount">Minimum Nominal</label>
+                                <div class="input-group">
+                                    <span class="ap-input-group-text">Rp</span>
+                                    <input type="number" id="min_payment_amount" name="min_payment_amount" class="ap-input"
+                                        value="{{ settings.min_payment_amount|default:'0' }}" min="0" step="1000" inputmode="numeric">
+                                </div>
+                                <small class="text-muted">0 = tanpa minimum.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="ap-card">
+                    <div class="ap-card-head">
+                        <h5 class="mb-0"><i class="bi bi-clock text-gold"></i> Jam Operasional</h5>
+                        <label class="ap-toggle-label ap-toggle-label-sm">
+                            <input type="checkbox" name="accept_payment_247" value="1" {% if settings.accept_payment_247 %}checked{% endif %}>
+                            <span>24/7</span>
+                        </label>
+                    </div>
+                    <div class="ap-card-body">
+                        <p class="text-muted small mb-3">Batasi kapan customer bisa membayar online.</p>
+                        <div id="apTimeGrid" class="row g-2 {% if settings.accept_payment_247 %}opacity-50{% endif %}">
+                            <div class="col-5">
+                                <label class="ap-form-label" for="working_hours_start">Jam Mulai</label>
+                                <input type="time" id="working_hours_start" name="working_hours_start" class="ap-input"
+                                    value="{{ settings.working_hours_start|time:'H:i'|default:'08:00' }}">
+                            </div>
+                            <div class="col-2 d-flex align-items-end justify-content-center pb-2">
+                                <i class="bi bi-arrow-right text-gold"></i>
+                            </div>
+                            <div class="col-5">
+                                <label class="ap-form-label" for="working_hours_end">Jam Selesai</label>
+                                <input type="time" id="working_hours_end" name="working_hours_end" class="ap-input"
+                                    value="{{ settings.working_hours_end|time:'H:i'|default:'22:00' }}">
+                            </div>
+                        </div>
+                        <small class="text-muted mt-2 d-block">Di luar jam ini, customer akan diminta bayar di studio.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-card mt-3">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-file-text text-gold"></i> Catatan & Kebijakan</h5>
+            </div>
+            <div class="ap-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="general_payment_note">Catatan Umum Pembayaran</label>
+                        <textarea id="general_payment_note" name="general_payment_note" class="ap-input ap-textarea" rows="3"
+                            placeholder="Contoh: Pembayaran diverifikasi maksimal 1x24 jam.">{{ settings.general_payment_note|default:'' }}</textarea>
+                        <small class="text-muted">Tampil di header halaman instruksi pembayaran customer.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="refund_policy">Kebijakan Refund</label>
+                        <textarea id="refund_policy" name="refund_policy" class="ap-input ap-textarea" rows="3"
+                            placeholder="Contoh: Refund 100% jika pembatalan H-3. 50% jika H-1.">{{ settings.refund_policy|default:'' }}</textarea>
+                        <small class="text-muted">Ditampilkan saat customer ingin membatalkan booking.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: NOTIFIKASI -->
+    <div class="ap-tab-pane" id="tab-notify" role="tabpanel">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-bell text-gold"></i> Notifikasi Pembayaran</h5>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Pilih channel & event yang ingin kamu terima notifikasi.</p>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="notification_email">Email Notifikasi</label>
+                        <input type="email" id="notification_email" name="notification_email" class="ap-input"
+                            value="{{ settings.notification_email|default:'' }}"
+                            placeholder="{{ artist.user.email|default:'email@example.com' }}">
+                        <small class="text-muted">Kosongkan untuk pakai email akun ({{ artist.user.email|default:'-' }}).</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-form-label" for="notification_whatsapp">WhatsApp Notifikasi</label>
+                        <input type="tel" id="notification_whatsapp" name="notification_whatsapp" class="ap-input"
+                            value="{{ settings.notification_whatsapp|default:'' }}" placeholder="08xxxxxxxxxx" inputmode="numeric">
+                        <small class="text-muted">Nomor yang akan menerima notifikasi via WhatsApp bot.</small>
+                    </div>
+                </div>
+
+                <label class="ap-form-label">Event Notifikasi</label>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="ap-toggle-row">
+                            <input type="checkbox" name="notify_on_pending" value="1" {% if settings.notify_on_pending %}checked{% endif %}>
+                            <span><i class="bi bi-hourglass-split text-warning"></i></span>
+                            <span class="ap-toggle-row-text">
+                                <strong>Pembayaran Pending</strong>
+                                <small>Saat customer baru memulai bayar</small>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-toggle-row">
+                            <input type="checkbox" name="notify_on_paid" value="1" {% if settings.notify_on_paid %}checked{% endif %}>
+                            <span><i class="bi bi-check-circle-fill" style="color:#5fd57e;"></i></span>
+                            <span class="ap-toggle-row-text">
+                                <strong>Pembayaran Berhasil</strong>
+                                <small>Saat customer konfirmasi / auto-paid</small>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-toggle-row">
+                            <input type="checkbox" name="notify_on_failed" value="1" {% if settings.notify_on_failed %}checked{% endif %}>
+                            <span><i class="bi bi-x-circle-fill" style="color:#ff6b6b;"></i></span>
+                            <span class="ap-toggle-row-text">
+                                <strong>Pembayaran Gagal</strong>
+                                <small>Saat transaksi gagal / ditolak</small>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="ap-toggle-row">
+                            <input type="checkbox" name="notify_on_expired" value="1" {% if settings.notify_on_expired %}checked{% endif %}>
+                            <span><i class="bi bi-clock-history text-muted"></i></span>
+                            <span class="ap-toggle-row-text">
+                                <strong>Pembayaran Expired</strong>
+                                <small>Saat lewat batas waktu bayar</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ADVANCED -->
+    <div class="ap-tab-pane" id="tab-advanced" role="tabpanel">
+        <div class="ap-card mb-3">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-sliders text-gold"></i> Integrasi Midtrans (Opsional)</h5>
+            </div>
+            <div class="ap-card-body">
+                <p class="text-muted small mb-3">Untuk sistem marketplace / bagi hasil otomatis via Midtrans Split Payment.</p>
+                <div class="mb-3">
+                    <label class="ap-toggle-row">
+                        <input type="checkbox" name="use_split_payment" value="1" {% if settings.use_split_payment %}checked{% endif %}>
+                        <span><i class="bi bi-share text-gold"></i></span>
+                        <span class="ap-toggle-row-text">
+                            <strong>Aktifkan Midtrans Split Payment</strong>
+                            <small>Untuk sistem bagi hasil otomatis antara platform dan artist</small>
+                        </span>
+                    </label>
+                </div>
+                <div class="mb-0">
+                    <label class="ap-form-label" for="midtrans_merchant_id">Midtrans Sub-Merchant ID</label>
+                    <input type="text" id="midtrans_merchant_id" name="midtrans_merchant_id" class="ap-input"
+                        value="{{ settings.midtrans_merchant_id|default:'' }}" placeholder="mis: 19891234-1234-1234-1234-123456789012">
+                    <small class="text-muted">Dapatkan dari dashboard Midtrans setelah registrasi sub-merchant.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-card mb-3">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-shield-check text-gold"></i> Persetujuan</h5>
+            </div>
+            <div class="ap-card-body">
+                <label class="ap-toggle-row">
+                    <input type="checkbox" name="terms_accepted" value="1" {% if settings.terms_accepted %}checked{% endif %}>
+                    <span><i class="bi bi-check2-square text-gold"></i></span>
+                    <span class="ap-toggle-row-text">
+                        <strong>Saya menyetujui Syarat & Ketentuan Payment Gateway</strong>
+                        <small>Dengan mencentang, saya menyatakan data rekening/e-wallet yang saya masukkan adalah benar dan milik saya sendiri.</small>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="ap-alert ap-alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <div>
+                <strong>Penting!</strong>
+                <p class="mb-0">Pastikan semua data rekening, e-wallet, dan QRIS sudah benar sebelum mengaktifkan payment gateway. Data yang salah dapat menyebabkan kehilangan dana.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ap-save-bar" id="apSaveBar">
+        <div class="d-flex gap-2 justify-content-end flex-wrap">
+            <button type="button" class="btn btn-outline-gold" id="apResetBtn">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </button>
+            <button type="submit" class="btn btn-gold" id="apSaveBtn">
+                <i class="bi bi-check-lg"></i> <span>Simpan Pengaturan</span>
+            </button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    'use strict';
+
+    // ===== TAB SWITCHER =====
+    var tabs = document.querySelectorAll('.ap-nav-tab');
+    var panes = document.querySelectorAll('.ap-tab-pane');
+    var navTabsContainer = document.getElementById('apNavTabs');
+
+    function scrollTabIntoView(tab) {
+        if (!tab || !navTabsContainer) return;
+        try {
+            var tRect = tab.getBoundingClientRect();
+            var cRect = navTabsContainer.getBoundingClientRect();
+            // Check if tab is outside visible area
+            if (tRect.left < cRect.left + 20 || tRect.right > cRect.right - 20) {
+                tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        } catch(e) { /* ignore */ }
+    }
+
+    function activateTab(name) {
+        if (!name) return;
+        var targetTab = null;
+        tabs.forEach(function(t) {
+            var isActive = t.getAttribute('data-tab') === name;
+            t.classList.toggle('active', isActive);
+            if (isActive) targetTab = t;
+        });
+        panes.forEach(function(p) {
+            p.classList.toggle('active', p.id === name);
+        });
+        // Auto-scroll active tab into view on mobile
+        scrollTabIntoView(targetTab);
+        try {
+            var url = new URL(window.location.href);
+            url.searchParams.set('tab', name);
+            history.replaceState(null, '', url);
+        } catch(e) {}
+    }
+    tabs.forEach(function(t) {
+        t.addEventListener('click', function() { activateTab(t.getAttribute('data-tab')); });
+    });
+
+    var initialTab = null;
+    try {
+        var u = new URL(window.location.href);
+        initialTab = u.searchParams.get('tab');
+    } catch(e) {}
+    if (!initialTab && window.location.hash) {
+        initialTab = window.location.hash.replace('#', '');
+    }
+    if (initialTab && document.getElementById(initialTab)) {
+        activateTab(initialTab);
+    } else {
+        // Scroll initial active tab into view
+        var firstActive = document.querySelector('.ap-nav-tab.active');
+        if (firstActive) {
+            requestAnimationFrame(function() { scrollTabIntoView(firstActive); });
+        }
+    }
+
+    // ===== Card link row toggle =====
+    var cardRadios = document.querySelectorAll('input[name="card_processing_method"]');
+    var linkRow = document.getElementById('apCardLinkRow');
+    function updateLinkRow() {
+        if (!linkRow) return;
+        var selected = document.querySelector('input[name="card_processing_method"]:checked');
+        linkRow.style.display = (selected && selected.value === 'link') ? '' : 'none';
+    }
+    cardRadios.forEach(function(r) { r.addEventListener('change', updateLinkRow); });
+    updateLinkRow();
+
+    // ===== Welcome CTA toggle text update =====
+    var welcomeToggle = document.querySelector('.ap-welcome input[name="accept_online_payment"]');
+    var welcomeLabel = welcomeToggle ? welcomeToggle.closest('label') : null;
+    if (welcomeToggle && welcomeLabel) {
+        welcomeToggle.addEventListener('change', function() {
+            var span = welcomeLabel.querySelector('span');
+            if (span) {
+                span.innerHTML = '<i class="bi bi-power"></i> ' + (welcomeToggle.checked ? 'Aktif' : 'Nonaktif');
+            }
+            welcomeLabel.classList.toggle('active', welcomeToggle.checked);
+        });
+    }
+
+    // ===== Time grid toggle (24/7) =====
+    var alwaysOn = document.querySelector('input[name="accept_payment_247"]');
+    var timeGrid = document.getElementById('apTimeGrid');
+    function syncTimeGrid() {
+        if (!timeGrid) return;
+        if (alwaysOn && alwaysOn.checked) {
+            timeGrid.classList.add('ap-disabled');
+        } else {
+            timeGrid.classList.remove('ap-disabled');
+        }
+    }
+    if (alwaysOn) alwaysOn.addEventListener('change', syncTimeGrid);
+    syncTimeGrid();
+
+    // ===== QRIS image preview =====
+    var qrisInput = document.getElementById('qris_image');
+    var qrisPreview = document.getElementById('apQrisPreviewImg');
+    var qrisPlaceholder = document.getElementById('apQrisPlaceholder');
+    var qrisClear = document.getElementById('apQrisClear');
+
+    function clearQrisPreview() {
+        if (qrisPreview) { qrisPreview.src = ''; qrisPreview.style.display = 'none'; }
+        if (qrisPlaceholder) qrisPlaceholder.style.display = '';
+    }
+    function showQrisPreview(src) {
+        if (qrisPreview) { qrisPreview.src = src; qrisPreview.style.display = ''; }
+        if (qrisPlaceholder) qrisPlaceholder.style.display = 'none';
+    }
+
+    if (qrisInput && qrisPreview) {
+        qrisInput.addEventListener('change', function(e) {
+            var file = e.target.files && e.target.files[0];
+            if (!file) {
+                if (qrisClear && qrisClear.checked) clearQrisPreview();
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar. Maks 2MB.');
+                qrisInput.value = '';
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                showQrisPreview(ev.target.result);
+                if (qrisClear) qrisClear.checked = false;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    if (qrisClear) {
+        qrisClear.addEventListener('change', function() {
+            if (qrisClear.checked) {
+                clearQrisPreview();
+                if (qrisInput) qrisInput.value = '';
+            }
+        });
+    }
+
+    // ===== Tab scroll shadow indicator =====
+    function updateTabShadows() {
+        if (!navTabsContainer) return;
+        navTabsContainer.classList.remove('has-scroll-left', 'has-scroll-right');
+        var maxScroll = navTabsContainer.scrollWidth - navTabsContainer.clientWidth;
+        if (maxScroll <= 4) return;
+        var sl = navTabsContainer.scrollLeft;
+        if (sl > 4) navTabsContainer.classList.add('has-scroll-left');
+        if (sl < maxScroll - 4) navTabsContainer.classList.add('has-scroll-right');
+    }
+    if (navTabsContainer) {
+        navTabsContainer.addEventListener('scroll', updateTabShadows, { passive: true });
+        window.addEventListener('resize', updateTabShadows);
+        // Initial check after layout settles
+        requestAnimationFrame(function() {
+            updateTabShadows();
+            setTimeout(updateTabShadows, 200);
+        });
+    }
+
+    // ===== iOS keyboard viewport fix =====
+    // When the keyboard opens, scroll the focused input into view properly
+    if ('visualViewport' in window) {
+        var lastScrollY = 0;
+        window.visualViewport.addEventListener('resize', function() {
+            // Detect keyboard open on mobile
+            if (window.visualViewport.height < window.innerHeight * 0.75) {
+                document.body.classList.add('keyboard-open');
+            } else {
+                document.body.classList.remove('keyboard-open');
+            }
+        });
+    }
+
+    // ===== Save bar dirty state =====
+    var form = document.getElementById('apForm');
+    var saveBar = document.getElementById('apSaveBar');
+    if (form && saveBar) {
+        var initialData = new FormData(form);
+        function isDirty() {
+            var current = new FormData(form);
+            for (var pair of current.entries()) {
+                if (initialData.get(pair[0]) !== pair[1]) return true;
+            }
+            var fileInputs = form.querySelectorAll('input[type="file"]');
+            for (var i = 0; i < fileInputs.length; i++) {
+                if (fileInputs[i].files && fileInputs[i].files.length > 0) return true;
+            }
+            return false;
+        }
+        function syncDirty() {
+            saveBar.classList.toggle('is-dirty', isDirty());
+        }
+        form.addEventListener('input', syncDirty);
+        form.addEventListener('change', syncDirty);
+    }
+
+    // ===== Reset button =====
+    var resetBtn = document.getElementById('apResetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Reset semua perubahan? Halaman akan dimuat ulang.')) {
+                location.reload();
+            }
+        });
+    }
+
+    // ===== Save loading state =====
+    var saveBtn = document.getElementById('apSaveBtn');
+    if (saveBtn && form) {
+        form.addEventListener('submit', function() {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+        });
+    }
+})();
+</script>
+{% endblock %}

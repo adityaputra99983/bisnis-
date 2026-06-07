@@ -1,0 +1,54 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Layanan Saya - Artist Panel{% endblock %}
+{% block page_title %}Layanan Saya{% endblock %}
+
+{% block content %}
+<p class="text-muted mb-4">Pilih layanan yang kamu tawarkan. Layanan yang dipilih akan muncul sebagai spesialisasimu di profil publik.</p>
+
+{% if all_services %}
+<div class="ap-service-grid">
+    {% for s in all_services %}
+    <div class="ap-service-card {% if s in artist.specialties.all %}selected{% endif %}"
+         data-service-id="{{ s.id }}">
+        <form method="post" action="{% url 'artist_toggle_service' s.id %}">
+            {% csrf_token %}
+            <button type="submit" class="ap-svc-trigger">
+                <div class="ap-svc-info">
+                    <div class="ap-svc-cat small text-gold">{{ s.category.name|default:'Umum' }}</div>
+                    <h5>{{ s.name }}</h5>
+                    <p class="text-muted small">{{ s.description|truncatechars:90 }}</p>
+                    <div class="ap-svc-meta">
+                        <span><i class="bi bi-clock"></i> {{ s.duration }}</span>
+                        <span class="fw-bold text-gold">Rp {{ s.price|floatformat:0|intcomma }}</span>
+                    </div>
+                </div>
+                <div class="ap-svc-check">
+                    <div class="ap-checkbox {% if s in artist.specialties.all %}checked{% endif %}">
+                        {% if s in artist.specialties.all %}
+                            <i class="bi bi-check-lg"></i>
+                        {% endif %}
+                    </div>
+                    <small>
+                        {% if s in artist.specialties.all %}
+                            Aktif
+                        {% else %}
+                            Nonaktif
+                        {% endif %}
+                    </small>
+                </div>
+            </button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="ap-empty-state">
+    <i class="bi bi-tags"></i>
+    <h5>Belum ada layanan</h5>
+    <p class="text-muted">Belum ada layanan yang tersedia saat ini.</p>
+</div>
+{% endif %}
+{% endblock %}

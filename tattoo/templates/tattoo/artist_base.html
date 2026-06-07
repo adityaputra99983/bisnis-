@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Artist Panel - Bali Tattoo{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=5.1">
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="artist-panel-body">
+    <div class="ap-layout">
+        <aside class="ap-sidebar" id="apSidebar">
+            <div class="ap-sidebar-brand">
+                <i class="bi bi-droplet"></i>
+                <span class="ap-brand-text">Bali Tattoo</span>
+                <span class="ap-brand-badge">Artist</span>
+            </div>
+
+            <nav class="ap-sidebar-nav">
+                <a href="{% url 'artist_dashboard' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'artist_booking_list' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_booking_list' %}active{% endif %}">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Pesanan Masuk</span>
+                    {% if nav_artist_pending_count %}<span class="ap-nav-badge">{{ nav_artist_pending_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'artist_portfolio' %}" class="ap-nav-item {% if 'portfolio' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-images"></i>
+                    <span>Portofolio</span>
+                </a>
+                <a href="{% url 'artist_profile_edit' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_profile_edit' %}active{% endif %}">
+                    <i class="bi bi-person-gear"></i>
+                    <span>Profil & Bio</span>
+                </a>
+                <a href="{% url 'artist_services' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_services' %}active{% endif %}">
+                    <i class="bi bi-tools"></i>
+                    <span>Keahlian & Harga</span>
+                </a>
+                <a href="{% url 'artist_settings' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_settings' %}active{% endif %}">
+                    <i class="bi bi-gear"></i>
+                    <span>Pengaturan Bisnis</span>
+                </a>
+                <a href="{% url 'artist_payment_settings' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_payment_settings' %}active{% endif %}">
+                    <i class="bi bi-credit-card-2-front"></i>
+                    <span>Payment Gateway</span>
+                </a>
+            </nav>
+
+            <div class="ap-sidebar-footer">
+                <a href="{% url 'artist_detail' artist.id %}" class="ap-nav-item">
+                    <i class="bi bi-eye"></i>
+                    <span>Lihat Profil Publik</span>
+                </a>
+                <a href="{% url 'home' %}" class="ap-nav-item">
+                    <i class="bi bi-house-door"></i>
+                    <span>Ke Situs Utama</span>
+                </a>
+                <a href="{% url 'logout' %}" class="ap-nav-item ap-nav-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <button class="ap-sidebar-toggle" id="apSidebarToggle" type="button">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <main class="ap-main">
+            <header class="ap-topbar">
+                <div class="ap-topbar-left">
+                    <h5 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h5>
+                </div>
+                <div class="ap-topbar-right">
+                    <div class="ap-topbar-user">
+                        <div class="ap-tbu-avatar">
+                            {% if artist.photo %}
+                                <img src="{{ artist.photo.url }}" alt="{{ artist.nickname }}">
+                            {% else %}
+                                <i class="bi bi-person-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="ap-tbu-info">
+                            <strong>{{ artist.nickname }}</strong>
+                            <small class="text-muted">{{ artist.name }}</small>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="container-fluid px-4 mt-3">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="ap-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var toggleBtn = document.getElementById('apSidebarToggle');
+        var sidebar = document.getElementById('apSidebar');
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+            });
+        }
+    });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

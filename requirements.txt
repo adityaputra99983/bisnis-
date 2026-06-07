@@ -1,0 +1,18 @@
+Django==6.0.5
+Pillow==12.2.0
+
+# Production / hosting essentials
+gunicorn==23.0.0
+whitenoise==6.8.2
+dj-database-url==3.0.1
+python-decouple==3.8
+
+# REST API + CORS (untuk mobile app / integrasi external)
+djangorestframework==3.17.1
+django-filter==25.2
+django-cors-headers==4.9.0
+
+# Media storage (untuk Vercel / serverless - filesystem tidak persistent)
+# Catatan: Tidak wajib untuk Hostinger. Install hanya jika deploy ke Vercel.
+# cloudinary==1.44.1
+# django-cloudinary-storage==0.3.1

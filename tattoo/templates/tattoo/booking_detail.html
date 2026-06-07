@@ -1,0 +1,378 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}<span data-t="title_booking_detail">Detail Pesanan</span> #{{ booking.id }} - Bali Tattoo Studio{% endblock %}
+
+{% block extra_js %}
+{% if booking.payment_status != 'paid' and booking.status != 'cancelled' %}
+<script>
+(function(){
+    var btn = document.getElementById('pay-button');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyiapkan...';
+        window.location.href = "{% url 'payment_initiate' booking.id %}";
+    });
+})();
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container">
+
+        <div class="booking-detail-header" data-aos="fade-up">
+            <div class="bdh-back">
+                <a href="{% url 'booking_list' %}" class="btn-ghost-link">
+                    <i class="bi bi-arrow-left"></i> <span data-t="back_to_orders">Kembali ke Pesanan</span>
+                </a>
+            </div>
+            <div class="bdh-main">
+                <div>
+                    <div class="bdh-id"><span data-t="order_id">Pesanan</span> #{{ booking.id }}</div>
+                    <h1 class="bdh-title">{{ booking.service.name }}</h1>
+                    <div class="bdh-meta">
+                        <span><i class="bi bi-calendar3"></i> <span data-t="created_at">Dibuat</span> {{ booking.created_at|date:"d M Y" }}</span>
+                        <span><i class="bi bi-person-badge"></i> {{ booking.artist.nickname }}</span>
+                    </div>
+                </div>
+                <div class="bdh-badges">
+                    <span class="booking-status status-{{ booking.status }}">
+                        <i class="bi bi-circle-fill"></i> {{ booking.get_status_display }}
+                    </span>
+                    <span class="payment-status pay-{{ booking.payment_status }}">
+                        <i class="bi bi-credit-card"></i> {{ booking.get_payment_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STATUS TIMELINE ===== -->
+        {% if booking.status != 'cancelled' %}
+        <div class="booking-timeline" data-aos="fade-up" data-aos-delay="50">
+            {% with cur=booking.status %}
+            <div class="bt-step
+                {% if cur == 'pending' %}is-current
+                {% elif cur == 'confirmed' or cur == 'in_progress' or cur == 'completed' %}is-done{% endif %}">
+                <div class="bt-icon"><i class="bi bi-clock-history"></i></div>
+                <div class="bt-text">
+                    <div class="bt-title" data-t="step_waiting_title">Menunggu Konfirmasi</div>
+                    <div class="bt-sub" data-t="step_waiting_sub">Artist akan segera memeriksa pesananmu</div>
+                </div>
+            </div>
+            <div class="bt-line {% if cur == 'confirmed' or cur == 'in_progress' or cur == 'completed' %}is-done{% endif %}"></div>
+
+            <div class="bt-step
+                {% if cur == 'confirmed' %}is-current
+                {% elif cur == 'in_progress' or cur == 'completed' %}is-done{% endif %}">
+                <div class="bt-icon"><i class="bi bi-check2-circle"></i></div>
+                <div class="bt-text">
+                    <div class="bt-title" data-t="step_confirmed_title">Dikonfirmasi</div>
+                    <div class="bt-sub" data-t="step_confirmed_sub">Pesananmu sudah dikonfirmasi artist</div>
+                </div>
+            </div>
+            <div class="bt-line {% if cur == 'in_progress' or cur == 'completed' %}is-done{% endif %}"></div>
+
+            <div class="bt-step
+                {% if cur == 'in_progress' %}is-current
+                {% elif cur == 'completed' %}is-done{% endif %}">
+                <div class="bt-icon"><i class="bi bi-brush"></i></div>
+                <div class="bt-text">
+                    <div class="bt-title" data-t="step_progress_title">Sedang Dikerjakan</div>
+                    <div class="bt-sub" data-t="step_progress_sub">Tattoo sedang dikerjakan oleh artist</div>
+                </div>
+            </div>
+            <div class="bt-line {% if cur == 'completed' %}is-done{% endif %}"></div>
+
+            <div class="bt-step {% if cur == 'completed' %}is-done is-final{% endif %}">
+                <div class="bt-icon"><i class="bi bi-stars"></i></div>
+                <div class="bt-text">
+                    <div class="bt-title" data-t="step_done_title">Selesai</div>
+                    <div class="bt-sub" data-t="step_done_sub">Tattoo selesai dan bisa di-review</div>
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+        {% else %}
+        <div class="alert alert-danger d-flex align-items-center gap-2" data-aos="fade-up">
+            <i class="bi bi-x-circle-fill" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong data-t="cancelled_title">Pesanan Dibatalkan</strong><br>
+                <small data-t="cancelled_sub">Pesanan ini sudah dibatalkan. Silakan buat pesanan baru jika kamu masih ingin tattoo.</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ===== WHAT'S NEXT — Action Hint ===== -->
+        {% if booking.status != 'cancelled' and booking.status != 'completed' %}
+        <div class="booking-next-action" data-aos="fade-up" data-aos-delay="100">
+            <div class="bna-icon"><i class="bi bi-lightbulb-fill"></i></div>
+            <div class="bna-text">
+                <strong data-t="next_step">Langkah selanjutnya:</strong>
+                {% if booking.payment_status != 'paid' %}
+                    {% if booking.status == 'pending' %}
+                        <span data-t="next_step_pending">Tunggu konfirmasi dari artist, lalu lakukan pembayaran untuk mengamankan jadwalmu.</span>
+                    {% else %}
+                        <span data-t="next_step_pay">Lakukan pembayaran sekarang untuk mengamankan jadwal kamu.</span>
+                    {% endif %}
+                {% else %}
+                    {% if booking.status == 'confirmed' %}
+                        <span data-t="next_step_confirmed">Datang sesuai jadwal — atau tunggu artist datang jika kamu memilih panggil ke rumah.</span>
+                    {% elif booking.status == 'in_progress' %}
+                        <span data-t="next_step_in_progress">Tattoo sedang dikerjakan. Nikmati prosesnya!</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row g-4 mt-1">
+
+            <!-- ===== LEFT: BOOKING DETAILS ===== -->
+            <div class="col-lg-7">
+                <div class="booking-info-card" data-aos="fade-up">
+                    <h5 class="bic-title"><i class="bi bi-info-circle text-gold"></i> <span data-t="booking_info">Informasi Pesanan</span></h5>
+
+                    <div class="bic-grid">
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_service">Layanan</div>
+                            <div class="bic-value">{{ booking.service.name }}</div>
+                        </div>
+                        {% if booking.package %}
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_package">Paket</div>
+                            <div class="bic-value">{{ booking.package.name }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_artist">Artist</div>
+                            <div class="bic-value">
+                                <a href="{% url 'artist_detail' booking.artist.id %}" class="text-gold">
+                                    {{ booking.artist.nickname }}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_mode">Mode Layanan</div>
+                            <div class="bic-value">
+                                {% if booking.mode == 'studio' %}
+                                    <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="mode_studio">Datang ke Studio</span></span>
+                                {% else %}
+                                    <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="mode_mobile">Panggil ke Rumah</span></span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_date">Tanggal</div>
+                            <div class="bic-value">{{ booking.booking_date|date:"l, d F Y" }}</div>
+                        </div>
+                        <div class="bic-item">
+                            <div class="bic-label" data-t="label_time">Jam</div>
+                            <div class="bic-value">{{ booking.booking_time|time:"H:i" }} <span data-t="wita">WITA</span></div>
+                        </div>
+                    </div>
+
+                    {% if booking.mode == 'mobile' and booking.location_address %}
+                    <div class="bic-block">
+                        <div class="bic-label"><i class="bi bi-geo-alt-fill text-gold"></i> <span data-t="label_address">Alamat Lokasi</span></div>
+                        <div class="bic-value bic-multiline">{{ booking.location_address|linebreaksbr }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if booking.notes %}
+                    <div class="bic-block">
+                        <div class="bic-label"><i class="bi bi-chat-left-text text-gold"></i> <span data-t="label_notes">Catatan / Permintaan</span></div>
+                        <div class="bic-value bic-multiline">{{ booking.notes|linebreaksbr }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if booking.design_reference %}
+                    <div class="bic-block">
+                        <div class="bic-label"><i class="bi bi-image text-gold"></i> <span data-t="label_reference">Referensi Desain</span></div>
+                        <a href="{{ booking.design_reference.url }}" target="_blank" class="bic-image-link">
+                            <img src="{{ booking.design_reference.url }}" alt="Referensi desain" class="bic-image">
+                            <small><i class="bi bi-arrows-fullscreen"></i> <span data-t="click_enlarge">Klik untuk perbesar</span></small>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Artist Info -->
+                <div class="booking-info-card mt-4" data-aos="fade-up" data-aos-delay="50">
+                    <h5 class="bic-title"><i class="bi bi-person-badge text-gold"></i> <span data-t="about_artist">Tentang Artist</span></h5>
+                    <div class="bic-artist">
+                        {% if booking.artist.photo %}
+                            <img src="{{ booking.artist.photo.url }}" alt="{{ booking.artist.nickname }}" class="bic-artist-photo">
+                        {% else %}
+                            <div class="bic-artist-photo bic-artist-photo-placeholder">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        {% endif %}
+                        <div class="bic-artist-info">
+                            <h6 class="mb-1">{{ booking.artist.nickname }}</h6>
+                            <p class="text-muted small mb-2">{{ booking.artist.name }}</p>
+                            <p class="text-secondary small mb-2">
+                                <i class="bi bi-award text-gold"></i> {{ booking.artist.experience_years }} <span data-t="years_experience">tahun pengalaman</span>
+                                {% if booking.artist.instagram %}
+                                · <i class="bi bi-instagram text-gold"></i> {{ booking.artist.instagram }}
+                                {% endif %}
+                            </p>
+                            <a href="{% url 'artist_detail' booking.artist.id %}" class="btn btn-outline-gold btn-sm">
+                                <i class="bi bi-eye"></i> <span data-t="view_full_profile">Lihat Profil Lengkap</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RIGHT: PRICE & PAYMENT ===== -->
+            <div class="col-lg-5">
+                <div class="booking-payment-card" data-aos="fade-left">
+                    <h5 class="bpc-title"><i class="bi bi-receipt text-gold"></i> <span data-t="fee_details">Rincian Biaya</span></h5>
+
+                    <div class="bpc-prices">
+                        <div class="bpc-row">
+                            <span><span data-t="service_fee">Biaya Layanan</span>
+                                {% if booking.package %}
+                                    <small class="text-muted d-block">({{ booking.package.name }})</small>
+                                {% endif %}
+                            </span>
+                            <span data-region-price="{{ booking.service.price }}">Rp {{ booking.service.price|floatformat:0 }}</span>
+                        </div>
+                        {% if booking.travel_fee and booking.travel_fee > 0 %}
+                        <div class="bpc-row">
+                            <span><span data-t="travel_fee">Biaya Panggilan</span>
+                                <small class="text-muted d-block" data-t="home_service_label">(panggil ke rumah)</small>
+                            </span>
+                            <span data-region-price="{{ booking.travel_fee }}">Rp {{ booking.travel_fee|floatformat:0 }}</span>
+                        </div>
+                        {% endif %}
+                        <hr class="bpc-divider">
+                        <div class="bpc-total">
+                            <span data-t="total_pay">Total Bayar</span>
+                            <span class="bpc-total-amount" data-region-price="{{ booking.total_price }}" data-region-price-primary="1">Rp {{ booking.total_price|floatformat:0 }}</span>
+                        </div>
+                        <div class="currency-conversions justify-content-end mt-2">
+                            {{ booking.total_price|multi_currency }}
+                        </div>
+                    </div>
+
+                    <hr class="bpc-divider">
+
+                    {% if booking.payment_status == 'paid' %}
+                        <div class="bpc-paid">
+                            <div class="bpc-paid-icon">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 text-success" data-t="payment_paid">Pembayaran Lunas</h6>
+                                <p class="mb-0 small text-muted">
+                                    <span data-t="method_label">Metode:</span> <strong>{{ booking.payment_method|default:"-" }}</strong><br>
+                                    {% if booking.paid_at %}<span data-t="date_label_inline">Tanggal:</span> {{ booking.paid_at|date:"d M Y, H:i" }}{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    {% elif booking.status == 'cancelled' %}
+                        <div class="alert alert-danger mb-0">
+                            <i class="bi bi-x-circle"></i> <span data-t="cancelled_no_pay">Pesanan dibatalkan — pembayaran tidak diperlukan.</span>
+                        </div>
+                    {% else %}
+                        {% if booking.payment_status == 'pending' %}
+                            <div class="alert alert-warning small mb-3">
+                                <i class="bi bi-clock-history"></i> <span data-t="payment_pending">Pembayaran kamu sedang menunggu konfirmasi.</span>
+                            </div>
+                        {% elif booking.payment_status == 'failed' %}
+                            <div class="alert alert-danger small mb-3">
+                                <i class="bi bi-x-circle"></i> <span data-t="payment_failed">Pembayaran sebelumnya gagal. Silakan coba lagi.</span>
+                            </div>
+                        {% endif %}
+                        <button id="pay-button" class="btn btn-gold w-100 btn-lg">
+                            <i class="bi bi-credit-card-fill"></i>
+                            {% if booking.payment_status == 'pending' %}
+                                <span data-t="continue_payment">Lanjutkan Pembayaran</span>
+                            {% else %}
+                                <span data-t="pay_now">Bayar Sekarang</span>
+                            {% endif %}
+                        </button>
+                        <a href="{% url 'payment_initiate' booking.id %}" class="bd-pay-methods-link">
+                            <i class="bi bi-wallet2"></i>
+                            <span data-t="view_pay_methods">Lihat Payment Gateway</span>
+                            <i class="bi bi-arrow-right ms-auto"></i>
+                        </a>
+                        <small class="text-muted d-block mt-2 text-center">
+                            <i class="bi bi-shield-lock"></i> <span data-t="secure_payment">Transaksi aman & terenkripsi</span>
+                        </small>
+                    {% endif %}
+                </div>
+
+                <!-- Help / FAQ -->
+                <div class="booking-help-card mt-4" data-aos="fade-left" data-aos-delay="100">
+                    <h6 class="bhc-title"><i class="bi bi-question-circle text-gold"></i> <span data-t="need_help">Butuh Bantuan?</span></h6>
+                    <p class="text-muted small mb-3" data-t="help_text">
+                        Ada pertanyaan tentang pesanan ini? Hubungi kami langsung via WhatsApp.
+                    </p>
+                    <a href="https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20tanya%20tentang%20pesanan%20%23{{ booking.id }}"
+                       target="_blank" class="btn btn-outline-gold btn-sm w-100">
+                        <i class="bi bi-whatsapp"></i> <span data-t="chat_wa">Chat WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REVIEW SECTION (only when completed) ===== -->
+        {% if booking.status == 'completed' %}
+        <div class="row mt-5">
+            <div class="col-lg-12">
+                <div class="booking-review-section" data-aos="fade-up">
+                    {% if review %}
+                        <h5 class="brs-title"><i class="bi bi-star-fill text-gold"></i> <span data-t="your_review">Ulasan Kamu</span></h5>
+                        <div class="review-card mt-3">
+                            <div class="text-gold mb-2" style="font-size: 1.3rem; letter-spacing: 4px;">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 text-muted small">{{ review.rating }}/5</span>
+                            </div>
+                            {% if review.comment %}
+                                <p class="text-secondary mb-2">{{ review.comment }}</p>
+                            {% endif %}
+                            <small class="text-muted"><span data-t="given_on">Diberikan pada</span> {{ review.created_at|date:"d M Y" }}</small>
+                        </div>
+                    {% elif review_form %}
+                        <h5 class="brs-title"><i class="bi bi-pencil-square text-gold"></i> <span data-t="give_review">Beri Ulasan</span></h5>
+                        <p class="text-muted small" data-t="review_prompt">Bagaimana pengalaman tattoo kamu? Ulasanmu sangat berarti buat artist dan customer lain.</p>
+                        <form method="POST" class="mt-3">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label class="form-label" data-t="rating_question">Berapa rating yang kamu kasih?</label>
+                                <div class="rating-options">
+                                    {% for radio in review_form.rating %}
+                                        {{ radio.tag }}
+                                        <label for="{{ radio.id_for_label }}" class="rating-label">{{ radio.choice_label }}</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label" data-t="comment_label">Ceritakan pengalamanmu (opsional)</label>
+                                {{ review_form.comment }}
+                            </div>
+                            <button type="submit" class="btn btn-gold">
+                                <i class="bi bi-send"></i> <span data-t="send_review">Kirim Ulasan</span>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

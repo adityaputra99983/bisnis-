@@ -1,0 +1,99 @@
+{% extends 'tattoo/artist_base.html' %}
+{% load static %}
+
+{% block title %}Pengaturan - Artist Panel{% endblock %}
+{% block page_title %}Pengaturan{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Preferensi Layanan</h5>
+            </div>
+            <form method="post" action="{% url 'artist_settings' %}">
+                {% csrf_token %}
+                <div class="ap-card-body">
+                    <div class="mb-3">
+                        <label class="ap-form-label">Mode Layanan</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <label class="ap-toggle-label">
+                                <input type="checkbox" name="is_available_studio" value="1" {% if artist.is_available_studio %}checked{% endif %}>
+                                <span><i class="bi bi-shop"></i> Studio</span>
+                            </label>
+                            <label class="ap-toggle-label">
+                                <input type="checkbox" name="is_available_mobile" value="1" {% if artist.is_available_mobile %}checked{% endif %}>
+                                <span><i class="bi bi-house-heart"></i> Mobile (ke lokasi customer)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="ap-form-label">Biaya Travel (Mobile) — Rp</label>
+                        <div class="input-group">
+                            <input type="number" name="mobile_fee" class="ap-input" value="{{ artist.mobile_fee|default:'50000' }}" min="0" placeholder="50000">
+                            <span class="ap-input-group-text">per lokasi</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="ap-form-label">Wilayah Layanan (Mobile)</label>
+                        <input type="text" name="service_area" class="ap-input" value="{{ artist.service_area|default:'' }}" placeholder="Contoh: Denpasar, Badung, Gianyar">
+                    </div>
+                    <button type="submit" class="btn btn-gold mt-2">
+                        <i class="bi bi-check-lg"></i> Simpan Pengaturan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="ap-card">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informasi Akun</h5>
+            </div>
+            <div class="ap-card-body">
+                <div class="ap-summary-row">
+                    <span>Email</span>
+                    <strong>{{ artist.user.email|default:'-' }}</strong>
+                </div>
+                <div class="ap-summary-row">
+                    <span>Username</span>
+                    <strong>{{ artist.user.username }}</strong>
+                </div>
+                <div class="ap-summary-row">
+                    <span>Bergabung</span>
+                    <strong>{{ artist.user.date_joined|date:"d M Y" }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="ap-card mt-4">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-megaphone"></i> Keahlian & Spesialisasi</h5>
+            </div>
+            <form method="post" action="{% url 'artist_settings_specialties' %}">
+                {% csrf_token %}
+                <div class="ap-card-body">
+                    <p class="text-muted small">Pilih layanan sebagai spesialisasi kamu (akan muncul di profil publik)</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for s in all_services %}
+                        <label class="ap-chip-check">
+                            <input type="checkbox" name="specialties" value="{{ s.id }}"
+                                {% if s in artist.specialties.all %}checked{% endif %}>
+                            <span>{{ s.name }}</span>
+                        </label>
+                        {% empty %}
+                        <p class="text-muted small">Belum ada layanan tersedia.</p>
+                        {% endfor %}
+                    </div>
+                    {% if all_services %}
+                    <button type="submit" class="btn btn-gold mt-3">
+                        <i class="bi bi-check-lg"></i> Simpan Spesialisasi
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

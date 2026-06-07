@@ -1,0 +1,148 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% load currency_tags %}
+
+{% block title %}Pesanan Saya - Bali Tattoo Studio{% endblock %}
+
+{% block content %}
+<section class="page-header" data-aos="fade-down">
+    <div class="container text-center">
+        <h1>Pesanan <span class="text-gold">Saya</span></h1>
+        <p class="lead">Pantau status semua tattoo booking kamu di satu tempat</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+
+        <!-- ===== STATS SUMMARY ===== -->
+        {% if stats.total > 0 %}
+        <div class="booking-stats-grid" data-aos="fade-up">
+            <div class="bsg-card bsg-total">
+                <div class="bsg-icon"><i class="bi bi-collection"></i></div>
+                <div class="bsg-info">
+                    <div class="bsg-num">{{ stats.total }}</div>
+                    <div class="bsg-label">Total Pesanan</div>
+                </div>
+            </div>
+            <div class="bsg-card bsg-active">
+                <div class="bsg-icon"><i class="bi bi-hourglass-split"></i></div>
+                <div class="bsg-info">
+                    <div class="bsg-num">{{ stats.active }}</div>
+                    <div class="bsg-label">Aktif</div>
+                </div>
+            </div>
+            <div class="bsg-card bsg-unpaid">
+                <div class="bsg-icon"><i class="bi bi-wallet2"></i></div>
+                <div class="bsg-info">
+                    <div class="bsg-num">{{ stats.unpaid }}</div>
+                    <div class="bsg-label">Belum Lunas</div>
+                </div>
+            </div>
+            <div class="bsg-card bsg-done">
+                <div class="bsg-icon"><i class="bi bi-check-circle"></i></div>
+                <div class="bsg-info">
+                    <div class="bsg-num">{{ stats.completed }}</div>
+                    <div class="bsg-label">Selesai</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FILTER TABS ===== -->
+        <div class="booking-filter-tabs" data-aos="fade-up" data-aos-delay="50">
+            {% for key, label, icon, count in filter_tabs %}
+                <a href="?status={{ key }}"
+                   class="bft-tab {% if current_filter == key %}is-active{% endif %}">
+                    <i class="bi {{ icon }}"></i>
+                    <span>{{ label }}</span>
+                    {% if count %}<span class="bft-count">{{ count }}</span>{% endif %}
+                </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- ===== BOOKINGS LIST ===== -->
+        {% if bookings %}
+            <div class="row g-4 mt-2">
+                {% for booking in bookings %}
+                    <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                        <a href="{% url 'booking_detail' booking.id %}" class="text-decoration-none">
+                            <div class="booking-card-v2">
+                                <div class="bcv-head">
+                                    <div class="bcv-id">#{{ booking.id }}</div>
+                                    <div class="bcv-badges">
+                                        <span class="booking-status status-{{ booking.status }}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="bcv-body">
+                                    <h5 class="bcv-title">{{ booking.service.name }}</h5>
+                                    {% if booking.package %}
+                                        <p class="bcv-package text-muted small">
+                                            <i class="bi bi-box-seam"></i> {{ booking.package.name }}
+                                        </p>
+                                    {% endif %}
+
+                                    <div class="bcv-meta">
+                                        <div class="bcv-meta-item">
+                                            <i class="bi bi-person-badge"></i>
+                                            <span>{{ booking.artist.nickname }}</span>
+                                        </div>
+                                        <div class="bcv-meta-item">
+                                            <i class="bi bi-calendar3"></i>
+                                            <span>{{ booking.booking_date|date:"d M Y" }} · {{ booking.booking_time|time:"H:i" }}</span>
+                                        </div>
+                                        <div class="bcv-meta-item">
+                                            {% if booking.mode == 'studio' %}
+                                                <i class="bi bi-shop text-gold"></i>
+                                                <span>Di Studio</span>
+                                            {% else %}
+                                                <i class="bi bi-house-heart text-gold"></i>
+                                                <span>Panggil ke Rumah</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bcv-foot">
+                                    <div class="bcv-price">
+                                        <small class="text-muted d-block">Total</small>
+                                        <span class="bcv-price-amount">Rp {{ booking.total_price|floatformat:0 }}</span>
+                                        <div class="booking-price-currencies">{{ booking.total_price|multi_currency }}</div>
+                                    </div>
+                                    <div class="bcv-payment">
+                                        <span class="payment-status pay-{{ booking.payment_status }}">
+                                            <i class="bi bi-credit-card"></i>
+                                            {{ booking.get_payment_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="bcv-arrow">
+                                    <i class="bi bi-arrow-right"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="booking-empty-state" data-aos="fade-up">
+                <i class="bi bi-journal-text" style="font-size: 4rem; color: var(--gold);"></i>
+                {% if stats.total == 0 %}
+                    <h4 class="mt-4">Belum ada pesanan</h4>
+                    <p class="text-muted">Yuk booking tattoo impianmu sekarang!</p>
+                {% else %}
+                    <h4 class="mt-4">Tidak ada pesanan di kategori ini</h4>
+                    <p class="text-muted">Coba pilih kategori filter lain di atas.</p>
+                {% endif %}
+                <a href="{% url 'booking_create' %}" class="btn btn-gold mt-3">
+                    <i class="bi bi-calendar-check"></i> Booking Baru
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

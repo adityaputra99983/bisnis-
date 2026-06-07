@@ -33,8 +33,15 @@ SECRET_KEY = config(
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # ALLOWED_HOSTS: pisahkan dengan koma di .env
-# Untuk support multi-domain: ALLOWED_HOSTS=domain.com,www.domain.com,.vercel.app
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+# Default include `.vercel.app` & `.localhost` (leading dot = wildcard subdomain)
+# untuk support Vercel deployment (subdomain random: bisnis-xxx.vercel.app)
+# + preview deployment (pr-123-bisnis-xxx.vercel.app)
+# Untuk custom domain: ALLOWED_HOSTS=...,yourdomain.com,www.yourdomain.com
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1,.vercel.app,.localhost',
+    cast=Csv()
+)
 
 # CSRF_TRUSTED_ORIGINS: untuk HTTPS / cross-site form post
 # Format lengkap URL: https://domain.com
@@ -94,6 +101,37 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bisnis.wsgi.application'
+
+
+# ============================================================
+# STARTUP WARNINGS (bantu debug production deployment)
+# ============================================================
+import os as _os
+import logging as _logging
+import warnings as _warnings
+
+_startup_logger = _logging.getLogger('django.startup')
+
+if not DEBUG and _os.environ.get('VERCEL'):
+    # Vercel deployment: cek apakah subdomain Vercel sudah di-allow
+    vercel_allowed = any(h == '.vercel.app' or h.endswith('.vercel.app') for h in ALLOWED_HOSTS)
+    if not vercel_allowed:
+        _startup_logger.warning(
+            "VERCEL DEPLOYMENT: '*.vercel.app' tidak ada di ALLOWED_HOSTS. "
+            "Tambahkan ',.vercel.app' ke env var ALLOWED_HOSTS di Vercel project settings, "
+            "atau redeploy setelah update settings.py default."
+        )
+
+if not DEBUG:
+    # Tampilkan konfigurasi host saat startup production (untuk verifikasi)
+    _startup_logger.info(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+    _startup_logger.info(f"CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
+    if '*' in ALLOWED_HOSTS:
+        _startup_logger.warning(
+            "ALLOWED_HOSTS berisi '*' (allow all). Ini AMAN untuk development, "
+            "TAPI tidak untuk production (rentan HTTP Host header attack). "
+            "Ganti dengan domain spesifik."
+        )
 
 
 # ============================================================

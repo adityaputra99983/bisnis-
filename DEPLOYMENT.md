@@ -228,13 +228,23 @@ Setelah signup, copy `DATABASE_URL` (format: `postgresql://user:password@host:54
    ```
    SECRET_KEY=<random-50-char>
    DEBUG=False
-   ALLOWED_HOSTS=.vercel.app
+   ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,.localhost
    CSRF_TRUSTED_ORIGINS=https://your-project.vercel.app
    DATABASE_URL=postgres://user:pass@host:5432/db
    CLOUDINARY_CLOUD_NAME=your-cloud-name
    CLOUDINARY_API_KEY=your-api-key
    CLOUDINARY_API_SECRET=your-api-secret
    ```
+
+   > **Catatan ALLOWED_HOSTS**:
+   > - Default di `settings.py` sudah include `.vercel.app` (leading dot = wildcard subdomain), jadi `bisnis-xxx.vercel.app`, `pr-123-bisnis-xxx.vercel.app`, dan semua subdomain Vercel lain akan otomatis diterima.
+   > - **TIDAK PERLU** set `ALLOWED_HOSTS` di Vercel kecuali pakai custom domain.
+   > - Untuk custom domain (misal `tattoostudio.com`):
+   >   ```
+   >   ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,.localhost,tattoostudio.com,www.tattoostudio.com
+   >   ```
+   > - **WAJIB redeploy** setiap kali ubah env var (Vercel tidak hot-reload env).
+
 6. **Deploy** → tunggu sampai selesai
 7. **Jalankan migration** (Vercel → Project → Settings → Functions → atau via CLI):
    ```bash
@@ -775,6 +785,21 @@ python manage.py runserver 127.0.0.1:8001
 Tambahkan domain/IP ke `ALLOWED_HOSTS` di `.env`:
 ```env
 ALLOWED_HOSTS=localhost,127.0.0.1,yourdomain.com
+```
+
+**Spesifik Vercel**: Error `Invalid HTTP_HOST header: 'bisnis-xxx.vercel.app'` artinya subdomain Vercel tidak masuk `ALLOWED_HOSTS`. Default di `settings.py` sudah include `.vercel.app` (wildcard subdomain), jadi:
+
+- **Cek 1**: Pastikan `ALLOWED_HOSTS` env var di Vercel project settings TIDAK override default. Kalau diset, harus include `.vercel.app`:
+  ```
+  ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,.localhost
+  ```
+- **Cek 2**: Kalau pakai custom domain, tambahkan manual (lihat section Custom Domain di atas).
+- **Cek 3**: Redeploy Vercel setelah ubah env var.
+
+Startup log di Vercel Functions akan print warning kalau ada masalah:
+```
+WARNING: VERCEL DEPLOYMENT: '*.vercel.app' tidak ada di ALLOWED_HOSTS. ...
+INFO: ALLOWED_HOSTS: ['localhost', '127.0.0.1', '.vercel.app', '.localhost']
 ```
 
 ## Static files 404 di production

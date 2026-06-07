@@ -20,6 +20,9 @@ urlpatterns = [
     # Health check
     path('health/', views.health_check, name='api-health'),
 
+    # Diagnostic (no DB required, untuk debug deployment)
+    path('diagnose/', views.diagnose, name='api-diagnose'),
+
     # Payment methods (custom view, bukan ViewSet)
     path('payment-methods/', views.PaymentMethodsView.as_view(), name='api-payment-methods'),
 

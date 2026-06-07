@@ -25,13 +25,30 @@ def _detect_hint(error_msg):
     """Deteksi jenis error dan return hint yang relevan."""
     if 'DATABASE_URL' in error_msg or 'Vercel filesystem' in error_msg:
         return (
-            'Setup PostgreSQL free tier (pilih salah satu):<br>'
-            '&bull; <a href="https://neon.tech">Neon</a> (recommended, 1 menit)<br>'
-            '&bull; <a href="https://supabase.com">Supabase</a><br>'
-            '&bull; <a href="https://railway.app">Railway</a><br><br>'
-            'Lalu set env di <strong>Vercel project &rarr; Settings &rarr; Environment Variables</strong>:<br>'
-            '<div class="code">DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require</div>'
-            'Setelah set, klik <strong>Redeploy</strong> di tab Deployments.'
+            '<strong>Setup DATABASE_URL di Vercel (3 langkah):</strong><br><br>'
+            '<strong>1.</strong> Login ke <a href="https://supabase.com/dashboard">Supabase</a> '
+            '(atau <a href="https://console.neon.tech">Neon</a> / '
+            '<a href="https://railway.app">Railway</a>) &rarr; buka project kamu<br><br>'
+            '<strong>2.</strong> Pergi ke <strong>Project Settings &rarr; Database &rarr; Connection string &rarr; URI</strong><br>'
+            'Copy connection string (format: <code>postgresql://postgres:PASSWORD@db.REF.supabase.co:5432/postgres</code>)<br>'
+            'Tambahkan <code>?sslmode=require</code> di akhir URL<br><br>'
+            '<strong>3.</strong> Vercel &rarr; Project &rarr; Settings &rarr; Environment Variables:<br>'
+            '<div class="code">'
+            'Key:   DATABASE_URL<br>'
+            'Value: postgresql://postgres:YOUR_PASSWORD@db.YOUR_REF.supabase.co:5432/postgres?sslmode=require'
+            '</div>'
+            'Save &rarr; tab Deployments &rarr; klik titik tiga &rarr; <strong>Redeploy</strong><br><br>'
+            '<strong>Catatan:</strong> URL <code>https://xxx.supabase.co/rest/v1/</code> adalah REST API, '
+            'BUKAN database URL. Yang kamu butuhkan adalah PostgreSQL connection string dari '
+            '<strong>Project Settings &rarr; Database</strong>.<br><br>'
+            '<strong>Test koneksi lokal dulu (opsional):</strong><br>'
+            '<div class="code">'
+            'set DATABASE_URL=postgresql://postgres:PASSWORD@db.REF.supabase.co:5432/postgres?sslmode=require<br>'
+            'python manage.py migrate<br>'
+            'python manage.py runserver'
+            '</div>'
+            'Kalau local jalan &rarr; push ke Vercel & redeploy.<br><br>'
+            'Cek status env vars: <a href="/api/v1/diagnose/">/api/v1/diagnose/</a>'
         )
     if 'psycopg' in error_msg.lower() or 'postgresql' in error_msg.lower():
         return (
@@ -39,25 +56,30 @@ def _detect_hint(error_msg):
             'Pastikan <code>requirements.txt</code> ada baris: '
             '<code>psycopg[binary]==3.2.3</code><br>'
             'Pastikan DATABASE_URL format: '
-            '<code>postgresql://user:pass@host:5432/db?sslmode=require</code>'
+            '<code>postgresql://user:pass@host:5432/db?sslmode=require</code><br><br>'
+            'Cek status: <a href="/api/v1/diagnose/">/api/v1/diagnose/</a>'
         )
     if 'ALLOWED_HOSTS' in error_msg or 'DisallowedHost' in error_msg:
         return (
             'Domain tidak masuk ALLOWED_HOSTS. Default sudah include <code>.vercel.app</code>,<br>'
             'tapi kalau pakai custom domain tambahkan manual di env Vercel:<br>'
-            '<div class="code">ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,yourdomain.com</div>'
+            '<div class="code">ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,yourdomain.com</div><br>'
+            'Cek status: <a href="/api/v1/diagnose/">/api/v1/diagnose/</a>'
         )
     if 'SECRET_KEY' in error_msg:
         return (
             'Set <code>SECRET_KEY</code> di Vercel project settings.<br>'
-            'Generate baru: '
-            '<code>python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</code>'
+            'Generate baru:<br>'
+            '<div class="code">python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</div>'
+            'Copy output &rarr; paste ke Vercel env var SECRET_KEY.<br><br>'
+            'Cek status: <a href="/api/v1/diagnose/">/api/v1/diagnose/</a>'
         )
     return (
-        'Cek Vercel logs untuk detail. Kemungkinan:<br>'
+        'Cek Vercel logs untuk detail (Project &rarr; Logs). Kemungkinan:<br>'
         '&bull; Environment variable ada yang missing<br>'
-        '&bull; Database tidak bisa dikonek (firewall / IP)<br>'
-        '&bull; requirements.txt konflik versi'
+        '&bull; Database tidak bisa dikonek (firewall / IP / wrong password)<br>'
+        '&bull; requirements.txt konflik versi<br><br>'
+        'Cek status env vars: <a href="/api/v1/diagnose/">/api/v1/diagnose/</a>'
     )
 
 

@@ -392,6 +392,7 @@ def api_root(request):
             'bookings':       f'{base}bookings/',
             'payment_methods': f'{base}payment-methods/',
             'health':         f'{base}health/',
+            'diagnose':       f'{base}diagnose/',
         },
         'auth': {
             'session': 'Login di /login/ lalu gunakan cookie session untuk request berikutnya.',
@@ -409,6 +410,80 @@ def health_check(request):
         'status': 'ok',
         'timestamp': timezone.now().isoformat(),
         'service': 'bali-tattoo-api',
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def diagnose(request):
+    """GET /api/v1/diagnose/ - diagnostic config (tidak butuh DB connection).
+
+    Berguna untuk debug deployment error tanpa harus bisa konek ke database.
+    Menampilkan status env vars, database engine, allowed hosts, dll.
+    """
+    from django.conf import settings
+    import os
+    import sys
+
+    # Detect env vars (hanya nama, jangan expose value!)
+    env_status = {
+        'SECRET_KEY': 'SET' if os.environ.get('SECRET_KEY') else 'MISSING',
+        'DEBUG': 'True' if settings.DEBUG else 'False',
+        'DATABASE_URL': 'SET' if os.environ.get('DATABASE_URL') else 'MISSING',
+        'ALLOWED_HOSTS': settings.ALLOWED_HOSTS,
+        'CSRF_TRUSTED_ORIGINS': settings.CSRF_TRUSTED_ORIGINS,
+        'VERCEL': '1' if os.environ.get('VERCEL') else 'NOT SET',
+        'VERCEL_ENV': os.environ.get('VERCEL_ENV', 'NOT SET'),
+        'VERCEL_URL': os.environ.get('VERCEL_URL', 'NOT SET'),
+    }
+
+    # Detect database engine
+    db_engine = settings.DATABASES.get('default', {}).get('ENGINE', 'unknown')
+    db_name = settings.DATABASES.get('default', {}).get('NAME', 'unknown')
+    db_host = settings.DATABASES.get('default', {}).get('HOST', 'N/A')
+
+    # Check common issues
+    issues = []
+    if not os.environ.get('DATABASE_URL') and os.environ.get('VERCEL'):
+        issues.append({
+            'severity': 'critical',
+            'issue': 'DATABASE_URL tidak di-set di Vercel',
+            'fix': 'Set DATABASE_URL di Vercel project settings (Supabase/Neon/Railway PostgreSQL connection string)',
+        })
+    if db_engine == 'django.db.backends.sqlite3' and os.environ.get('VERCEL'):
+        issues.append({
+            'severity': 'critical',
+            'issue': 'SQLite di Vercel (filesystem read-only)',
+            'fix': 'DATABASE_URL harus di-set ke PostgreSQL. Lihat hint di halaman error.',
+        })
+    if not os.environ.get('SECRET_KEY'):
+        issues.append({
+            'severity': 'high',
+            'issue': 'SECRET_KEY tidak di-set',
+            'fix': 'Generate: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"',
+        })
+
+    return Response({
+        'status': 'diagnostic_ok',
+        'service': 'bali-tattoo-api',
+        'python_version': sys.version,
+        'django_version': __import__('django').VERSION,
+        'environment': env_status,
+        'database': {
+            'engine': db_engine,
+            'name': str(db_name),
+            'host': str(db_host),
+        },
+        'static_files': {
+            'whitenoise_enabled': any('whitenoise' in m.lower() for m in settings.MIDDLEWARE),
+            'static_url': settings.STATIC_URL,
+        },
+        'issues': issues,
+        'next_steps': [
+            'GET /api/v1/health/  → basic health check',
+            'GET /api/v1/services/  → test DB query',
+            'GET /api/v1/diagnose/  → detailed config (this endpoint)',
+        ] if not issues else ['Fix issues di atas lalu redeploy Vercel'],
     })
 
 

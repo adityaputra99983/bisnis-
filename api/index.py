@@ -2,6 +2,10 @@
 Vercel entry point untuk Django.
 File ini di-referensikan oleh vercel.json sebagai handler untuk semua routes.
 WhiteNoise (di MIDDLEWARE) akan serve static files secara otomatis.
+
+PENTING untuk Vercel build: `application` HARUS di-assign di top-level module
+(body AST level). Vercel static parser hanya cek `tree.body` (bukan nested di
+try/except). Jadi kita pakai helper function + assign top-level.
 """
 
 import os
@@ -17,17 +21,10 @@ sys.path.insert(0, str(ROOT_DIR))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bisnis.settings')
 
 
-# Try load Django app, tapi tangkap error konfigurasi dengan pesan jelas
-try:
-    from django.core.wsgi import get_wsgi_application
-    application = get_wsgi_application()
-except Exception as e:
-    # Tangani: ImproperlyConfigured (DATABASE_URL missing), ModuleNotFoundError, dll
-    error_msg = str(e) or type(e).__name__
-
-    # Deteksi jenis error untuk hint yang lebih spesifik
+def _detect_hint(error_msg):
+    """Deteksi jenis error dan return hint yang relevan."""
     if 'DATABASE_URL' in error_msg or 'Vercel filesystem' in error_msg:
-        hint = (
+        return (
             'Setup PostgreSQL free tier (pilih salah satu):<br>'
             '&bull; <a href="https://neon.tech">Neon</a> (recommended, 1 menit)<br>'
             '&bull; <a href="https://supabase.com">Supabase</a><br>'
@@ -36,40 +33,37 @@ except Exception as e:
             '<div class="code">DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require</div>'
             'Setelah set, klik <strong>Redeploy</strong> di tab Deployments.'
         )
-    elif 'psycopg' in error_msg.lower() or 'postgresql' in error_msg.lower():
-        hint = (
+    if 'psycopg' in error_msg.lower() or 'postgresql' in error_msg.lower():
+        return (
             'Driver PostgreSQL belum terinstall atau DATABASE_URL salah format.<br>'
             'Pastikan <code>requirements.txt</code> ada baris: '
             '<code>psycopg[binary]==3.2.3</code><br>'
             'Pastikan DATABASE_URL format: '
             '<code>postgresql://user:pass@host:5432/db?sslmode=require</code>'
         )
-    elif 'ALLOWED_HOSTS' in error_msg or 'DisallowedHost' in error_msg:
-        hint = (
+    if 'ALLOWED_HOSTS' in error_msg or 'DisallowedHost' in error_msg:
+        return (
             'Domain tidak masuk ALLOWED_HOSTS. Default sudah include <code>.vercel.app</code>,<br>'
             'tapi kalau pakai custom domain tambahkan manual di env Vercel:<br>'
             '<div class="code">ALLOWED_HOSTS=localhost,127.0.0.1,.vercel.app,yourdomain.com</div>'
         )
-    elif 'SECRET_KEY' in error_msg:
-        hint = (
+    if 'SECRET_KEY' in error_msg:
+        return (
             'Set <code>SECRET_KEY</code> di Vercel project settings.<br>'
             'Generate baru: '
             '<code>python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</code>'
         )
-    else:
-        hint = (
-            'Cek Vercel logs untuk detail. Kemungkinan:<br>'
-            '&bull; Environment variable ada yang missing<br>'
-            '&bull; Database tidak bisa dikonek (firewall / IP)<br>'
-            '&bull; requirements.txt konflik versi'
-        )
+    return (
+        'Cek Vercel logs untuk detail. Kemungkinan:<br>'
+        '&bull; Environment variable ada yang missing<br>'
+        '&bull; Database tidak bisa dikonek (firewall / IP)<br>'
+        '&bull; requirements.txt konflik versi'
+    )
 
-    # Build a WSGI app that returns the error
-    def application(environ, start_response):
-        accept = environ.get('HTTP_ACCEPT', '')
-        is_browser = 'text/html' in accept
-        if is_browser:
-            body = f"""<!DOCTYPE html>
+
+def _make_error_app(error_msg, hint):
+    """Build a WSGI app that returns a helpful HTML/JSON error page."""
+    html = f"""<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -97,9 +91,31 @@ except Exception as e:
 <p><small>Lihat <code>DEPLOYMENT.md</code> section "Setup Database (Vercel butuh PostgreSQL)" untuk langkah lengkap.</small></p>
 </body>
 </html>"""
+
+    def app(environ, start_response):
+        accept = environ.get('HTTP_ACCEPT', '')
+        is_browser = 'text/html' in accept
+        if is_browser:
             start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'text/html; charset=utf-8')])
-        else:
-            payload = json.dumps({'error': error_msg, 'hint_html': hint, 'status': 500})
-            start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'application/json')])
-            body = payload
-        return [body.encode('utf-8')]
+            return [html.encode('utf-8')]
+        payload = json.dumps({'error': error_msg, 'hint_html': hint, 'status': 500})
+        start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'application/json')])
+        return [payload.encode('utf-8')]
+
+    return app
+
+
+def _load_application():
+    """Load Django WSGI app; return error WSGI app kalau gagal."""
+    try:
+        from django.core.wsgi import get_wsgi_application
+        return get_wsgi_application()
+    except Exception as exc:
+        err = str(exc) or type(exc).__name__
+        return _make_error_app(err, _detect_hint(err))
+
+
+# ============================================================
+# `application` di TOP-LEVEL (tree.body) — required oleh Vercel parser
+# ============================================================
+application = _load_application()

@@ -12,6 +12,10 @@ djangorestframework==3.17.1
 django-filter==25.2
 django-cors-headers==4.9.0
 
+# PostgreSQL driver (WAJIB untuk Vercel / production dengan DATABASE_URL)
+# psycopg3 (modern, recommended oleh Django 5+)
+psycopg[binary]==3.2.3
+
 # Media storage (untuk Vercel / serverless - filesystem tidak persistent)
 # Catatan: Tidak wajib untuk Hostinger. Install hanya jika deploy ke Vercel.
 # cloudinary==1.44.1

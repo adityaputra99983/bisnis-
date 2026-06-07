@@ -172,12 +172,22 @@ sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
 ### Setup Database (Vercel butuh PostgreSQL)
 
+> ⚠️ **Vercel filesystem READ-ONLY** (kecuali `/tmp`, dan `/tmp` tidak persistent antar invocation). **SQLite TIDAK BISA dipakai di Vercel** — akan dapat error `unable to open database file`.
+>
+> Aplikasi sudah di-hardcode untuk **fail-fast** dengan error message jelas kalau detect Vercel + DATABASE_URL kosong.
+
 Vercel Postgres sudah discontinued, jadi pakai salah satu (semua ada free tier):
 - **[Neon](https://neon.tech)** — Recommended, paling mudah
 - **[Supabase](https://supabase.com)**
 - **[Railway Postgres](https://railway.app)**
 
 Setelah signup, copy `DATABASE_URL` (format: `postgresql://user:password@host:5432/dbname`).
+
+**Setup cepat dengan Neon (1 menit):**
+1. Signup di https://neon.tech (pakai GitHub)
+2. **Create Project** → pilih region Singapore (terdekat)
+3. Copy **Connection String** dari dashboard Neon
+4. Paste ke Vercel env: `DATABASE_URL=postgresql://...neon.tech/neondb?sslmode=require`
 
 ### Setup Cloudinary (untuk media files)
 
@@ -800,6 +810,43 @@ Startup log di Vercel Functions akan print warning kalau ada masalah:
 ```
 WARNING: VERCEL DEPLOYMENT: '*.vercel.app' tidak ada di ALLOWED_HOSTS. ...
 INFO: ALLOWED_HOSTS: ['localhost', '127.0.0.1', '.vercel.app', '.localhost']
+```
+
+## "OperationalError: unable to open database file" (Vercel)
+
+**Penyebab:** Vercel filesystem READ-ONLY. SQLite tidak bisa menulis ke disk. Aplikasi di-hardcode untuk fail-fast dengan pesan jelas.
+
+**Solusi:**
+
+1. **Setup PostgreSQL free tier** (lihat section "Setup Database" di atas):
+   - Recommended: [Neon](https://neon.tech) (1 menit setup)
+   - Alternative: [Supabase](https://supabase.com), [Railway](https://railway.app)
+
+2. **Set env di Vercel** Project → Settings → Environment Variables:
+   ```
+   DATABASE_URL=postgresql://user:pass@host.neon.tech/neondb?sslmode=require
+   ```
+   > Catatan: Tambahkan `?sslmode=require` di akhir URL jika provider PostgreSQL kamu butuh SSL (Supabase & Neon butuh).
+
+3. **Redeploy** Vercel (env baru tidak auto-apply).
+
+4. **Jalankan migration** (lihat section migration di atas, atau tambahkan ke build command):
+   ```
+   pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+   ```
+
+5. **Test:**
+   ```bash
+   curl https://your-project.vercel.app/api/v1/health/
+   # Harus return {"status":"ok",...}, BUKAN 500 error
+   ```
+
+**Atau jalankan lokal** dengan env yang sama untuk test koneksi:
+```bash
+export DATABASE_URL="postgresql://user:pass@host.neon.tech/neondb?sslmode=require"
+python manage.py check
+python manage.py migrate
+python manage.py runserver
 ```
 
 ## Static files 404 di production

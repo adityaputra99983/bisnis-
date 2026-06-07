@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from decouple import config, Csv
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 
 # ============================================================
@@ -140,14 +141,35 @@ if not DEBUG:
 # Prioritas:
 # 1. Jika DATABASE_URL di-set → pakai itu (PostgreSQL/MySQL/cockroachdb untuk production)
 # 2. Jika tidak → fallback ke SQLite (cocok untuk dev & Hostinger shared)
-DATABASE_URL = config('DATABASE_URL', default='')
-if DATABASE_URL:
+#
+# PENTING untuk Vercel: Filesystem di Vercel READ-ONLY (kecuali /tmp, tapi tidak
+# persistent antar invocation). SQLite TIDAK BISA dipakai di Vercel.
+# Jadi kalau detect environment Vercel tapi DATABASE_URL kosong → fail fast
+# dengan error message jelas, bukan diam-diam fallback ke SQLite yang akan crash.
+_DATABASE_URL = config('DATABASE_URL', default='')
+_IS_VERCEL = bool(config('VERCEL', default=False, cast=bool))
+
+if _DATABASE_URL:
     DATABASES = {'default': dj_database_url.config(
-        default=DATABASE_URL,
+        default=_DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
     )}
+elif _IS_VERCEL:
+    # Vercel: Wajib PostgreSQL. Fail fast dengan instruksi jelas.
+    raise ImproperlyConfigured(
+        "DATABASE_URL tidak di-set di Vercel!\n"
+        "Vercel filesystem read-only, SQLite tidak bisa dipakai.\n"
+        "Setup PostgreSQL free tier:\n"
+        "  - Supabase: https://supabase.com (recommended)\n"
+        "  - Neon:     https://neon.tech\n"
+        "  - Railway:  https://railway.app\n"
+        "Lalu set env di Vercel project:\n"
+        "  DATABASE_URL=postgres://user:pass@host:5432/db\n"
+        "Lihat DEPLOYMENT.md section 'Deploy ke Vercel' untuk langkah lengkap."
+    )
 else:
+    # Development & Hostinger shared: SQLite OK
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

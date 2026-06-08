@@ -146,9 +146,9 @@ if not DEBUG:
 # persistent antar invocation). SQLite TIDAK BISA dipakai di Vercel.
 # Jadi kalau detect environment Vercel tapi DATABASE_URL kosong → fail fast
 # dengan error message jelas, bukan diam-diam fallback ke SQLite yang akan crash.
-_DATABASE_URL = config('DATABASE_URL', default='')
-_DIRECT_URL = config('DIRECT_URL', default='')
-_IS_VERCEL = bool(config('VERCEL', default=False, cast=bool))
+_DATABASE_URL = os.environ.get('DATABASE_URL') or config('DATABASE_URL', default='')
+_DIRECT_URL = os.environ.get('DIRECT_URL') or config('DIRECT_URL', default='')
+_IS_VERCEL = bool(os.environ.get('VERCEL')) or bool(config('VERCEL', default=False, cast=bool))
 
 if _DATABASE_URL:
     DATABASES = {'default': dj_database_url.config(

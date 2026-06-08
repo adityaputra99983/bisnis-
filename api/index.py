@@ -21,6 +21,47 @@ sys.path.insert(0, str(ROOT_DIR))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bisnis.settings')
 
 
+def _get_env_snapshot():
+    """Ambil snapshot env vars yang relevan (aman, tanpa password)."""
+    keys = ['DATABASE_URL', 'DIRECT_URL', 'SECRET_KEY', 'DEBUG', 'VERCEL',
+            'ALLOWED_HOSTS', 'CSRF_TRUSTED_ORIGINS', 'PYTHONUNBUFFERED',
+            'DJANGO_SETTINGS_MODULE']
+    snapshot = {}
+    for k in keys:
+        val = os.environ.get(k, '<NOT SET>')
+        # Maskasi value sensitif
+        if k in ('DATABASE_URL', 'DIRECT_URL', 'SECRET_KEY'):
+            if val != '<NOT SET>':
+                val = val[:20] + '...' + val[-4:] if len(val) > 30 else '***SET***'
+        snapshot[k] = val
+    # Tambahkan semua env var lain yang menarik
+    other = {k: v for k, v in os.environ.items()
+             if k.isupper() and k not in keys}
+    snapshot['OTHER_ENV_VARS'] = other
+    return snapshot
+
+
+def _diagnose_app(environ, start_response):
+    """WSGI app untuk /api/v1/diagnose/ — jalan tanpa Django."""
+    import pprint
+    snap = _get_env_snapshot()
+    accept = environ.get('HTTP_ACCEPT', '')
+    if 'text/html' in accept:
+        body = '<html><body><h1>Env Diagnose</h1><pre>' + pprint.pformat(snap) + '</pre></body></html>'
+        start_response('200 OK', [('Content-Type', 'text/html; charset=utf-8')])
+    else:
+        body = json.dumps(snap, indent=2)
+        start_response('200 OK', [('Content-Type', 'application/json')])
+    return [body.encode('utf-8')]
+
+
+# Intercept /api/v1/diagnose/ SEBELUM Django — biar tetap bisa diakses
+# meskipun Django gagal start. Vercel WSGI memanggil application()
+# setiap request, jadi kita handle routing manual di sini.
+# Simpan reference ke diagnose app.
+_DIAGNOSE_PATH = '/api/v1/diagnose/'
+
+
 def _detect_hint(error_msg):
     """Deteksi jenis error dan return hint yang relevan."""
     if 'DATABASE_URL' in error_msg or 'Vercel filesystem' in error_msg:
@@ -85,6 +126,9 @@ def _detect_hint(error_msg):
 
 def _make_error_app(error_msg, hint):
     """Build a WSGI app that returns a helpful HTML/JSON error page."""
+    snap = _get_env_snapshot()
+    safetype = 'env-match' if snap.get('DATABASE_URL', '<NOT SET>') != '<NOT SET>' else 'env-missing'
+
     html = f"""<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -93,13 +137,19 @@ def _make_error_app(error_msg, hint):
 <title>Setup Required - 500</title>
 <style>
   body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          max-width: 720px; margin: 60px auto; padding: 20px; line-height: 1.6; color: #222; }}
+          max-width: 780px; margin: 60px auto; padding: 20px; line-height: 1.6; color: #222; }}
   h1 {{ color: #c00; margin-bottom: 8px; }}
+  h3 {{ margin-top: 24px; margin-bottom: 6px; }}
   .code {{ background: #f4f4f4; border-left: 4px solid #c00; padding: 12px 16px;
            border-radius: 4px; font-family: ui-monospace, "Cascadia Code", monospace;
-           white-space: pre-wrap; word-break: break-word; }}
+           white-space: pre-wrap; word-break: break-word; font-size: 13px; }}
   .hint {{ background: #fff8e1; border-left: 4px solid #f0a000; padding: 12px 16px;
            border-radius: 4px; margin-top: 20px; }}
+  .env-table {{ width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }}
+  .env-table td {{ padding: 4px 8px; border-bottom: 1px solid #ddd; }}
+  .env-table td:first-child {{ font-weight: bold; white-space: nowrap; }}
+  .missing {{ color: #c00; font-weight: bold; }}
+  .ok {{ color: #090; }}
   a {{ color: #0066cc; }}
 </style>
 </head>
@@ -109,10 +159,23 @@ def _make_error_app(error_msg, hint):
 <h2>Error:</h2>
 <div class="code">{error_msg}</div>
 <div class="hint"><strong>Next step:</strong><br>{hint}</div>
+<h3>Environment Variables (terbaca Vercel):</h3>
+<table class="env-table">
+"""
+    for k, v in snap.items():
+        if k == 'OTHER_ENV_VARS':
+            continue
+        css = 'missing' if v == '<NOT SET>' else 'ok'
+        html += f'<tr><td>{k}</td><td class="{css}">{v}</td></tr>\n'
+
+    html += """</table>
+<p><a href="/api/v1/diagnose/">/api/v1/diagnose/</a> — detail lengkap</p>
 <hr>
 <p><small>Lihat <code>DEPLOYMENT.md</code> section "Setup Database (Vercel butuh PostgreSQL)" untuk langkah lengkap.</small></p>
 </body>
 </html>"""
+
+    payload_dict = {'error': error_msg, 'hint_html': hint, 'status': 500, 'env': snap, 'safetype': safetype}
 
     def app(environ, start_response):
         accept = environ.get('HTTP_ACCEPT', '')
@@ -120,7 +183,7 @@ def _make_error_app(error_msg, hint):
         if is_browser:
             start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'text/html; charset=utf-8')])
             return [html.encode('utf-8')]
-        payload = json.dumps({'error': error_msg, 'hint_html': hint, 'status': 500})
+        payload = json.dumps(payload_dict)
         start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'application/json')])
         return [payload.encode('utf-8')]
 
@@ -128,13 +191,23 @@ def _make_error_app(error_msg, hint):
 
 
 def _load_application():
-    """Load Django WSGI app; return error WSGI app kalau gagal."""
+    """Load Django WSGI app; kalau gagal return error app dengan route diagnose."""
     try:
         from django.core.wsgi import get_wsgi_application
-        return get_wsgi_application()
+        django_app = get_wsgi_application()
+        return django_app
     except Exception as exc:
         err = str(exc) or type(exc).__name__
-        return _make_error_app(err, _detect_hint(err))
+        error_app = _make_error_app(err, _detect_hint(err))
+
+        # Bungkus agar /api/v1/diagnose/ tetap bisa diakses
+        def _wrapped_app(environ, start_response):
+            path = environ.get('PATH_INFO', '')
+            if path == _DIAGNOSE_PATH:
+                return _diagnose_app(environ, start_response)
+            return error_app(environ, start_response)
+
+        return _wrapped_app
 
 
 # ============================================================

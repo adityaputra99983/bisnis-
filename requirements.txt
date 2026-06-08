@@ -12,6 +12,10 @@ djangorestframework==3.17.1
 django-filter==25.2
 django-cors-headers==4.9.0
 
+# Media storage (S3-compatible — Supabase Storage, R2, MinIO)
+django-storages[s3]==1.14.6
+boto3==1.43.24
+
 # PostgreSQL driver (WAJIB untuk Vercel / production dengan DATABASE_URL)
 # psycopg3 (modern, recommended oleh Django 5+)
 psycopg[binary]==3.2.3

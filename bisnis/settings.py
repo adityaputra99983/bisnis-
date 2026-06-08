@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'storages',
     # Local
     'tattoo',
 ]
@@ -226,33 +227,33 @@ WHITENOISE_ROOT = BASE_DIR
 
 
 # ============================================================
-# MEDIA FILES (user uploads)
+# MEDIA FILES (user uploads) — Supabase Storage (S3-compatible)
 # ============================================================
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Jika Cloudinary env di-set → pakai Cloudinary (WAJIB untuk Vercel/serverless)
-USE_CLOUDINARY = all([
-    config('CLOUDINARY_CLOUD_NAME', default=''),
-    config('CLOUDINARY_API_KEY', default=''),
-    config('CLOUDINARY_API_SECRET', default=''),
+# Supabase Storage via S3-compatible API
+USE_SUPABASE_STORAGE = all([
+    config('SUPABASE_SERVICE_KEY', default=''),
+    config('SUPABASE_URL', default=''),
+    config('SUPABASE_STORAGE_BUCKET', default='media'),
 ])
 
-if USE_CLOUDINARY:
-    # Lazy import: hanya jika env di-set
-    try:
-        import cloudinary
-        import cloudinary.storage
-        cloudinary.config(
-            cloud_name=config('CLOUDINARY_CLOUD_NAME'),
-            api_key=config('CLOUDINARY_API_KEY'),
-            api_secret=config('CLOUDINARY_API_SECRET'),
-            secure=True,
-        )
-        DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    except ImportError:
-        # Jika package belum terinstall, fallback ke local
-        USE_CLOUDINARY = False
+if USE_SUPABASE_STORAGE:
+    SUPABASE_PROJECT_REF = config('SUPABASE_URL').replace('https://', '').split('.')[0]
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID = SUPABASE_PROJECT_REF
+    AWS_SECRET_ACCESS_KEY = config('SUPABASE_SERVICE_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('SUPABASE_STORAGE_BUCKET', default='media')
+    AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3'
+    AWS_S3_REGION_NAME = config('SUPABASE_REGION', default='ap-southeast-2')
+    AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_S3_ADDRESSING_STYLE = 'virtual'
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_S3_FILE_OVERWRITE = False
+    # Public URL for media files
+    MEDIA_URL = f'https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}/'
 
 
 # ============================================================

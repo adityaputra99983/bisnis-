@@ -147,6 +147,7 @@ if not DEBUG:
 # Jadi kalau detect environment Vercel tapi DATABASE_URL kosong → fail fast
 # dengan error message jelas, bukan diam-diam fallback ke SQLite yang akan crash.
 _DATABASE_URL = config('DATABASE_URL', default='')
+_DIRECT_URL = config('DIRECT_URL', default='')
 _IS_VERCEL = bool(config('VERCEL', default=False, cast=bool))
 
 if _DATABASE_URL:
@@ -155,6 +156,13 @@ if _DATABASE_URL:
         conn_max_age=600,
         conn_health_checks=True,
     )}
+    # Direct connection (session pooler) untuk migrations
+    if _DIRECT_URL:
+        DATABASES['direct'] = dj_database_url.config(
+            default=_DIRECT_URL,
+            conn_max_age=0,
+            conn_health_checks=True,
+        )
 elif _IS_VERCEL:
     # Vercel: Wajib PostgreSQL. Fail fast dengan instruksi jelas.
     raise ImproperlyConfigured(

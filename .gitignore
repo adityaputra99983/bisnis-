@@ -22,7 +22,6 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-staticfiles/
 /static/
 
 # Migrations (opsional - uncomment jika tidak ingin track migrations)
@@ -54,3 +53,5 @@ dist/
 # Temporary
 tmp/
 *.tmp
+
+.vercel

@@ -16,7 +16,7 @@
                 </div>
                 <div class="ap-card-body text-center">
                     <div class="ap-avatar-upload mb-3">
-                        {% if artist.photo %}
+                        {% if artist.photo.name %}
                             <img src="{{ artist.photo.url }}" alt="{{ artist.nickname }}" id="previewPhoto">
                         {% else %}
                             <div class="ap-avatar-placeholder">
@@ -26,9 +26,9 @@
                         <label for="id_photo" class="ap-avatar-overlay">
                             <i class="bi bi-camera-fill"></i> Ganti Foto
                         </label>
-                        <input type="file" name="photo" id="id_photo" class="d-none" accept="image/*">
+                        <input type="file" name="photo" id="id_photo" accept="image/*" style="display:block;margin-top:8px;width:100%">
                     </div>
-                    <p class="text-muted small mb-0">Format: JPG, PNG. Maks 2MB</p>
+                    <p class="text-muted small mb-0">Format: JPG, PNG, WEBP. Maks 10MB</p>
                 </div>
             </div>
 

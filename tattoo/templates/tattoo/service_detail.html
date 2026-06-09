@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-md-6" data-aos="fade-right">
                 <div class="service-detail-card">
-                    {% if service.image %}
+                    {% if service.image.name %}
                         <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-100" style="height: 400px; object-fit: cover;">
                     {% else %}
                         <div style="height: 400px; background: var(--gradient-card); display: flex; align-items: center; justify-content: center;">
@@ -99,7 +99,7 @@
                         <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
                             <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
                                 <div class="artist-card">
-                                    {% if artist.photo %}
+                                    {% if artist.photo.name %}
                                         <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-card-img" style="height: 200px;">
                                     {% else %}
                                         <div class="artist-card-img-placeholder" style="height: 200px;">

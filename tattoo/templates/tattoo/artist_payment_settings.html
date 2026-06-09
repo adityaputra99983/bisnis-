@@ -62,7 +62,7 @@
                     <i class="bi bi-qr-code-scan"></i>
                 </div>
                 <div class="ap-stat-body">
-                    <div class="ap-stat-num">{% if settings.enable_qris and settings.qris_image %}✓{% else %}–{% endif %}</div>
+                    <div class="ap-stat-num">{% if settings.enable_qris and settings.qris_image.name %}✓{% else %}–{% endif %}</div>
                     <div class="ap-stat-label">QRIS</div>
                 </div>
             </div>
@@ -351,7 +351,7 @@
                                 <i class="bi bi-qr-code-scan"></i> QR Code QRIS
                             </div>
                             <div class="ap-qris-preview-body" id="apQrisImageWrap">
-                                {% if settings.qris_image %}
+                                {% if settings.qris_image.name %}
                                     <img src="{{ settings.qris_image.url }}" alt="QRIS" class="ap-qris-image" id="apQrisPreviewImg">
                                 {% else %}
                                     <div class="ap-qris-placeholder" id="apQrisPlaceholder">
@@ -366,7 +366,7 @@
                                     <i class="bi bi-cloud-arrow-up"></i> Upload QR
                                 </label>
                                 <input type="file" id="qris_image" name="qris_image" accept="image/*" class="d-none">
-                                {% if settings.qris_image %}
+                                {% if settings.qris_image.name %}
                                 <label class="ap-btn-sm-outline" title="Hapus QR">
                                     <input type="checkbox" name="qris_image_clear" value="1" class="d-none" id="apQrisClear">
                                     <i class="bi bi-trash"></i>

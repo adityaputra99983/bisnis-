@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from .models import ServiceCategory, Booking, Artist
 
 
@@ -34,7 +35,7 @@ def navbar_data(request):
             nav_artist_pending_count = Booking.objects.filter(
                 artist=artist_obj, status='pending'
             ).count()
-        except Artist.DoesNotExist:
+        except ObjectDoesNotExist:
             pass
 
     return {

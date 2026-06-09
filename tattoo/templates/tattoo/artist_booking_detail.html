@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if booking.design_reference %}
+                    {% if booking.design_reference.name %}
                     <div class="col-12">
                         <label class="ap-field-label">Referensi Desain</label>
                         <div class="ap-field-value">
@@ -199,7 +199,7 @@
                             Customer sudah submit bukti pembayaran {{ booking.payment_method }}.
                             Silakan periksa dan putuskan untuk approve / reject.
                         </p>
-                        {% if booking.payment_proof %}
+                        {% if booking.payment_proof.name %}
                         <a href="{{ booking.payment_proof.url }}" target="_blank" class="btn btn-outline-gold btn-sm w-100 mb-3">
                             <i class="bi bi-image"></i> Lihat Bukti Pembayaran
                         </a>

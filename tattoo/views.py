@@ -7,7 +7,7 @@ from django.db.models import Avg, Count, Q, Prefetch, Sum
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.conf import settings
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError
 from .models import ServiceCategory, Service, ServicePackage, Artist, Portfolio, Booking, Review, ArtistPaymentSettings
 from .forms import RegisterForm, BookingForm, ReviewForm
@@ -510,7 +510,7 @@ def _get_enabled_methods_for_artist(artist):
 def _get_artist_or_404(user):
     try:
         return user.artist
-    except Artist.DoesNotExist:
+    except ObjectDoesNotExist:
         raise PermissionDenied('Anda bukan seorang tattoo artist.')
 
 
@@ -639,15 +639,22 @@ def artist_update_status(request, booking_id):
 def artist_profile_edit(request):
     artist = _get_artist_or_404(request.user)
     if request.method == 'POST':
-        artist.nickname = request.POST.get('nickname', artist.nickname)
-        artist.name = request.POST.get('name', artist.name)
-        artist.experience_years = request.POST.get('experience_years', artist.experience_years)
-        artist.service_area = request.POST.get('service_area', artist.service_area)
-        artist.short_bio = request.POST.get('short_bio', artist.short_bio)
-        artist.bio = request.POST.get('bio', artist.bio)
-        artist.instagram = request.POST.get('instagram', artist.instagram)
-        if request.FILES.get('photo'):
-            artist.photo = request.FILES['photo']
+        artist.nickname = request.POST.get('nickname', '').strip()
+        artist.name = request.POST.get('name', '').strip()
+        try:
+            artist.experience_years = int(request.POST.get('experience_years', artist.experience_years))
+        except (ValueError, TypeError):
+            pass
+        artist.service_area = request.POST.get('service_area', '').strip()
+        artist.short_bio = request.POST.get('short_bio', '').strip()
+        artist.bio = request.POST.get('bio', '').strip()
+        artist.instagram = request.POST.get('instagram', '').strip()
+        photo = request.FILES.get('photo')
+        if photo:
+            if photo.size > 10 * 1024 * 1024:
+                messages.error(request, 'Ukuran foto maksimal 10 MB.')
+                return redirect('artist_profile_edit')
+            artist.photo = photo
         artist.save()
         messages.success(request, 'Profil berhasil diperbarui!')
         return redirect('artist_profile_edit')
@@ -681,16 +688,28 @@ def artist_portfolio_add(request):
     if not image:
         messages.error(request, 'Gambar wajib diupload.')
         return redirect('artist_portfolio')
+    # Validasi format gambar
+    allowed_types = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+    if image.content_type not in allowed_types:
+        messages.error(request, 'Format gambar harus JPG, PNG, atau WEBP.')
+        return redirect('artist_portfolio')
+    if image.size > 10 * 1024 * 1024:
+        messages.error(request, 'Ukuran gambar maksimal 10 MB.')
+        return redirect('artist_portfolio')
     service = None
     if service_id and service_id.isdigit():
         service = Service.objects.filter(id=int(service_id)).first()
-    Portfolio.objects.create(
-        artist=artist,
-        title=title,
-        description=description,
-        service=service,
-        image=image,
-    )
+    try:
+        Portfolio.objects.create(
+            artist=artist,
+            title=title,
+            description=description,
+            service=service,
+            image=image,
+        )
+    except Exception:
+        messages.error(request, 'Gagal menyimpan gambar. Coba lagi atau hubungi kami.')
+        return redirect('artist_portfolio')
     messages.success(request, 'Karya berhasil ditambahkan ke portofolio!')
     return redirect('artist_portfolio')
 

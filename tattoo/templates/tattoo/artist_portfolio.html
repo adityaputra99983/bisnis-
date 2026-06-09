@@ -17,7 +17,7 @@
     {% for item in portfolios %}
     <div class="ap-portfolio-card">
         <div class="ap-por-img">
-            {% if item.image %}
+            {% if item.image.name %}
                 <img src="{{ item.image.url }}" alt="{{ item.title }}">
             {% endif %}
             <div class="ap-por-overlay">

@@ -80,7 +80,7 @@
                 <div class="ap-topbar-right">
                     <div class="ap-topbar-user">
                         <div class="ap-tbu-avatar">
-                            {% if artist.photo %}
+                            {% if artist.photo.name %}
                                 <img src="{{ artist.photo.url }}" alt="{{ artist.nickname }}">
                             {% else %}
                                 <i class="bi bi-person-circle"></i>

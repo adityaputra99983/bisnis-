@@ -214,9 +214,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise: serve static files langsung dari Django app (no Nginx needed)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # WhiteNoise config
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
@@ -225,6 +222,18 @@ WHITENOISE_SKIP_CHARSET = True
 # Auto-detect tambahan file statis di root
 WHITENOISE_ROOT = BASE_DIR
 
+
+# ============================================================
+# STORAGES (Django 6.x) — includes static & media backends
+# ============================================================
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 # ============================================================
 # MEDIA FILES (user uploads) — Supabase Storage (S3-compatible)
@@ -241,19 +250,19 @@ USE_SUPABASE_STORAGE = all([
 
 if USE_SUPABASE_STORAGE:
     SUPABASE_PROJECT_REF = config('SUPABASE_URL').replace('https://', '').split('.')[0]
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    AWS_ACCESS_KEY_ID = SUPABASE_PROJECT_REF
-    AWS_SECRET_ACCESS_KEY = config('SUPABASE_SERVICE_KEY')
-    AWS_STORAGE_BUCKET_NAME = config('SUPABASE_STORAGE_BUCKET', default='media')
-    AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3'
-    AWS_S3_REGION_NAME = config('SUPABASE_REGION', default='ap-southeast-2')
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_S3_ADDRESSING_STYLE = 'virtual'
-    AWS_DEFAULT_ACL = 'public-read'
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    AWS_S3_FILE_OVERWRITE = False
-    # Public URL for media files
-    MEDIA_URL = f'https://{SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}/'
+    AWS_ACCESS_KEY_ID = config('SUPABASE_S3_ACCESS_KEY', default='')
+    AWS_SECRET_ACCESS_KEY = config('SUPABASE_S3_SECRET_KEY', default='')
+    if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+        STORAGES['default']['BACKEND'] = 'storages.backends.s3boto3.S3Boto3Storage'
+        AWS_STORAGE_BUCKET_NAME = config('SUPABASE_STORAGE_BUCKET', default='media')
+        AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_PROJECT_REF}.storage.supabase.co/storage/v1/s3'
+        AWS_S3_REGION_NAME = config('SUPABASE_REGION', default='ap-southeast-2')
+        AWS_S3_SIGNATURE_VERSION = 's3v4'
+        AWS_S3_ADDRESSING_STYLE = 'path'
+        AWS_DEFAULT_ACL = 'public-read'
+        AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+        AWS_S3_FILE_OVERWRITE = False
+        AWS_QUERYSTRING_EXPIRE = 86400
 
 
 # ============================================================
@@ -431,6 +440,28 @@ PLATFORM_PAYMENT_ACCOUNTS = {
 
 # Batas waktu pembayaran sebelum booking otomatis expire
 PAYMENT_EXPIRY_HOURS = config('PAYMENT_EXPIRY_HOURS', default=24, cast=int)
+
+
+# ============================================================
+# DATABASE CONNECTION VERIFICATION
+# ============================================================
+import django.db as _dj_db
+from django.db import connections as _db_conns
+
+
+def _verify_db_connection():
+    """Verifikasi koneksi database saat startup.
+    Jika gagal, log warning — tidak crash agar user tetap bisa akses halaman statis.
+    """
+    try:
+        conn = _db_conns['default']
+        conn.ensure_connection()
+        _startup_logger.info(f"Database OK — engine: {conn.vendor}, host: {conn.settings_dict.get('HOST', 'local')}")
+    except Exception as exc:
+        _startup_logger.warning(f"Database TIDAK bisa diakses saat startup: {exc}")
+
+
+_verify_db_connection()
 
 
 # ============================================================

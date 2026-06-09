@@ -38,7 +38,7 @@
                     <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
                         <div class="artist-card h-100">
                             <div class="artist-card-img-wrap">
-                                {% if artist.photo %}
+                                {% if artist.photo.name %}
                                     <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-card-img">
                                 {% else %}
                                     <div class="artist-card-img-placeholder">

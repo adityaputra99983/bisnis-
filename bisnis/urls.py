@@ -58,9 +58,10 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # WhiteNoise dev server juga handle static, tapi tambahkan ini untuk fallback
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-elif not getattr(settings, 'USE_CLOUDINARY', False):
+elif not getattr(settings, 'USE_CLOUDINARY', False) and not getattr(settings, 'USE_SUPABASE_STORAGE', False):
     # Production dengan local media (Hostinger) - biasanya di-handle Apache .htaccess
     # Tambah ini sebagai fallback jika tidak ada reverse proxy
+    # Skip jika pakai S3 storage (Supabase/Cloudinary) — URL dari storage backend
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

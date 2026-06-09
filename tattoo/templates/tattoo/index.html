@@ -162,7 +162,7 @@
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
                     <div class="luxury-service-card">
                         <div class="lc-img-wrap">
-                            {% if service.image %}
+                             {% if service.image.name %}
                                 <img src="{{ service.image.url }}" alt="{{ service.name }}" class="lc-img">
                             {% else %}
                                 <div class="lc-placeholder"><i class="bi bi-palette"></i></div>
@@ -225,7 +225,7 @@
                 <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
                     <a href="{% url 'artist_detail' item.artist.id %}" class="text-decoration-none">
                         <div class="artist-card">
-                            {% if item.artist.photo %}
+                            {% if item.artist.photo.name %}
                                 <img src="{{ item.artist.photo.url }}" alt="{{ item.artist.name }}" class="artist-card-img">
                             {% else %}
                                 <div class="artist-card-img-placeholder">

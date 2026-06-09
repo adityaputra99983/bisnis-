@@ -335,7 +335,7 @@
                     </div>
                 </div>
                 <div class="pay-pending-card" data-aos="fade-up">
-                    {% if booking.payment_proof %}
+                    {% if booking.payment_proof.name %}
                     <div class="pay-pending-proof">
                         <i class="bi bi-image"></i>
                         <a href="{{ booking.payment_proof.url }}" target="_blank">Lihat bukti pembayaran yang diupload</a>

@@ -189,7 +189,7 @@
                     </div>
                     {% endif %}
 
-                    {% if booking.design_reference %}
+                    {% if booking.design_reference.name %}
                     <div class="bic-block">
                         <div class="bic-label"><i class="bi bi-image text-gold"></i> <span data-t="label_reference">Referensi Desain</span></div>
                         <a href="{{ booking.design_reference.url }}" target="_blank" class="bic-image-link">
@@ -204,7 +204,7 @@
                 <div class="booking-info-card mt-4" data-aos="fade-up" data-aos-delay="50">
                     <h5 class="bic-title"><i class="bi bi-person-badge text-gold"></i> <span data-t="about_artist">Tentang Artist</span></h5>
                     <div class="bic-artist">
-                        {% if booking.artist.photo %}
+                        {% if booking.artist.photo.name %}
                             <img src="{{ booking.artist.photo.url }}" alt="{{ booking.artist.nickname }}" class="bic-artist-photo">
                         {% else %}
                             <div class="bic-artist-photo bic-artist-photo-placeholder">

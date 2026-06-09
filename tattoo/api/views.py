@@ -426,6 +426,7 @@ def diagnose(request):
     import sys
 
     # Detect env vars (hanya nama, jangan expose value!)
+    supabase_keys = ['SUPABASE_URL', 'SUPABASE_SERVICE_KEY', 'SUPABASE_STORAGE_BUCKET', 'SUPABASE_REGION']
     env_status = {
         'SECRET_KEY': 'SET' if os.environ.get('SECRET_KEY') else 'MISSING',
         'DEBUG': 'True' if settings.DEBUG else 'False',
@@ -436,6 +437,8 @@ def diagnose(request):
         'VERCEL_ENV': os.environ.get('VERCEL_ENV', 'NOT SET'),
         'VERCEL_URL': os.environ.get('VERCEL_URL', 'NOT SET'),
     }
+    for k in supabase_keys:
+        env_status[k] = 'SET' if os.environ.get(k) else 'MISSING'
 
     # Detect database engine
     db_engine = settings.DATABASES.get('default', {}).get('ENGINE', 'unknown')

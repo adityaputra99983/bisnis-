@@ -7,7 +7,8 @@ from django.db.models import Avg, Count, Q, Prefetch, Sum
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import DatabaseError
 from .models import ServiceCategory, Service, ServicePackage, Artist, Portfolio, Booking, Review, ArtistPaymentSettings
 from .forms import RegisterForm, BookingForm, ReviewForm
 from .payment import (
@@ -18,15 +19,13 @@ from .payment import (
 
 
 # ============================================================
-# Custom error handlers
+# Custom error handlers — friendly, tidak menakut-nakuti user
 # ============================================================
 def custom_404(request, exception=None):
-    from django.shortcuts import render
     return render(request, 'tattoo/404.html', status=404)
 
 
 def custom_500(request):
-    from django.shortcuts import render
     return render(request, 'tattoo/500.html', status=500)
 
 
@@ -126,7 +125,15 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
-            user, artist = form.save_with_role()
+            try:
+                user, artist = form.save_with_role()
+            except (DatabaseError, ValidationError, Exception):
+                messages.error(
+                    request,
+                    'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi '
+                    'atau hubungi kami jika masalah berlanjut.'
+                )
+                return render(request, 'tattoo/register.html', {'form': form})
             login(request, user)
             if artist:
                 messages.success(
@@ -148,7 +155,14 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        try:
+            user = authenticate(request, username=username, password=password)
+        except (DatabaseError, Exception):
+            messages.error(
+                request,
+                'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
+            )
+            return render(request, 'tattoo/login.html')
         if user:
             login(request, user)
             messages.success(request, f'Selamat datang kembali, {user.username}!')

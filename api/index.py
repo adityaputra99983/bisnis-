@@ -25,7 +25,8 @@ def _get_env_snapshot():
     """Ambil snapshot env vars yang relevan (aman, tanpa password)."""
     keys = ['DATABASE_URL', 'DIRECT_URL', 'SECRET_KEY', 'DEBUG', 'VERCEL',
             'ALLOWED_HOSTS', 'CSRF_TRUSTED_ORIGINS', 'PYTHONUNBUFFERED',
-            'DJANGO_SETTINGS_MODULE']
+            'DJANGO_SETTINGS_MODULE', 'SUPABASE_URL', 'SUPABASE_SERVICE_KEY',
+            'SUPABASE_STORAGE_BUCKET', 'SUPABASE_REGION']
     snapshot = {}
     for k in keys:
         val = os.environ.get(k, '<NOT SET>')

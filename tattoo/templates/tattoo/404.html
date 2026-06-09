@@ -1,17 +1,39 @@
 {% extends 'tattoo/base.html' %}
 {% load static %}
 
-{% block title %}Halaman Tidak Ditemukan - 404{% endblock %}
+{% block title %}Halaman Tidak Ditemukan{% endblock %}
 
 {% block content %}
 <section class="py-5 mt-5">
     <div class="container text-center py-5" data-aos="fade-up">
-        <div class="display-1 text-gold mb-3" style="font-weight: 800;">404</div>
-        <h2 class="mb-3">Halaman Tidak Ditemukan</h2>
-        <p class="text-muted mb-4">Maaf, halaman yang kamu cari tidak ada atau sudah dipindahkan.</p>
-        <a href="{% url 'home' %}" class="btn btn-gold">
-            <i class="bi bi-house-fill"></i> Kembali ke Beranda
-        </a>
+        <div class="error-art mb-4">
+            <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;width:100%">
+                <defs>
+                    <linearGradient id="ink404" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#c9a13b"/>
+                        <stop offset="100%" stop-color="#8a6d2b"/>
+                    </linearGradient>
+                </defs>
+                <text x="100" y="80" text-anchor="middle" fill="url(#ink404)" font-size="60" font-weight="800" font-family="Playfair Display, serif" opacity="0.9">404</text>
+                <path d="M40 100 Q60 85 80 100 Q100 115 120 100 Q140 85 160 100" fill="none" stroke="#c9a13b" stroke-width="1.5" opacity="0.4"/>
+                <circle cx="30" cy="30" r="4" fill="#c9a13b" opacity="0.15"/>
+                <circle cx="170" cy="25" r="6" fill="#c9a13b" opacity="0.1"/>
+                <circle cx="150" cy="100" r="3" fill="#c9a13b" opacity="0.2"/>
+            </svg>
+        </div>
+        <h2 class="mb-3">Jelajahi Lebih Jauh</h2>
+        <p class="text-muted mb-4" style="max-width:480px;margin:0 auto 1.5rem;">
+            Halaman yang kamu tuju tidak tersedia. Mungkin sudah dipindahkan atau tidak pernah ada — 
+            tapi masih banyak inspirasi tattoo menunggumu di beranda.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{% url 'home' %}" class="btn btn-gold">
+                <i class="bi bi-house-fill"></i> Kembali ke Beranda
+            </a>
+            <a href="{% url 'service_list' %}" class="btn btn-outline-gold">
+                <i class="bi bi-palette"></i> Lihat Layanan
+            </a>
+        </div>
     </div>
 </section>
 {% endblock %}

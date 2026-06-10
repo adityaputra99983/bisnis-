@@ -67,6 +67,21 @@
                         </div>
                     {% endif %}
 
+                    {% if artist.artist_styles.all %}
+                        <div class="mb-4">
+                            <h6 class="text-gold text-uppercase small mb-2"><i class="bi bi-brush"></i> Style Tattoo</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for ae in artist.artist_styles.all %}
+                                    <span class="bg-studio">
+                                        <i class="bi {{ ae.style.icon }}"></i> {{ ae.style.name }}
+                                        <small class="ms-1">· {{ ae.get_skill_level_display }}</small>
+                                        {% if ae.is_primary %}<small class="text-gold ms-1">⭐ Utama</small>{% endif %}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
                     {% if completed_bookings_count %}
                         <div class="mb-4">
                             <h6 class="text-gold text-uppercase small mb-2"><i class="bi bi-journal-check"></i> Riwayat Pekerjaan</h6>

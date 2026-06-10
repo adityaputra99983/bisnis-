@@ -23,16 +23,24 @@
                         <input type="text" id="serviceSearch" class="form-control" placeholder="Cari layanan tattoo..." data-t="service_find">
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select id="categoryFilter" class="form-select">
-                        <option value="all" data-t="all_services">Semua Layanan</option>
+                        <option value="all" data-t="all_services">Semua Kategori</option>
                         {% for cat in categories %}
                             <option value="cat-{{ cat.id }}">{{ cat.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button class="btn btn-gold w-100 h-100" data-t="intl">Internasional</button>
+                    <select id="styleFilter" class="form-select">
+                        <option value="all">Semua Style</option>
+                        {% for style in all_styles %}
+                            <option value="style-{{ style.id }}">{{ style.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-gold w-100 h-100" data-t="intl"><i class="bi bi-globe"></i></button>
                 </div>
             </div>
         </div>
@@ -51,7 +59,7 @@
             
             <div class="row g-4">
                 {% for service in category.services.all %}
-                <div class="col-md-6 col-lg-4 service-item" data-category="cat-{{ category.id }}">
+                <div class="col-md-6 col-lg-4 service-item" data-category="cat-{{ category.id }}" data-styles="{% for s in service.styles.all %}style-{{ s.id }} {% endfor %}">
                     <div class="luxury-service-card">
                         <div class="lc-img-wrap">
                             {% if service.image.name %}
@@ -71,6 +79,14 @@
                         <div class="lc-content">
                             <h3 class="lc-title">{{ service.name }}</h3>
                             <p class="lc-desc">{{ service.description|truncatewords:20 }}</p>
+                            
+                            {% if service.styles.all %}
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                {% for style in service.styles.all %}
+                                <span class="badge" style="background: var(--gradient-gold); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             
                             <div class="lc-pricing-panel">
                                 <div class="lc-pricing-header">
@@ -102,21 +118,25 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('serviceSearch');
     const categoryFilter = document.getElementById('categoryFilter');
+    const styleFilter = document.getElementById('styleFilter');
     const serviceItems = document.querySelectorAll('.service-item');
 
     function filterServices() {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedCat = categoryFilter.value;
+        const selectedStyle = styleFilter.value;
 
         serviceItems.forEach(item => {
             const title = item.querySelector('.lc-title').innerText.toLowerCase();
             const desc = item.querySelector('.lc-desc').innerText.toLowerCase();
             const cat = item.getAttribute('data-category');
+            const styles = (item.getAttribute('data-styles') || '').trim();
 
             const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm);
             const matchesCat = selectedCat === 'all' || cat === selectedCat;
+            const matchesStyle = selectedStyle === 'all' || styles.includes(selectedStyle);
 
-            if (matchesSearch && matchesCat) {
+            if (matchesSearch && matchesCat && matchesStyle) {
                 item.style.display = 'block';
             } else {
                 item.style.display = 'none';
@@ -126,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     searchInput.addEventListener('input', filterServices);
     categoryFilter.addEventListener('change', filterServices);
+    styleFilter.addEventListener('change', filterServices);
 });
 </script>
 {% endblock %}

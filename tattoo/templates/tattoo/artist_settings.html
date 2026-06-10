@@ -94,6 +94,56 @@
                 </div>
             </form>
         </div>
+
+        <div class="ap-card mt-4">
+            <div class="ap-card-head">
+                <h5 class="mb-0"><i class="bi bi-brush"></i> Style Tattoo</h5>
+            </div>
+            <form method="post" action="{% url 'artist_settings_styles' %}">
+                {% csrf_token %}
+                <div class="ap-card-body">
+                    <p class="text-muted small">Pilih style tattoo yang kamu kuasai dan tingkat pengalamanmu</p>
+                    <div class="d-flex flex-column gap-3">
+                        {% for style in all_styles %}
+                        <div class="style-row d-flex align-items-center gap-2 flex-wrap">
+                            <label class="ap-chip-check mb-0">
+                                <input type="checkbox" name="styles" value="{{ style.id }}"
+                                    {% if style in artist.style_expertise.all %}checked{% endif %}>
+                                <span><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                            </label>
+                            <div class="d-flex align-items-center gap-2 ms-auto">
+                                <div class="d-flex align-items-center gap-1">
+                                    <small class="text-muted">Exp:</small>
+                                    <input type="number" name="exp_{{ style.id }}"
+                                        value="{% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id %}{{ ae.experience_years }}{% endif %}{% endfor %}"
+                                        class="ap-input" style="width:60px" min="0" placeholder="0">
+                                    <small class="text-muted">thn</small>
+                                </div>
+                                <select name="skill_{{ style.id }}" class="ap-input" style="width:auto">
+                                    <option value="beginner" {% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id and ae.skill_level == 'beginner' %}selected{% endif %}{% endfor %}>Pemula</option>
+                                    <option value="intermediate" {% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id and ae.skill_level == 'intermediate' %}selected{% endif %}{% endfor %}>Menengah</option>
+                                    <option value="advanced" {% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id and ae.skill_level == 'advanced' %}selected{% endif %}{% endfor %}>Mahir</option>
+                                    <option value="master" {% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id and ae.skill_level == 'master' %}selected{% endif %}{% endfor %}>Master</option>
+                                </select>
+                                <label class="ap-chip-check mb-0">
+                                    <input type="radio" name="primary_style" value="{{ style.id }}"
+                                        {% for ae in artist.artist_styles.all %}{% if ae.style.id == style.id and ae.is_primary %}checked{% endif %}{% endfor %}>
+                                    <span><small>Utama</small></span>
+                                </label>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted small">Belum ada style tattoo tersedia.</p>
+                        {% endfor %}
+                    </div>
+                    {% if all_styles %}
+                    <button type="submit" class="btn btn-gold mt-3">
+                        <i class="bi bi-check-lg"></i> Simpan Style
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

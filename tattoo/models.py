@@ -19,6 +19,23 @@ class ServiceCategory(models.Model):
         return self.name
 
 
+class Style(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    icon = models.CharField(max_length=100, default="bi-brush",
+                            help_text="Bootstrap icon class")
+    image = models.ImageField(upload_to='styles/', blank=True, null=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['sort_order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
 class Service(models.Model):
     DIFFICULTY_CHOICES = [
         ('beginner', 'Pemula'),
@@ -42,6 +59,7 @@ class Service(models.Model):
         max_length=20, choices=DIFFICULTY_CHOICES, default='intermediate'
     )
     image = models.ImageField(upload_to='services/', blank=True, null=True)
+    styles = models.ManyToManyField(Style, blank=True, related_name='services')
     is_popular = models.BooleanField(default=False, help_text="Tandai sebagai layanan populer")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,6 +99,9 @@ class Artist(models.Model):
     photo = models.ImageField(upload_to='artists/', blank=True, null=True)
     photo_thumbnail = models.ImageField(upload_to='artists/thumbs/', blank=True, null=True)
     specialties = models.ManyToManyField(Service, related_name='artists', blank=True)
+    style_expertise = models.ManyToManyField(
+        Style, through='ArtistStyle', blank=True, related_name='artists'
+    )
     is_available_mobile = models.BooleanField(
         default=True,
         verbose_name="Bisa panggil ke rumah",
@@ -110,6 +131,30 @@ class Artist(models.Model):
 
     def __str__(self):
         return f"{self.nickname} ({self.name})"
+
+
+class ArtistStyle(models.Model):
+    SKILL_CHOICES = [
+        ('beginner', 'Pemula'),
+        ('intermediate', 'Menengah'),
+        ('advanced', 'Mahir'),
+        ('master', 'Master'),
+    ]
+
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='artist_styles')
+    style = models.ForeignKey(Style, on_delete=models.CASCADE, related_name='artist_styles')
+    experience_years = models.PositiveIntegerField(default=0)
+    skill_level = models.CharField(
+        max_length=20, choices=SKILL_CHOICES, default='intermediate'
+    )
+    is_primary = models.BooleanField(default=False, help_text="Gaya utama artist ini")
+
+    class Meta:
+        unique_together = ['artist', 'style']
+        ordering = ['-is_primary', '-experience_years']
+
+    def __str__(self):
+        return f"{self.artist.nickname} - {self.style.name} ({self.get_skill_level_display()})"
 
 
 class Portfolio(models.Model):

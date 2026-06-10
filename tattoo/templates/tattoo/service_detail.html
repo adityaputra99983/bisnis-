@@ -29,6 +29,18 @@
                     <p class="text-muted lead">{{ service.short_desc }}</p>
                     <hr class="text-muted">
                     <p class="text-secondary" style="line-height: 1.8;">{{ service.description|linebreaks }}</p>
+
+                    {% if service.styles.all %}
+                    <div class="mb-4">
+                        <h6 class="text-gold text-uppercase small mb-2"><i class="bi bi-brush"></i> Style Tersedia</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for style in service.styles.all %}
+                            <span class="bg-studio"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <div class="detail-pricing-section mt-5">
                         <div class="dp-header">
                             <span class="dp-label" data-t="starts_from">{{ service.price_label|default:"HARGA MULAI DARI" }}</span>

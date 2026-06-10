@@ -22,18 +22,26 @@
                         <input type="text" id="artistSearch" class="form-control" placeholder="Cari artist favoritmu..." data-t="artist_find">
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-gold w-100" data-t="available_studio">Studio</button>
-                        <button class="btn btn-outline-gold w-100" data-t="available_mobile">Mobile</button>
+                        <button class="btn btn-outline-gold w-50" data-t="available_studio">Studio</button>
+                        <button class="btn btn-outline-gold w-50" data-t="available_mobile">Mobile</button>
                     </div>
+                </div>
+                <div class="col-md-1">
+                    <select id="styleFilter" class="form-select" style="font-size:0.85rem;">
+                        <option value="all">Style</option>
+                        {% for style in all_styles %}
+                            <option value="style-{{ style.id }}">{{ style.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>
 
         <div class="row g-4" id="artistGrid">
             {% for item in artists_data %}
-                <div class="col-md-4 col-lg-3 artist-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
+                <div class="col-md-4 col-lg-3 artist-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}" data-styles="{% for ae in item.artist.artist_styles.all %}style-{{ ae.style.id }} {% endfor %}">
                     {% with artist=item.artist %}
                     <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
                         <div class="artist-card h-100">
@@ -68,6 +76,14 @@
                                     {% endif %}
                                 </div>
                                 {% endif %}
+
+                                {% if artist.artist_styles.all %}
+                                <div class="artist-specialties mt-1">
+                                    {% for ae in artist.artist_styles.all|slice:":2" %}
+                                        <span class="specialty-chip" style="background: var(--gradient-gold); color: #000;"><i class="bi {{ ae.style.icon }}"></i> {{ ae.style.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                                 
                                 <div class="artist-tags mt-3">
                                     {% if artist.is_available_studio %}
@@ -96,16 +112,25 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('artistSearch');
+    const styleFilter = document.getElementById('styleFilter');
     const artistItems = document.querySelectorAll('.artist-item');
     const filterBtns = document.querySelectorAll('.search-filter-bar .btn-outline-gold');
 
-    searchInput.addEventListener('input', function() {
-        const term = this.value.toLowerCase();
+    function filterArtists() {
+        const term = searchInput.value.toLowerCase();
+        const selectedStyle = styleFilter.value;
+
         artistItems.forEach(item => {
             const text = item.innerText.toLowerCase();
-            item.style.display = text.includes(term) ? 'block' : 'none';
+            const styles = (item.getAttribute('data-styles') || '').trim();
+            const matchesSearch = text.includes(term);
+            const matchesStyle = selectedStyle === 'all' || styles.includes(selectedStyle);
+            item.style.display = (matchesSearch && matchesStyle) ? 'block' : 'none';
         });
-    });
+    }
+
+    searchInput.addEventListener('input', filterArtists);
+    styleFilter.addEventListener('change', filterArtists);
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -114,12 +139,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const mode = this.innerText.trim().toLowerCase();
             artistItems.forEach(item => {
                 const tags = item.querySelector('.artist-tags');
+                const styleMatch = styleFilter.value === 'all' || (item.getAttribute('data-styles') || '').includes(styleFilter.value);
                 if (mode === 'studio' && tags) {
-                    item.style.display = tags.innerText.toLowerCase().includes('studio') ? 'block' : 'none';
+                    item.style.display = (tags.innerText.toLowerCase().includes('studio') && styleMatch) ? 'block' : 'none';
                 } else if (mode === 'mobile' && tags) {
-                    item.style.display = tags.innerText.toLowerCase().includes('mobile') ? 'block' : 'none';
+                    item.style.display = (tags.innerText.toLowerCase().includes('mobile') && styleMatch) ? 'block' : 'none';
                 } else {
-                    item.style.display = 'block';
+                    item.style.display = styleMatch ? 'block' : 'none';
                 }
             });
         });

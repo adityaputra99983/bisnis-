@@ -1,9 +1,16 @@
 from django.contrib import admin
-from .models import ServiceCategory, Service, ServicePackage, Artist, Portfolio, Booking, Review
+from .models import ServiceCategory, Style, Service, ServicePackage, Artist, ArtistStyle, Portfolio, Booking, Review
 
 
 @admin.register(ServiceCategory)
 class ServiceCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'sort_order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name']
+
+
+@admin.register(Style)
+class StyleAdmin(admin.ModelAdmin):
     list_display = ['name', 'sort_order', 'is_active']
     list_filter = ['is_active']
     search_fields = ['name']
@@ -17,15 +24,28 @@ class ServicePackageInline(admin.TabularInline):
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ['name', 'category', 'price', 'duration', 'difficulty', 'is_popular', 'is_active']
-    list_filter = ['category', 'difficulty', 'is_popular', 'is_active']
+    list_filter = ['category', 'difficulty', 'is_popular', 'is_active', 'styles']
     search_fields = ['name', 'description']
     inlines = [ServicePackageInline]
+    filter_horizontal = ['styles']
 
 
 @admin.register(ServicePackage)
 class ServicePackageAdmin(admin.ModelAdmin):
     list_display = ['service', 'name', 'price', 'duration', 'is_recommended']
     list_filter = ['is_recommended', 'service__category']
+
+
+@admin.register(ArtistStyle)
+class ArtistStyleAdmin(admin.ModelAdmin):
+    list_display = ['artist', 'style', 'skill_level', 'experience_years', 'is_primary']
+    list_filter = ['skill_level', 'is_primary', 'style']
+    search_fields = ['artist__name', 'artist__nickname', 'style__name']
+
+
+class ArtistStyleInline(admin.TabularInline):
+    model = ArtistStyle
+    extra = 1
 
 
 class PortfolioInline(admin.TabularInline):
@@ -40,7 +60,7 @@ class ArtistAdmin(admin.ModelAdmin):
     list_filter = ['is_available_mobile', 'is_available_studio', 'is_active']
     search_fields = ['name', 'nickname', 'bio']
     filter_horizontal = ['specialties']
-    inlines = [PortfolioInline]
+    inlines = [ArtistStyleInline, PortfolioInline]
 
 
 @admin.register(Portfolio)

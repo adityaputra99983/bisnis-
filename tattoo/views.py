@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError
-from .models import ServiceCategory, Service, ServicePackage, Artist, Portfolio, Booking, Review, ArtistPaymentSettings
+from .models import ServiceCategory, Style, Service, ServicePackage, Artist, ArtistStyle, Portfolio, Booking, Review, ArtistPaymentSettings
 from .forms import RegisterForm, BookingForm, ReviewForm
 from .payment import (
     generate_payment_session, get_payment_instructions, mark_booking_as_paid,
@@ -60,8 +60,10 @@ def service_list(request):
     categories = ServiceCategory.objects.filter(is_active=True).prefetch_related(
         Prefetch('services', queryset=Service.objects.filter(is_active=True))
     )
+    all_styles = Style.objects.filter(is_active=True).order_by('sort_order', 'name')
     return render(request, 'tattoo/services.html', {
         'categories': categories,
+        'all_styles': all_styles,
     })
 
 
@@ -79,7 +81,9 @@ def service_detail(request, service_id):
 
 
 def artist_list(request):
-    artists = Artist.objects.filter(is_active=True).prefetch_related('portfolios', 'specialties')
+    artists = Artist.objects.filter(is_active=True).prefetch_related(
+        'portfolios', 'specialties', 'artist_styles__style'
+    )
     mode = request.GET.get('mode')
     if mode == 'mobile':
         artists = artists.filter(is_available_mobile=True)
@@ -96,8 +100,10 @@ def artist_list(request):
             'review_count': review_count,
             'portfolio_count': artist.portfolios.count(),
         })
+    all_styles = Style.objects.filter(is_active=True).order_by('sort_order', 'name')
     return render(request, 'tattoo/artists.html', {
         'artists_data': artists_data,
+        'all_styles': all_styles,
         'current_mode': mode,
     })
 
@@ -737,9 +743,11 @@ def artist_settings(request):
         messages.success(request, 'Pengaturan berhasil disimpan!')
         return redirect('artist_settings')
     all_services = Service.objects.filter(is_active=True).order_by('category__name', 'name')
+    all_styles = Style.objects.filter(is_active=True).order_by('sort_order', 'name')
     return render(request, 'tattoo/artist_settings.html', {
         'artist': artist,
         'all_services': all_services,
+        'all_styles': all_styles,
     })
 
 
@@ -756,6 +764,64 @@ def artist_settings_specialties(request):
         artist.specialties.clear()
     artist.save()
     messages.success(request, 'Spesialisasi berhasil diperbarui!')
+    return redirect('artist_settings')
+
+
+@login_required
+def artist_settings_styles(request):
+    if request.method != 'POST':
+        return redirect('artist_settings')
+    artist = _get_artist_or_404(request.user)
+    style_ids = request.POST.getlist('styles')
+    experience_data = {}
+
+    for key, value in request.POST.items():
+        if key.startswith('exp_'):
+            sid = key.replace('exp_', '')
+            if sid.isdigit():
+                try:
+                    experience_data[int(sid)] = int(value)
+                except (ValueError, TypeError):
+                    experience_data[int(sid)] = 0
+
+    skill_data = {}
+    for key, value in request.POST.items():
+        if key.startswith('skill_'):
+            sid = key.replace('skill_', '')
+            if sid.isdigit() and value in ['beginner', 'intermediate', 'advanced', 'master']:
+                skill_data[int(sid)] = value
+
+    primary_style_id = request.POST.get('primary_style', '')
+    primary_id = int(primary_style_id) if primary_style_id.isdigit() else None
+
+    if style_ids:
+        styles = Style.objects.filter(id__in=[int(x) for x in style_ids if x.isdigit()])
+        current_ids = set(artist.style_expertise.values_list('style_id', flat=True))
+        new_ids = set(s.id for s in styles)
+
+        # Remove unselected
+        for old_id in current_ids - new_ids:
+            ArtistStyle.objects.filter(artist=artist, style_id=old_id).delete()
+
+        # Add or update selected
+        for style in styles:
+            years = experience_data.get(style.id, 0)
+            skill = skill_data.get(style.id, 'intermediate')
+            is_primary = (style.id == primary_id)
+
+            ArtistStyle.objects.update_or_create(
+                artist=artist, style=style,
+                defaults={
+                    'experience_years': years,
+                    'skill_level': skill,
+                    'is_primary': is_primary,
+                },
+            )
+    else:
+        artist.style_expertise.clear()
+
+    artist.save()
+    messages.success(request, 'Keahlian style tattoo berhasil diperbarui!')
     return redirect('artist_settings')
 
 

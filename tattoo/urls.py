@@ -29,5 +29,6 @@ urlpatterns = [
     path('artist/services/<int:service_id>/toggle/', views.artist_toggle_service, name='artist_toggle_service'),
     path('artist/settings/', views.artist_settings, name='artist_settings'),
     path('artist/settings/specialties/', views.artist_settings_specialties, name='artist_settings_specialties'),
+    path('artist/settings/styles/', views.artist_settings_styles, name='artist_settings_styles'),
     path('artist/payment-settings/', views.artist_payment_settings, name='artist_payment_settings'),
 ]

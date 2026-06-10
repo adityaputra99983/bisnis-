@@ -1,4 +1,6 @@
 import json
+import re
+from urllib.parse import urlparse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -155,6 +157,18 @@ def register_view(request):
     return render(request, 'tattoo/register.html', {'form': form})
 
 
+def _safe_next_url(request):
+    url = request.GET.get('next', '')
+    if not url:
+        return 'home'
+    parsed = urlparse(url)
+    if parsed.netloc or parsed.scheme:
+        return 'home'
+    if not re.match(r'^/[a-zA-Z0-9_\-/]*$', url):
+        return 'home'
+    return url
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -172,8 +186,7 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, f'Selamat datang kembali, {user.username}!')
-            next_url = request.GET.get('next', 'home')
-            return redirect(next_url)
+            return redirect(_safe_next_url(request))
         messages.error(request, 'Username atau password salah.')
     return render(request, 'tattoo/login.html')
 

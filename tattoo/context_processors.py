@@ -1,9 +1,13 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from .models import ServiceCategory, Booking, Artist
 
 
 def navbar_data(request):
-    categories = ServiceCategory.objects.filter(is_active=True)[:6]
+    try:
+        categories = list(ServiceCategory.objects.filter(is_active=True)[:6])
+    except DatabaseError:
+        categories = []
 
     user_bookings_count = 0
     user_unpaid_count = 0
@@ -16,18 +20,21 @@ def navbar_data(request):
     nav_artist_pending_count = 0
 
     if request.user.is_authenticated:
-        qs = Booking.objects.filter(user=request.user).select_related(
-            'artist', 'service'
-        )
-        user_bookings_count = qs.count()
-        user_unpaid_count = qs.filter(
-            payment_status__in=['unpaid', 'pending']
-        ).exclude(status='cancelled').count()
-        user_active_count = qs.filter(
-            status__in=['pending', 'confirmed', 'in_progress']
-        ).count()
-        user_recent_bookings = list(qs.order_by('-created_at')[:4])
-        has_new_activity = user_unpaid_count > 0 or user_active_count > 0
+        try:
+            qs = Booking.objects.filter(user=request.user).select_related(
+                'artist', 'service'
+            )
+            user_bookings_count = qs.count()
+            user_unpaid_count = qs.filter(
+                payment_status__in=['unpaid', 'pending']
+            ).exclude(status='cancelled').count()
+            user_active_count = qs.filter(
+                status__in=['pending', 'confirmed', 'in_progress']
+            ).count()
+            user_recent_bookings = list(qs.order_by('-created_at')[:4])
+            has_new_activity = user_unpaid_count > 0 or user_active_count > 0
+        except DatabaseError:
+            pass
 
         # Check if user has an artist profile
         try:
@@ -35,7 +42,7 @@ def navbar_data(request):
             nav_artist_pending_count = Booking.objects.filter(
                 artist=artist_obj, status='pending'
             ).count()
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, DatabaseError):
             pass
 
     return {

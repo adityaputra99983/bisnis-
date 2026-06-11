@@ -5529,9 +5529,26 @@ select.form-select::-ms-value,
     color: #2ecc71;
     font-weight: 500;
 }
+.ap-cat-chevron {
+    flex-shrink: 0;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0.4;
+}
+.ap-category-block.collapsed .ap-cat-chevron {
+    transform: rotate(-90deg);
+}
+.ap-category-block:hover .ap-cat-chevron {
+    opacity: 0.8;
+}
 .ap-cat-progress {
     flex-shrink: 0;
-    width: 120px;
+    width: 100px;
 }
 .ap-cat-progress-track {
     height: 4px;
@@ -5602,8 +5619,9 @@ select.form-select::-ms-value,
     border-color: rgba(255,255,255,0.06);
 }
 .ap-service-card-h.selected {
-    background: linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(212,175,55,0.02) 100%);
-    border-color: rgba(212,175,55,0.15);
+    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 100%);
+    border-color: rgba(212,175,55,0.25);
+    box-shadow: 0 0 20px rgba(212,175,55,0.04);
 }
 .ap-service-card-h.selected::before {
     content: '';
@@ -5614,7 +5632,15 @@ select.form-select::-ms-value,
     width: 3px;
     border-radius: 3px;
     background: var(--gold);
-    box-shadow: 0 0 8px rgba(212,175,55,0.3);
+    box-shadow: 0 0 10px rgba(212,175,55,0.4);
+}
+.ap-service-card-h.selected::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.08), transparent 50%);
+    pointer-events: none;
 }
 .ap-svc-trigger-h {
     display: flex;
@@ -5676,6 +5702,23 @@ select.form-select::-ms-value,
     align-items: center;
     gap: 4px;
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+.ap-badge-popular::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: rotate(25deg);
+    animation: shimmerBadge 2.5s ease-in-out infinite;
+}
+@keyframes shimmerBadge {
+    0% { left: -60%; }
+    100% { left: 120%; }
 }
 .ap-badge-popular i {
     font-size: 0.5rem;
@@ -5781,7 +5824,7 @@ select.form-select::-ms-value,
 .ap-toggle-switch.on {
     background: linear-gradient(135deg, var(--gold), #d4a020);
     border-color: rgba(212,175,55,0.3);
-    box-shadow: 0 0 12px rgba(212,175,55,0.2);
+    box-shadow: 0 0 12px rgba(212,175,55,0.2), inset 0 0 8px rgba(255,255,255,0.1);
 }
 .ap-toggle-knob {
     width: 22px;

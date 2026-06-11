@@ -1,54 +1,299 @@
 {% extends 'tattoo/artist_base.html' %}
 {% load static %}
 {% load humanize %}
+{% load currency_tags %}
 
-{% block title %}Layanan Saya - Artist Panel{% endblock %}
-{% block page_title %}Layanan Saya{% endblock %}
+{% block title %}Keahlian & Harga - Artist Panel{% endblock %}
+{% block page_title %}Keahlian & Harga Layanan{% endblock %}
+
+{% block head_extra %}
+<style>
+  .ap-service-item {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: svcFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes svcFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<p class="text-muted mb-4">Pilih layanan yang kamu tawarkan. Layanan yang dipilih akan muncul sebagai spesialisasimu di profil publik.</p>
-
-{% if all_services %}
-<div class="ap-service-grid">
-    {% for s in all_services %}
-    <div class="ap-service-card {% if s in artist.specialties.all %}selected{% endif %}"
-         data-service-id="{{ s.id }}">
-        <form method="post" action="{% url 'artist_toggle_service' s.id %}">
-            {% csrf_token %}
-            <button type="submit" class="ap-svc-trigger">
-                <div class="ap-svc-info">
-                    <div class="ap-svc-cat small text-gold">{{ s.category.name|default:'Umum' }}</div>
-                    <h5>{{ s.name }}</h5>
-                    <p class="text-muted small">{{ s.description|truncatechars:90 }}</p>
-                    <div class="ap-svc-meta">
-                        <span><i class="bi bi-clock"></i> {{ s.duration }}</span>
-                        <span class="fw-bold text-gold">Rp {{ s.price|floatformat:0|intcomma }}</span>
-                    </div>
-                </div>
-                <div class="ap-svc-check">
-                    <div class="ap-checkbox {% if s in artist.specialties.all %}checked{% endif %}">
-                        {% if s in artist.specialties.all %}
-                            <i class="bi bi-check-lg"></i>
-                        {% endif %}
-                    </div>
-                    <small>
-                        {% if s in artist.specialties.all %}
-                            Aktif
-                        {% else %}
-                            Nonaktif
-                        {% endif %}
-                    </small>
-                </div>
-            </button>
-        </form>
+<div class="ap-hero-bar mb-4">
+  <div class="ap-hero-left">
+    <p class="ap-hero-desc">Aktifkan layanan yang kamu kuasai. Layanan aktif akan tampil sebagai spesialisasimu di profil publik dan pencarian customer.</p>
+    <div class="ap-hero-stats">
+      <div class="ap-stat-badge ap-stat-active">
+        <i class="bi bi-check-circle-fill"></i>
+        <span class="ap-stat-num" id="activeNum">{{ artist.specialties.count }}</span>
+        <span class="ap-stat-label">Aktif</span>
+      </div>
+      <div class="ap-stat-badge ap-stat-total">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+        <span class="ap-stat-num">{{ all_services.count }}</span>
+        <span class="ap-stat-label">Total</span>
+      </div>
+      <div class="ap-stat-badge ap-stat-inactive">
+        <i class="bi bi-circle"></i>
+        <span class="ap-stat-num">{{ inactive_count }}</span>
+        <span class="ap-stat-label">Nonaktif</span>
+      </div>
     </div>
-    {% endfor %}
+  </div>
+  <div class="ap-hero-right">
+    <div class="ap-progress-ring-wrap">
+      <svg class="ap-progress-ring" viewBox="0 0 36 36">
+        <path class="ap-progress-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        <path class="ap-progress-fill" stroke-dasharray="{% widthratio artist.specialties.count all_services.count 100 %}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+      </svg>
+      <div class="ap-progress-text">
+        <span class="ap-progress-pct">{% widthratio artist.specialties.count all_services.count 100 %}%</span>
+        <span class="ap-progress-sub">selesai</span>
+      </div>
+    </div>
+  </div>
 </div>
+
+<div class="ap-search-bar mb-4">
+  <i class="bi bi-search"></i>
+  <input type="text" id="serviceSearch" class="ap-input" placeholder="Cari layanan berdasarkan nama atau deskripsi..." autocomplete="off">
+  <button class="ap-search-clear" id="searchClear"><i class="bi bi-x-lg"></i></button>
+</div>
+
+{% if categories %}
+  {% for category in categories %}
+  {% with cat_services=category.services.all %}
+  {% with cat_active=active_counts|get_item:category.id %}
+  <div class="ap-category-block mb-4" data-cat-id="{{ category.id }}">
+    <div class="ap-cat-header">
+      <div class="ap-cat-header-left">
+        <div class="ap-cat-icon">
+          <i class="bi {{ category.icon }}"></i>
+        </div>
+        <div>
+          <h5 class="ap-cat-title">{{ category.name }}</h5>
+          <div class="ap-cat-meta">
+            <span class="cat-count-text">{{ cat_services|length }} layanan</span>
+            <span class="ap-cat-dot">•</span>
+            <span class="ap-cat-active-text">{{ cat_active }} aktif</span>
+          </div>
+        </div>
+      </div>
+      <div class="ap-cat-progress">
+        <div class="ap-cat-progress-track">
+          <div class="ap-cat-progress-fill" style="width:{% widthratio cat_active cat_services|length 100 %}%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ap-service-list">
+      {% for s in cat_services %}
+      {% if s.is_active %}
+      <div class="ap-service-item" data-name="{{ s.name|lower }} {{ s.description|lower }} {{ s.short_desc|lower }}">
+        <div class="ap-service-card-h {% if s in specialties %}selected{% endif %}" data-service-id="{{ s.id }}">
+          <form method="post" action="{% url 'artist_toggle_service' s.id %}" class="ap-svc-form">
+            {% csrf_token %}
+            <button type="submit" class="ap-svc-trigger-h">
+              <div class="ap-svc-info-h">
+                <div class="ap-svc-title-row">
+                  <h6 class="ap-svc-name">{{ s.name }}</h6>
+                  <div class="ap-svc-badges">
+                    {% if s.is_popular %}
+                    <span class="ap-badge-popular"><i class="bi bi-fire"></i> Populer</span>
+                    {% endif %}
+                    <span class="ap-badge-diff ap-badge-diff-{{ s.difficulty }}">
+                      {{ s.get_difficulty_display }}
+                    </span>
+                  </div>
+                </div>
+                {% if s.short_desc %}
+                <p class="ap-svc-desc">{{ s.short_desc }}</p>
+                {% endif %}
+                <div class="ap-svc-tags">
+                  <span class="ap-tag ap-tag-price"><i class="bi bi-currency-dollar"></i> Rp {{ s.price|floatformat:0|intcomma }}</span>
+                  <span class="ap-tag ap-tag-dur"><i class="bi bi-clock"></i> {{ s.duration }}</span>
+                  {% for style in s.styles.all %}
+                  <span class="ap-tag ap-tag-style"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="ap-svc-check-h">
+                <div class="ap-toggle-wrap">
+                  <div class="ap-toggle-switch {% if s in specialties %}on{% endif %}">
+                    <div class="ap-toggle-knob"></div>
+                  </div>
+                </div>
+                <span class="ap-toggle-label {% if s in specialties %}on{% endif %}">
+                  {% if s in specialties %}Aktif{% else %}Nonaktif{% endif %}
+                </span>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endwith %}
+  {% endwith %}
+  {% endfor %}
 {% else %}
 <div class="ap-empty-state">
-    <i class="bi bi-tags"></i>
-    <h5>Belum ada layanan</h5>
-    <p class="text-muted">Belum ada layanan yang tersedia saat ini.</p>
+  <i class="bi bi-tags"></i>
+  <h5>Belum ada layanan</h5>
+  <p class="text-muted">Belum ada layanan yang tersedia saat ini.</p>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('serviceSearch');
+  const searchClear = document.getElementById('searchClear');
+  const serviceItems = document.querySelectorAll('.ap-service-item');
+  const catHeaders = document.querySelectorAll('.ap-cat-header');
+  const catBlocks = document.querySelectorAll('.ap-category-block');
+  const activeNumEl = document.getElementById('activeNum');
+  const noResult = document.createElement('div');
+  noResult.className = 'ap-no-result';
+  noResult.innerHTML = '<i class="bi bi-search"></i><h6>Tidak ditemukan</h6><p class="text-muted">Coba gunakan kata kunci lain</p>';
+  noResult.style.display = 'none';
+  document.querySelector('.ap-content').appendChild(noResult);
+
+  // ── Collapse / Expand ──
+  catHeaders.forEach(h => {
+    h.addEventListener('click', function(e) {
+      if (e.target.closest('.ap-cat-progress')) return;
+      const block = this.closest('.ap-category-block');
+      const list = block.querySelector('.ap-service-list');
+      const wasCollapsed = block.classList.contains('collapsed');
+      if (wasCollapsed) {
+        list.style.maxHeight = list.scrollHeight + 'px';
+        block.classList.remove('collapsed');
+        list.addEventListener('transitionend', function handler() {
+          list.style.maxHeight = 'none';
+          list.removeEventListener('transitionend', handler);
+        });
+      } else {
+        list.style.maxHeight = list.scrollHeight + 'px';
+        requestAnimationFrame(() => {
+          list.style.maxHeight = '0px';
+          block.classList.add('collapsed');
+        });
+      }
+    });
+  });
+
+  // ── Search ──
+  function filterServices() {
+    const term = searchInput.value.toLowerCase().trim();
+    let globalIdx = 0;
+    let anyVisible = false;
+
+    serviceItems.forEach(item => {
+      const name = item.getAttribute('data-name') || '';
+      const match = !term || name.includes(term);
+      item.style.display = match ? '' : 'none';
+      if (match) {
+        anyVisible = true;
+        globalIdx++;
+        item.style.animation = 'none';
+        item.offsetHeight;
+        item.style.animation = `svcFadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) ${(globalIdx % 15) * 0.035}s forwards`;
+      }
+    });
+
+    catBlocks.forEach(block => {
+      const visible = block.querySelectorAll('.ap-service-item:not([style*="display: none"])');
+      const total = block.querySelectorAll('.ap-service-item');
+      block.style.display = visible.length > 0 ? '' : 'none';
+      const countEl = block.querySelector('.cat-count-text');
+      if (countEl) {
+        countEl.textContent = visible.length + ' dari ' + total.length + ' layanan';
+      }
+    });
+
+    // Auto-expand all categories during search
+    catBlocks.forEach(block => {
+      if (term && block.classList.contains('collapsed')) {
+        const list = block.querySelector('.ap-service-list');
+        list.style.maxHeight = list.scrollHeight + 'px';
+        block.classList.remove('collapsed');
+        list.addEventListener('transitionend', function handler() {
+          list.style.maxHeight = 'none';
+          list.removeEventListener('transitionend', handler);
+        });
+      }
+    });
+
+    searchClear.style.display = term ? 'flex' : 'none';
+    noResult.style.display = (!anyVisible && term) ? 'flex' : 'none';
+  }
+
+  searchInput.addEventListener('input', filterServices);
+
+  searchClear.addEventListener('click', function() {
+    searchInput.value = '';
+    filterServices();
+    searchInput.focus();
+  });
+
+  // ── AJAX Toggle ──
+  document.querySelectorAll('.ap-svc-trigger-h').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const form = this.closest('.ap-svc-form');
+      const card = this.closest('.ap-service-card-h');
+      const toggle = card.querySelector('.ap-toggle-switch');
+      const label = card.querySelector('.ap-toggle-label');
+      const url = form.getAttribute('action');
+      const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      const wasOn = toggle.classList.contains('on');
+      toggle.classList.toggle('on');
+      label.classList.toggle('on');
+      card.classList.toggle('selected');
+      label.textContent = wasOn ? 'Nonaktif' : 'Aktif';
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrf,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'csrfmiddlewaretoken=' + encodeURIComponent(csrf),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (activeNumEl) activeNumEl.textContent = data.active_count;
+        document.querySelectorAll('.ap-category-block').forEach(block => {
+          const activeItems = block.querySelectorAll('.ap-service-card-h.selected').length;
+          const totalItems = block.querySelectorAll('.ap-service-card-h').length;
+          const fill = block.querySelector('.ap-cat-progress-fill');
+          const txt = block.querySelector('.ap-cat-active-text');
+          if (fill) fill.style.width = totalItems ? (activeItems / totalItems * 100) + '%' : '0%';
+          if (txt) txt.textContent = activeItems + ' aktif';
+        });
+        const ring = document.querySelector('.ap-progress-fill');
+        const pctEl = document.querySelector('.ap-progress-pct');
+        const totalSvc = {{ all_services.count|safe }};
+        if (ring && totalSvc > 0) {
+          const pct = Math.round(data.active_count / totalSvc * 100);
+          ring.setAttribute('stroke-dasharray', pct + ', 100');
+          if (pctEl) pctEl.textContent = pct + '%';
+        }
+      })
+      .catch(() => {
+        toggle.classList.toggle('on');
+        label.classList.toggle('on');
+        card.classList.toggle('selected');
+        label.textContent = wasOn ? 'Aktif' : 'Nonaktif';
+      });
+    });
+  });
+});
+</script>
 {% endblock %}

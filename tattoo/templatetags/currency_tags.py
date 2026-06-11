@@ -40,6 +40,11 @@ CURRENCY_DESCS = {
 }
 
 
+@register.filter
+def get_item(d, key):
+    return d.get(key)
+
+
 @register.filter(is_safe=True)
 def multi_currency(value):
     if value is None:

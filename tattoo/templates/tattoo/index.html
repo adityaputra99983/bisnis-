@@ -151,6 +151,72 @@
 </section>
 {% endif %}
 
+{% if services_all %}
+<section class="services-section section-padding" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center" data-t="services_title">Layanan & <span class="text-gold" data-t="services_title_gold">Harga</span></h2>
+        <p class="section-subtitle text-center" data-t="services_sub">Temukan layanan tattoo impianmu dengan harga terbaik</p>
+        <div class="section-divider" data-aos="fade-up"></div>
+        <div class="row g-4 mt-4">
+            {% for service in services_all %}
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
+                    <div class="luxury-service-card">
+                        <div class="lc-img-wrap">
+                            {% if service.image.name %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="lc-img">
+                            {% else %}
+                                <div class="lc-placeholder"><i class="bi bi-palette"></i></div>
+                            {% endif %}
+                            <div class="lc-img-overlay"></div>
+                            {% if service.is_popular %}
+                                <span class="lc-badge" data-t="popular_badge">Populer</span>
+                            {% endif %}
+                            <div class="lc-tags">
+                                <span class="tag tag-diff-{{ service.difficulty }}">{{ service.get_difficulty_display }}</span>
+                                <span class="tag tag-clock"><i class="bi bi-clock"></i> {{ service.duration }}</span>
+                            </div>
+                        </div>
+                        <div class="lc-content">
+                            <h3 class="lc-title">{{ service.name }}</h3>
+                            <p class="lc-desc">{{ service.short_desc|default:service.description|truncatewords:20 }}</p>
+                            {% if service.styles.all %}
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                {% for style in service.styles.all %}
+                                <span class="badge" style="background: linear-gradient(135deg, #d4af37, #f0d68a); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="lc-pricing-panel">
+                                <div class="lc-pricing-header">
+                                    <span><i class="bi bi-currency-exchange"></i> <span data-t="est_kurs">Estimasi Kurs</span></span>
+                                    <span class="lc-pricing-badge" data-t="intl">Internasional</span>
+                                </div>
+                                <div class="lc-grid">
+                                    {{ service.price|multi_currency_detail }}
+                                </div>
+                            </div>
+                            <div class="lc-actions">
+                                <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline">
+                                    <i class="bi bi-eye"></i> <span data-t="see_detail">Detail</span>
+                                </a>
+                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking">
+                                    <i class="bi bi-calendar-check"></i> <span data-t="booking">Booking</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'service_list' %}" class="btn btn-outline-gold btn-lg">
+                <i class="bi bi-grid"></i> <span data-t="all_services">Lihat Semua Layanan</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 {% if services_popular %}
 <section class="popular-section section-padding">
     <div class="container">
@@ -183,6 +249,14 @@
                                 <p class="lc-desc">{{ service.short_desc|default:service.description|truncatewords:20 }}</p>
                             </div>
                             
+                            {% if service.styles.all %}
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                {% for style in service.styles.all %}
+                                <span class="badge" style="background: linear-gradient(135deg, #d4af37, #f0d68a); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
                             <div class="lc-pricing-panel">
                                 <div class="lc-pricing-header">
                                     <span><i class="bi bi-currency-exchange"></i> <span data-t="est_kurs">Estimasi Kurs</span></span>
@@ -197,7 +271,7 @@
                                 <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline" title="Detail">
                                     <i class="bi bi-eye"></i> <span data-t="see_detail">Detail</span>
                                 </a>
-                                <a href="{% url 'booking_create' %}" class="btn btn-gold-booking">
+                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking">
                                     <i class="bi bi-calendar-check"></i> <span data-t="booking">Booking</span>
                                 </a>
                             </div>
@@ -243,6 +317,20 @@
                                         <span data-t="no_rating">Belum ada rating</span>
                                     {% endif %}
                                 </div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <i class="bi bi-shield-check text-gold"></i>
+                                    <span class="text-muted" style="font-size: 0.85rem;">{{ item.artist.experience_years }} tahun</span>
+                                </div>
+                                {% if item.artist.specialties.all %}
+                                <div class="artist-specialties mb-2">
+                                    {% for service in item.artist.specialties.all|slice:":3" %}
+                                    <span class="specialty-chip">{{ service.name }}</span>
+                                    {% endfor %}
+                                    {% if item.artist.specialties.all|length > 3 %}
+                                    <span class="specialty-chip specialty-more">+{{ item.artist.specialties.all|length|add:"-3" }}</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                                 <div class="artist-tags">
                                     {% if item.artist.is_available_studio %}
                                         <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="available_studio">Studio</span></span>

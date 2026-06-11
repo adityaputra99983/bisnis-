@@ -36,7 +36,12 @@ def home(request):
         Prefetch('services', queryset=Service.objects.filter(is_active=True, is_popular=True))
     )
     services_popular = Service.objects.filter(is_active=True, is_popular=True)[:6]
-    artists = Artist.objects.filter(is_active=True).prefetch_related('portfolios', 'specialties')[:4]
+    services_all = Service.objects.filter(is_active=True).select_related(
+        'category'
+    ).prefetch_related('styles')[:9]
+    artists = Artist.objects.filter(is_active=True).prefetch_related(
+        'portfolios', 'specialties', 'artist_styles__style'
+    )[:8]
     artists_with_rating = []
     for artist in artists:
         avg = Review.objects.filter(booking__artist=artist).aggregate(Avg('rating'))['rating__avg']
@@ -53,6 +58,7 @@ def home(request):
     return render(request, 'tattoo/index.html', {
         'categories': categories,
         'services_popular': services_popular,
+        'services_all': services_all,
         'artists_with_rating': artists_with_rating,
         'stats': stats,
     })
@@ -844,20 +850,36 @@ def artist_toggle_service(request, service_id):
         return redirect('artist_services')
     artist = _get_artist_or_404(request.user)
     service = get_object_or_404(Service, id=service_id, is_active=True)
+    activated = False
     if service in artist.specialties.all():
         artist.specialties.remove(service)
     else:
         artist.specialties.add(service)
+        activated = True
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'activated': activated, 'active_count': artist.specialties.count()})
     return redirect('artist_services')
 
 
 @login_required
 def artist_services(request):
     artist = _get_artist_or_404(request.user)
-    all_services = Service.objects.filter(is_active=True).select_related('category').order_by('category__name', 'name')
+    specialties = list(artist.specialties.all())
+    all_services = Service.objects.filter(is_active=True).select_related('category').prefetch_related('styles').order_by('category__sort_order', 'category__name', 'name')
+    categories = ServiceCategory.objects.filter(is_active=True).prefetch_related(
+        'services'
+    ).order_by('sort_order', 'name')
+    active_counts = {}
+    for cat in categories:
+        active_counts[cat.id] = sum(1 for s in cat.services.all() if s in specialties)
+    inactive_count = all_services.count() - len(specialties)
     return render(request, 'tattoo/artist_services.html', {
         'artist': artist,
+        'specialties': specialties,
         'all_services': all_services,
+        'categories': categories,
+        'active_counts': active_counts,
+        'inactive_count': inactive_count,
     })
 
 

@@ -260,42 +260,22 @@ def _render_login_failsafe():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Bali Tattoo Studio</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Mohon Maaf - Bali Tattoo Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   body { font-family: 'Inter', sans-serif; background: #050505; color: #e0d5c0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 20px; }
-  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,161,59,0.2); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px; }
-  h2 { font-family: 'Playfair Display', serif; color: #c9a13b; text-align: center; }
-  .form-control { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e0d5c0; padding: 12px; border-radius: 8px; width: 100%; box-sizing:border-box; }
-  .form-control:focus { border-color: #c9a13b; outline: none; }
-  label { color: #a09880; font-size: 0.9rem; }
-  .btn { background: linear-gradient(135deg, #c9a13b, #a8842e); color: #050505; border: none; padding: 12px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; }
+  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,161,59,0.2); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px; text-align: center; }
+  h2 { font-family: 'Playfair Display', serif; color: #c9a13b; }
+  p { color: #a09880; line-height: 1.6; }
+  .btn { display: inline-block; background: linear-gradient(135deg, #c9a13b, #a8842e); color: #050505; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; margin-top: 8px; }
   .btn:hover { background: linear-gradient(135deg, #dbb34a, #b89434); }
-  .text-gold { color: #c9a13b; text-decoration: none; }
-  .brand { font-family: 'Playfair Display', serif; color: #c9a13b; font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="brand">Bali Tattoo</div>
-    <h2>Login</h2>
-    <p style="color:#a09880;text-align:center">Masuk ke akun kamu</p>
-    <form method="POST">
-      <input type="hidden" name="csrfmiddlewaretoken" value="placeholder">
-      <div class="mb-3">
-        <label>Username</label>
-        <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
-      </div>
-      <div class="mb-3">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
-      </div>
-      <button type="submit" class="btn">Login</button>
-    </form>
-    <p style="text-align:center;margin-top:1rem;color:#a09880;font-size:0.9rem">
-      Belum punya akun? <a href="/register/" class="text-gold">Daftar</a>
-    </p>
+    <h2>Mohon Maaf</h2>
+    <p>Sistem sedang sibuk. Silakan muat ulang halaman atau coba beberapa saat lagi.</p>
+    <a href="/login/" class="btn">Muat Ulang</a>
   </div>
 </body>
 </html>""")

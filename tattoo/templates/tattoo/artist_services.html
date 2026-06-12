@@ -18,16 +18,242 @@
   background-image:
     linear-gradient(rgba(212,175,55,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(212,175,55,0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-size: 50px 50px;
+}
+.ap-grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(212,175,55,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(6,182,212,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 85%, rgba(168,85,247,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 15%, rgba(244,63,94,0.04) 0%, transparent 50%);
 }
 .ap-content { position: relative; z-index: 1; }
+
+/* Redesigned Hero */
+.ap-hero {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+.ap-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(212,175,55,0.1), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.ap-hero-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+.ap-hero-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0;
+  line-height: 1.6;
+}
+.ap-hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  width: 100%;
+}
+.ap-hstat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ap-hstat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 35%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.ap-hstat-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 5px;
+}
+.ap-hstat-bar-container {
+    width: 100px;
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.ap-hstat-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Search Redesign */
+.ap-search {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+}
+.ap-search:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(212,175,55,0.1);
+  background: rgba(255,255,255,0.05);
+}
+.ap-search i { color: var(--text-muted); margin-right: 12px; }
+.ap-search input {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 10px 0;
+  width: 100%;
+  outline: none;
+}
+
+/* Category & Cards */
+.ap-cat {
+  background: rgba(255,255,255,0.01);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 24px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.ap-cat-head {
+  padding: 0 0 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+.ap-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+.ap-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--cat-c);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.ap-card.on {
+  background: var(--cat-c-dim);
+  border-color: var(--cat-c);
+}
+.ap-btn {
+    text-align: left;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+}
+.ap-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+}
+.ap-badge-row { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-pop {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    font-weight: 800;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+}
+.ap-diff {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 50px;
+    border: 1px solid currentColor;
+}
+.ap-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+.ap-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+.ap-tag {
+    background: rgba(255,255,255,0.05);
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+.ap-tag-price { color: var(--gold); font-weight: 700; background: rgba(212,175,55,0.1); }
+
+/* Switch Redesign */
+.ap-switch {
+  width: 50px;
+  height: 26px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  transition: all 0.3s;
+}
+.ap-switch.on { background: var(--cat-c); }
+.ap-knob {
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.ap-switch.on .ap-knob { left: 27px; }
+
+@keyframes apSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .ap-service-item {
   opacity: 0;
-  transform: translateY(20px) scale(0.97);
-  animation: apSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes apSlideUp {
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  animation: apSlideUp 0.5s ease forwards;
 }
 </style>
 {% endblock %}
@@ -35,95 +261,80 @@
 {% block content %}
 <div class="ap-grid-bg"></div>
 
-<div class="ap-hero mb-4">
+{% with total_services=all_services.count active_services=artist.specialties.count %}
+<div class="ap-hero">
   <div class="ap-hero-body">
     <div class="ap-hero-content">
-      <p class="ap-hero-desc">Aktifkan layanan yang kamu kuasai. Layanan aktif akan tampil sebagai spesialisasimu di profil publik.</p>
-      <div class="ap-hero-stats">
-        <div class="ap-hstat">
-          <span class="ap-hstat-num" id="activeNum">{{ artist.specialties.count }}</span>
-          <span class="ap-hstat-lbl">Aktif</span>
-          <div class="ap-hstat-bar" style="width:{% widthratio artist.specialties.count all_services.count 100 %}%"></div>
-        </div>
-        <div class="ap-hstat-div"></div>
-        <div class="ap-hstat">
-          <span class="ap-hstat-num">{{ all_services.count }}</span>
-          <span class="ap-hstat-lbl">Total</span>
-        </div>
-        <div class="ap-hstat-div"></div>
-        <div class="ap-hstat">
-          <span class="ap-hstat-num">{{ inactive_count }}</span>
-          <span class="ap-hstat-lbl">Nonaktif</span>
+      <h2 class="mb-3">Kelola <span class="text-gold">Keahlian</span> Anda</h2>
+      <p class="ap-hero-desc">Pilih layanan yang Anda tawarkan ke pelanggan. Layanan aktif akan muncul sebagai spesialisasi di profil publik Anda.</p>
+    </div>
+    
+    <div class="ap-hero-stats">
+      <div class="ap-hstat">
+        <span class="ap-hstat-num" id="activeNum">{{ active_services }}</span>
+        <span class="ap-hstat-lbl">Aktif</span>
+        <div class="ap-hstat-bar-container">
+            <div class="ap-hstat-bar" style="width:{% if total_services > 0 %}{% widthratio active_services total_services 100 %}{% else %}0{% endif %}%"></div>
         </div>
       </div>
-    </div>
-    <div class="ap-hero-ring">
-      <svg viewBox="0 0 40 40">
-        <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2"/>
-        <circle cx="20" cy="20" r="17" fill="none" stroke="url(#goldGrad)" stroke-width="2"
-          stroke-linecap="round" stroke-dasharray="{% widthratio artist.specialties.count all_services.count 100 %} 100"
-          class="ap-ring-progress"/>
-      </svg>
-      <svg width="0" height="0"><defs><linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#d4af37"/><stop offset="100%" stop-color="#f0d060"/>
-      </linearGradient></defs></svg>
-      <div class="ap-ring-text">
-        <span class="ap-ring-pct">{% widthratio artist.specialties.count all_services.count 100 %}%</span>
-        <span class="ap-ring-lbl">selesai</span>
+      <div class="ap-hstat">
+        <span class="ap-hstat-num">{{ total_services }}</span>
+        <span class="ap-hstat-lbl">Tersedia</span>
+      </div>
+      <div class="ap-hstat">
+        <span class="ap-hstat-num">{{ inactive_count }}</span>
+        <span class="ap-hstat-lbl">Nonaktif</span>
       </div>
     </div>
   </div>
 </div>
+{% endwith %}
 
-<div class="ap-search mb-4">
+<div class="ap-search">
   <i class="bi bi-search"></i>
-  <input type="text" id="serviceSearch" placeholder="Cari layanan..." autocomplete="off">
-  <button class="ap-search-clr" id="searchClear"><i class="bi bi-x-lg"></i></button>
+  <input type="text" id="serviceSearch" placeholder="Cari layanan yang Anda kuasai..." autocomplete="off">
+  <button class="ap-search-clr" id="searchClear" style="display:none;"><i class="bi bi-x-lg"></i></button>
 </div>
 
 {% if categories %}
   {% for category in categories %}
-  {% with cat_services=category.services.all %}
-  {% with cat_active=active_counts|get_item:category.id %}
-  <div class="ap-cat mb-4" data-cat-id="{{ category.id }}" style="--cat-hue:{{ forloop.counter0|add:'35'|stringformat:'i' }}deg">
-    <div class="ap-cat-glow"></div>
+  {% with cat_services=category.services.all|dictsort:"name" %}
+  {% with cat_active=active_counts|get_item:category.id|default:0 %}
+  <div class="ap-cat ap-cat-{{ forloop.counter0 }}" data-cat-id="{{ category.id }}">
     <div class="ap-cat-head">
       <div class="ap-cat-head-l">
-        <div class="ap-cat-icon"><i class="bi {{ category.icon }}"></i></div>
+        <div class="ap-cat-icon ap-icon-{{ forloop.counter0 }} text-gold mb-2" style="font-size: 1.5rem;"><i class="bi {{ category.icon }}"></i></div>
         <div>
-          <h5 class="ap-cat-title">{{ category.name }}</h5>
-          <span class="ap-cat-meta">{{ cat_services|length }} layanan <span class="ap-cat-dot">•</span> <span class="ap-cat-act">{{ cat_active }} aktif</span></span>
+          <h4 class="m-0">{{ category.name }}</h4>
+          <span class="ap-cat-meta text-muted small">{{ cat_services|length }} Layanan <span class="ap-cat-dot">•</span> <span class="ap-cat-act">{{ cat_active }} Aktif</span></span>
         </div>
       </div>
     </div>
+    
     <div class="ap-list">
       {% for s in cat_services %}
       {% if s.is_active %}
-      <div class="ap-item ap-service-item" data-name="{{ s.name|lower }} {{ s.short_desc|lower }}" style="animation-delay:{% widthratio forloop.counter0 1 6 %}0ms">
+      <div class="ap-item ap-service-item" data-name="{{ s.name|lower }} {{ s.short_desc|lower }}" style="animation-delay: {{ forloop.counter0|add:forloop.parentloop.counter0|mul:50 }}ms">
         <div class="ap-card {% if s in specialties %}on{% endif %}" data-service-id="{{ s.id }}">
+          <div class="ap-switch {% if s in specialties %}on{% endif %}">
+            <div class="ap-knob"></div>
+          </div>
           <form method="post" action="{% url 'artist_toggle_service' s.id %}" class="ap-form">
             {% csrf_token %}
             <button type="submit" class="ap-btn">
               <div class="ap-info">
-                <div class="ap-info-top">
-                  <h6 class="ap-name">{{ s.name }}</h6>
-                  <div class="ap-badge-row">
-                    {% if s.is_popular %}<span class="ap-pop"><i class="bi bi-lightning-fill"></i> Popular</span>{% endif %}
-                    <span class="ap-diff ap-diff-{{ s.difficulty }}">{{ s.get_difficulty_display }}</span>
-                  </div>
+                <h6 class="ap-name">{{ s.name }}</h6>
+                <div class="ap-badge-row">
+                  {% if s.is_popular %}<span class="ap-pop"><i class="bi bi-lightning-fill"></i> Populer</span>{% endif %}
+                  <span class="ap-diff ap-diff-{{ s.difficulty }}">{{ s.get_difficulty_display }}</span>
                 </div>
                 {% if s.short_desc %}<p class="ap-desc">{{ s.short_desc }}</p>{% endif %}
                 <div class="ap-tags">
                   <span class="ap-tag ap-tag-price">Rp {{ s.price|floatformat:0|intcomma }}</span>
-                  <span class="ap-tag ap-tag-dur">{{ s.duration }}</span>
+                  <span class="ap-tag"><i class="bi bi-clock"></i> {{ s.duration }}</span>
                   {% for style in s.styles.all %}
-                  <span class="ap-tag ap-tag-sty">{{ style.name }}</span>
+                  <span class="ap-tag">{{ style.name }}</span>
                   {% endfor %}
-                </div>
-              </div>
-              <div class="ap-tog">
-                <div class="ap-switch {% if s in specialties %}on{% endif %}">
-                  <div class="ap-knob"></div>
                 </div>
               </div>
             </button>
@@ -138,9 +349,9 @@
   {% endwith %}
   {% endfor %}
 {% else %}
-<div class="ap-empty">
-  <i class="bi bi-tags"></i>
-  <h5>Belum ada layanan</h5>
+<div class="ap-empty p-5 text-center">
+  <i class="bi bi-tags" style="font-size: 3rem; opacity: 0.2;"></i>
+  <h5 class="mt-3">Belum ada layanan</h5>
   <p class="text-muted">Belum ada layanan yang tersedia saat ini.</p>
 </div>
 {% endif %}
@@ -155,27 +366,40 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.getElementById('serviceSearch');
-  const searchClear = document.getElementById('searchClear');
-  const serviceItems = document.querySelectorAll('.ap-item');
-  const catBlocks = document.querySelectorAll('.ap-cat');
-  const activeNumEl = document.getElementById('activeNum');
-  const noResult = document.getElementById('noResult');
+  var searchInput = document.getElementById('serviceSearch');
+  var searchClear = document.getElementById('searchClear');
+  var serviceItems = document.querySelectorAll('.ap-item');
+  var catBlocks = document.querySelectorAll('.ap-cat');
+  var activeNumEl = document.getElementById('activeNum');
+  var noResult = document.getElementById('noResult');
+  var totalServices = {{ all_services.count|default:0 }};
 
   function filterServices() {
-    const term = searchInput.value.toLowerCase().trim();
-    let anyVisible = false;
+    var term = searchInput.value.toLowerCase().trim();
+    var anyVisible = false;
 
-    serviceItems.forEach(item => {
-      const name = item.getAttribute('data-name') || '';
-      const match = !term || name.includes(term);
+    serviceItems.forEach(function(item) {
+      var name = item.getAttribute('data-name') || '';
+      var match = !term || name.indexOf(term) !== -1;
       item.style.display = match ? '' : 'none';
       if (match) anyVisible = true;
     });
 
-    catBlocks.forEach(block => {
-      const visible = block.querySelectorAll('.ap-item:not([style*="display: none"])');
+    catBlocks.forEach(function(block) {
+      var items = block.querySelectorAll('.ap-item');
+      var visible = [];
+      items.forEach(function(it) {
+        if (it.style.display !== 'none') visible.push(it);
+      });
+      var wasHidden = block.style.display === 'none';
       block.style.display = visible.length > 0 ? '' : 'none';
+      if (visible.length > 0 && wasHidden) {
+        visible.forEach(function(el, i) {
+          el.style.animation = 'none';
+          void el.offsetHeight;
+          el.style.animation = 'apSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) ' + (i * 60) + 'ms forwards';
+        });
+      }
     });
 
     searchClear.style.display = term ? 'flex' : 'none';
@@ -189,16 +413,31 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.focus();
   });
 
-  document.querySelectorAll('.ap-btn').forEach(btn => {
+  function animateCount(el, target) {
+    var current = parseInt(el.textContent, 10) || 0;
+    var diff = target - current;
+    if (diff === 0) return;
+    var duration = Math.min(Math.abs(diff) * 20, 400);
+    var start = performance.now();
+    function tick(now) {
+      var p = Math.min((now - start) / duration, 1);
+      el.textContent = Math.round(current + diff * p);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  var forms = document.querySelectorAll('.ap-btn');
+  forms.forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      const form = this.closest('.ap-form');
-      const card = this.closest('.ap-card');
-      const toggle = card.querySelector('.ap-switch');
-      const url = form.getAttribute('action');
-      const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+      var form = this.closest('.ap-form');
+      var card = this.closest('.ap-card');
+      var toggle = card.querySelector('.ap-switch');
+      var url = form.getAttribute('action');
+      var csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
 
-      const wasOn = toggle.classList.contains('on');
+      var wasOn = toggle.classList.contains('on');
       toggle.classList.toggle('on');
       card.classList.toggle('on');
 
@@ -206,33 +445,44 @@ document.addEventListener('DOMContentLoaded', function() {
         method: 'POST',
         headers: { 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest' },
       })
-      .then(r => r.json())
-      .then(data => {
-        if (activeNumEl) activeNumEl.textContent = data.active_count;
-        catBlocks.forEach(block => {
-          const activeItems = block.querySelectorAll('.ap-card.on').length;
-          const totalItems = block.querySelectorAll('.ap-card').length;
-          const txt = block.querySelector('.ap-cat-act');
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (activeNumEl) {
+          var oldCount = parseInt(activeNumEl.textContent, 10) || 0;
+          animateCount(activeNumEl, data.active_count);
+        }
+        catBlocks.forEach(function(block) {
+          var activeItems = block.querySelectorAll('.ap-card.on').length;
+          var txt = block.querySelector('.ap-cat-act');
           if (txt) txt.textContent = activeItems + ' aktif';
-          const fill = block.querySelector('.ap-hstat-bar');
-          if (fill && activeNumEl) {
-            const total = {{ all_services.count|safe }};
-            fill.style.width = total ? (Math.round(data.active_count / total * 100)) + '%' : '0%';
+          var fill = block.querySelector('.ap-hstat-bar');
+          if (fill && totalServices > 0) {
+            fill.style.width = Math.round(data.active_count / totalServices * 100) + '%';
           }
         });
-        const pct = document.querySelector('.ap-ring-pct');
-        const ring = document.querySelector('.ap-ring-progress');
-        const total = {{ all_services.count|safe }};
-        if (ring && total > 0) {
-          const p = Math.round(data.active_count / total * 100);
+        var pct = document.querySelector('.ap-ring-pct');
+        var ring = document.querySelector('.ap-ring-progress');
+        if (ring && totalServices > 0) {
+          var p = Math.round(data.active_count / totalServices * 100);
           ring.setAttribute('stroke-dasharray', p + ' 100');
           if (pct) pct.textContent = p + '%';
         }
       })
-      .catch(() => {
+      .catch(function() {
         toggle.classList.toggle('on');
         card.classList.toggle('on');
       });
+    });
+  });
+
+  catBlocks.forEach(function(block) {
+    block.addEventListener('mouseenter', function() {
+      var icon = this.querySelector('.ap-cat-icon i');
+      if (icon) {
+        icon.style.transform = 'scale(1.15)';
+        icon.style.transition = 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        setTimeout(function() { icon.style.transform = 'scale(1)'; }, 250);
+      }
     });
   });
 });

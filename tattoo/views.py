@@ -24,11 +24,19 @@ from .payment import (
 # Custom error handlers — friendly, tidak menakut-nakuti user
 # ============================================================
 def custom_404(request, exception=None):
-    return render(request, 'tattoo/404.html', status=404)
+    try:
+        return render(request, 'tattoo/404.html', status=404)
+    except Exception:
+        from django.http import HttpResponse
+        return HttpResponse('<html lang="id"><body style="background:#050505;color:#e0d5c0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#c9a13b">Halaman Tidak Ditemukan</h2><p style="color:#a09880">Halaman yang kamu tuju tidak tersedia.</p><a href="/" style="color:#c9a13b">Kembali ke Beranda</a></div></body></html>', status=404)
 
 
 def custom_500(request):
-    return render(request, 'tattoo/500.html', status=500)
+    try:
+        return render(request, 'tattoo/500.html', status=500)
+    except Exception:
+        from django.http import HttpResponse
+        return HttpResponse('<html lang="id"><body style="background:#050505;color:#e0d5c0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#c9a13b">Mohon Maaf</h2><p style="color:#a09880">Permintaanmu tidak bisa diproses saat ini. Silakan coba beberapa saat lagi.</p><a href="/" style="color:#c9a13b">Kembali ke Beranda</a></div></body></html>', status=500)
 
 
 def home(request):
@@ -204,7 +212,13 @@ def _safe_next_url(request):
     return url
 
 
+def ping(request):
+    from django.http import HttpResponse
+    return HttpResponse('OK', content_type='text/plain')
+
+
 def login_view(request):
+    stored_messages = []
     try:
         if request.user.is_authenticated:
             return redirect('home')
@@ -214,29 +228,78 @@ def login_view(request):
             try:
                 user = authenticate(request, username=username, password=password)
             except Exception:
-                messages.error(
-                    request,
-                    'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
-                )
-                return render(request, 'tattoo/login.html')
+                stored_messages.append(('danger', 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'))
+                return _render_login(request, stored_messages)
             if user:
                 try:
                     login(request, user)
                 except Exception:
-                    messages.error(
-                        request,
-                        'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
-                    )
-                    return render(request, 'tattoo/login.html')
-                messages.success(request, f'Selamat datang kembali, {user.username}!')
+                    stored_messages.append(('danger', 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'))
+                    return _render_login(request, stored_messages)
+                stored_messages.append(('success', f'Selamat datang kembali, {user.username}!'))
                 try:
                     return redirect(_safe_next_url(request))
                 except Exception:
                     return redirect('home')
-            messages.error(request, 'Username atau password salah.')
+            stored_messages.append(('danger', 'Username atau password salah.'))
+        return _render_login(request, stored_messages)
+    except Exception:
+        return _render_login_failsafe()
+
+
+def _render_login(request, extra_messages=None):
+    try:
         return render(request, 'tattoo/login.html')
     except Exception:
-        return render(request, 'tattoo/login.html')
+        return _render_login_failsafe()
+
+
+def _render_login_failsafe():
+    from django.http import HttpResponse
+    return HttpResponse("""<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Bali Tattoo Studio</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #050505; color: #e0d5c0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 20px; }
+  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(201,161,59,0.2); border-radius: 16px; padding: 40px; width: 100%; max-width: 420px; }
+  h2 { font-family: 'Playfair Display', serif; color: #c9a13b; text-align: center; }
+  .form-control { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e0d5c0; padding: 12px; border-radius: 8px; width: 100%; box-sizing:border-box; }
+  .form-control:focus { border-color: #c9a13b; outline: none; }
+  label { color: #a09880; font-size: 0.9rem; }
+  .btn { background: linear-gradient(135deg, #c9a13b, #a8842e); color: #050505; border: none; padding: 12px; border-radius: 8px; font-weight: 600; width: 100%; cursor: pointer; }
+  .btn:hover { background: linear-gradient(135deg, #dbb34a, #b89434); }
+  .text-gold { color: #c9a13b; text-decoration: none; }
+  .brand { font-family: 'Playfair Display', serif; color: #c9a13b; font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">Bali Tattoo</div>
+    <h2>Login</h2>
+    <p style="color:#a09880;text-align:center">Masuk ke akun kamu</p>
+    <form method="POST">
+      <input type="hidden" name="csrfmiddlewaretoken" value="placeholder">
+      <div class="mb-3">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
+      </div>
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <p style="text-align:center;margin-top:1rem;color:#a09880;font-size:0.9rem">
+      Belum punya akun? <a href="/register/" class="text-gold">Daftar</a>
+    </p>
+  </div>
+</body>
+</html>""")
 
 
 def logout_view(request):

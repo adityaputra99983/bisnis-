@@ -191,21 +191,48 @@ def _make_error_app(error_msg, hint):
     return app
 
 
+_PING_PATH = '/ping/'
+_PING_RESPONSE = b'OK'
+
+
+def _ping_app(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/plain; charset=utf-8')])
+    return [_PING_RESPONSE]
+
+
+def _make_django_wrapper(django_app):
+    """Bungkus Django app: handle ping/diagnose BEFORE Django, catch errors."""
+    def _wrapped_app(environ, start_response):
+        path = environ.get('PATH_INFO', '')
+        if path == _PING_PATH:
+            return _ping_app(environ, start_response)
+        if path == _DIAGNOSE_PATH:
+            return _diagnose_app(environ, start_response)
+        try:
+            return django_app(environ, start_response)
+        except Exception as exc:
+            err = str(exc) or type(exc).__name__
+            error_app = _make_error_app(err, _detect_hint(err))
+            return error_app(environ, start_response)
+    return _wrapped_app
+
+
 def _load_application():
     """Load Django WSGI app; kalau gagal return error app dengan route diagnose."""
     try:
         from django.core.wsgi import get_wsgi_application
         django_app = get_wsgi_application()
-        return django_app
+        return _make_django_wrapper(django_app)
     except Exception as exc:
         err = str(exc) or type(exc).__name__
         error_app = _make_error_app(err, _detect_hint(err))
 
-        # Bungkus agar /api/v1/diagnose/ tetap bisa diakses
         def _wrapped_app(environ, start_response):
             path = environ.get('PATH_INFO', '')
             if path == _DIAGNOSE_PATH:
                 return _diagnose_app(environ, start_response)
+            if path == _PING_PATH:
+                return _ping_app(environ, start_response)
             return error_app(environ, start_response)
 
         return _wrapped_app

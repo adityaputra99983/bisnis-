@@ -12,7 +12,6 @@ import os
 from pathlib import Path
 from decouple import config, Csv
 import dj_database_url
-from django.core.exceptions import ImproperlyConfigured
 
 
 # ============================================================
@@ -157,6 +156,10 @@ if _DATABASE_URL:
         conn_max_age=600,
         conn_health_checks=True,
     )}
+    DATABASES['default']['OPTIONS'] = {
+        **DATABASES['default'].get('OPTIONS', {}),
+        'connect_timeout': 5,
+    }
     # Direct connection (session pooler) untuk migrations
     if _DIRECT_URL:
         DATABASES['direct'] = dj_database_url.config(
@@ -165,18 +168,20 @@ if _DATABASE_URL:
             conn_health_checks=True,
         )
 elif _IS_VERCEL:
-    # Vercel: Wajib PostgreSQL. Fail fast dengan instruksi jelas.
-    raise ImproperlyConfigured(
-        "DATABASE_URL tidak di-set di Vercel!\n"
-        "Vercel filesystem read-only, SQLite tidak bisa dipakai.\n"
-        "Setup PostgreSQL free tier:\n"
-        "  - Supabase: https://supabase.com (recommended)\n"
-        "  - Neon:     https://neon.tech\n"
-        "  - Railway:  https://railway.app\n"
-        "Lalu set env di Vercel project:\n"
-        "  DATABASE_URL=postgres://user:pass@host:5432/db\n"
-        "Lihat DEPLOYMENT.md section 'Deploy ke Vercel' untuk langkah lengkap."
+    # Vercel tanpa DATABASE_URL: pakai in-memory SQLite agar Django tetap start.
+    # Semua query akan gagal (table tidak ada) — tapi error handling di views
+    # akan catch dan render halaman tetap jalan dengan data kosong.
+    _startup_logger.warning(
+        "DATABASE_URL tidak di-set di Vercel! "
+        "Aplikasi berjalan dengan in-memory database — data tidak persisten. "
+        "Atur DATABASE_URL di Vercel project settings untuk production."
     )
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
 else:
     # Development & Hostinger shared: SQLite OK
     DATABASES = {
@@ -440,28 +445,6 @@ PLATFORM_PAYMENT_ACCOUNTS = {
 
 # Batas waktu pembayaran sebelum booking otomatis expire
 PAYMENT_EXPIRY_HOURS = config('PAYMENT_EXPIRY_HOURS', default=24, cast=int)
-
-
-# ============================================================
-# DATABASE CONNECTION VERIFICATION
-# ============================================================
-import django.db as _dj_db
-from django.db import connections as _db_conns
-
-
-def _verify_db_connection():
-    """Verifikasi koneksi database saat startup.
-    Jika gagal, log warning — tidak crash agar user tetap bisa akses halaman statis.
-    """
-    try:
-        conn = _db_conns['default']
-        conn.ensure_connection()
-        _startup_logger.info(f"Database OK — engine: {conn.vendor}, host: {conn.settings_dict.get('HOST', 'local')}")
-    except Exception as exc:
-        _startup_logger.warning(f"Database TIDAK bisa diakses saat startup: {exc}")
-
-
-_verify_db_connection()
 
 
 # ============================================================

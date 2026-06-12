@@ -205,35 +205,38 @@ def _safe_next_url(request):
 
 
 def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        try:
-            user = authenticate(request, username=username, password=password)
-        except Exception:
-            messages.error(
-                request,
-                'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
-            )
-            return render(request, 'tattoo/login.html')
-        if user:
+    try:
+        if request.user.is_authenticated:
+            return redirect('home')
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
             try:
-                login(request, user)
+                user = authenticate(request, username=username, password=password)
             except Exception:
                 messages.error(
                     request,
                     'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
                 )
                 return render(request, 'tattoo/login.html')
-            messages.success(request, f'Selamat datang kembali, {user.username}!')
-            try:
-                return redirect(_safe_next_url(request))
-            except Exception:
-                return redirect('home')
-        messages.error(request, 'Username atau password salah.')
-    return render(request, 'tattoo/login.html')
+            if user:
+                try:
+                    login(request, user)
+                except Exception:
+                    messages.error(
+                        request,
+                        'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
+                    )
+                    return render(request, 'tattoo/login.html')
+                messages.success(request, f'Selamat datang kembali, {user.username}!')
+                try:
+                    return redirect(_safe_next_url(request))
+                except Exception:
+                    return redirect('home')
+            messages.error(request, 'Username atau password salah.')
+        return render(request, 'tattoo/login.html')
+    except Exception:
+        return render(request, 'tattoo/login.html')
 
 
 def logout_view(request):

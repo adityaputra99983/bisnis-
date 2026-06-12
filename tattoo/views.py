@@ -32,29 +32,48 @@ def custom_500(request):
 
 
 def home(request):
-    categories = ServiceCategory.objects.filter(is_active=True).prefetch_related(
-        Prefetch('services', queryset=Service.objects.filter(is_active=True, is_popular=True))
-    )
-    services_popular = Service.objects.filter(is_active=True, is_popular=True)[:6]
-    services_all = Service.objects.filter(is_active=True).select_related(
-        'category'
-    ).prefetch_related('styles')[:9]
-    artists = Artist.objects.filter(is_active=True).prefetch_related(
-        'portfolios', 'specialties', 'artist_styles__style'
-    )[:8]
+    from django.db import DatabaseError as _DBErr
+    try:
+        categories = ServiceCategory.objects.filter(is_active=True).prefetch_related(
+            Prefetch('services', queryset=Service.objects.filter(is_active=True, is_popular=True))
+        )
+    except _DBErr:
+        categories = []
+    try:
+        services_popular = Service.objects.filter(is_active=True, is_popular=True)[:6]
+    except _DBErr:
+        services_popular = []
+    try:
+        services_all = Service.objects.filter(is_active=True).select_related(
+            'category'
+        ).prefetch_related('styles')[:9]
+    except _DBErr:
+        services_all = []
+    try:
+        artists = Artist.objects.filter(is_active=True).prefetch_related(
+            'portfolios', 'specialties', 'artist_styles__style'
+        )[:8]
+    except _DBErr:
+        artists = []
     artists_with_rating = []
     for artist in artists:
-        avg = Review.objects.filter(booking__artist=artist).aggregate(Avg('rating'))['rating__avg']
+        try:
+            avg = Review.objects.filter(booking__artist=artist).aggregate(Avg('rating'))['rating__avg']
+        except _DBErr:
+            avg = None
         artists_with_rating.append({
             'artist': artist,
             'avg_rating': round(avg, 1) if avg else None,
         })
-    stats = {
-        'artists_count': Artist.objects.filter(is_active=True).count(),
-        'services_count': Service.objects.filter(is_active=True).count(),
-        'completed_orders': Booking.objects.filter(status='completed').count(),
-        'categories_count': ServiceCategory.objects.filter(is_active=True).count(),
-    }
+    try:
+        stats = {
+            'artists_count': Artist.objects.filter(is_active=True).count(),
+            'services_count': Service.objects.filter(is_active=True).count(),
+            'completed_orders': Booking.objects.filter(status='completed').count(),
+            'categories_count': ServiceCategory.objects.filter(is_active=True).count(),
+        }
+    except _DBErr:
+        stats = {}
     return render(request, 'tattoo/index.html', {
         'categories': categories,
         'services_popular': services_popular,
@@ -141,21 +160,31 @@ def register_view(request):
         if form.is_valid():
             try:
                 user, artist = form.save_with_role()
-            except (DatabaseError, ValidationError, Exception):
+            except Exception:
                 messages.error(
                     request,
                     'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi '
                     'atau hubungi kami jika masalah berlanjut.'
                 )
                 return render(request, 'tattoo/register.html', {'form': form})
-            login(request, user)
+            try:
+                login(request, user)
+            except Exception:
+                messages.error(
+                    request,
+                    'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
+                )
+                return render(request, 'tattoo/register.html', {'form': form})
             if artist:
                 messages.success(
                     request,
                     f'Selamat datang, {artist.nickname}! Profil Artist kamu sudah aktif '
                     'dan tampil di daftar artist utama.'
                 )
-                return redirect('artist_detail', artist_id=artist.id)
+                try:
+                    return redirect('artist_detail', artist_id=artist.id)
+                except Exception:
+                    return redirect('home')
             messages.success(request, 'Selamat! Akunmu berhasil dibuat.')
             return redirect('home')
     else:
@@ -183,16 +212,26 @@ def login_view(request):
         password = request.POST.get('password')
         try:
             user = authenticate(request, username=username, password=password)
-        except (DatabaseError, Exception):
+        except Exception:
             messages.error(
                 request,
                 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
             )
             return render(request, 'tattoo/login.html')
         if user:
-            login(request, user)
+            try:
+                login(request, user)
+            except Exception:
+                messages.error(
+                    request,
+                    'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'
+                )
+                return render(request, 'tattoo/login.html')
             messages.success(request, f'Selamat datang kembali, {user.username}!')
-            return redirect(_safe_next_url(request))
+            try:
+                return redirect(_safe_next_url(request))
+            except Exception:
+                return redirect('home')
         messages.error(request, 'Username atau password salah.')
     return render(request, 'tattoo/login.html')
 

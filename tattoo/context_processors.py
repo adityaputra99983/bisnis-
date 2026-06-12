@@ -1,12 +1,10 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import DatabaseError
 from .models import ServiceCategory, Booking, Artist
 
 
 def navbar_data(request):
     try:
         categories = list(ServiceCategory.objects.filter(is_active=True)[:6])
-    except DatabaseError:
+    except Exception:
         categories = []
 
     user_bookings_count = 0
@@ -15,7 +13,6 @@ def navbar_data(request):
     user_recent_bookings = []
     has_new_activity = False
 
-    # Artist nav data
     artist_obj = None
     nav_artist_pending_count = 0
 
@@ -33,16 +30,15 @@ def navbar_data(request):
             ).count()
             user_recent_bookings = list(qs.order_by('-created_at')[:4])
             has_new_activity = user_unpaid_count > 0 or user_active_count > 0
-        except DatabaseError:
+        except Exception:
             pass
 
-        # Check if user has an artist profile
         try:
             artist_obj = request.user.artist
             nav_artist_pending_count = Booking.objects.filter(
                 artist=artist_obj, status='pending'
             ).count()
-        except (ObjectDoesNotExist, DatabaseError):
+        except Exception:
             pass
 
     return {

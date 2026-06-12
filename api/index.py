@@ -135,7 +135,7 @@ def _make_error_app(error_msg, hint):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Setup Required - 500</title>
+<title>Mohon Maaf - Bali Tattoo Studio</title>
 <style>
   body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           max-width: 780px; margin: 60px auto; padding: 20px; line-height: 1.6; color: #222; }}
@@ -155,8 +155,8 @@ def _make_error_app(error_msg, hint):
 </style>
 </head>
 <body>
-<h1>Setup Required (500)</h1>
-<p>Aplikasi belum bisa start di Vercel karena konfigurasi belum lengkap.</p>
+<h1>Mohon Maaf</h1>
+<p>Aplikasi belum bisa diakses karena konfigurasi belum lengkap. Tim kami akan segera menindaklanjuti.</p>
 <h2>Error:</h2>
 <div class="code">{error_msg}</div>
 <div class="hint"><strong>Next step:</strong><br>{hint}</div>
@@ -182,10 +182,10 @@ def _make_error_app(error_msg, hint):
         accept = environ.get('HTTP_ACCEPT', '')
         is_browser = 'text/html' in accept
         if is_browser:
-            start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'text/html; charset=utf-8')])
+            start_response('200 OK', [('Content-Type', 'text/html; charset=utf-8')])
             return [html.encode('utf-8')]
         payload = json.dumps(payload_dict)
-        start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'application/json')])
+        start_response('200 OK', [('Content-Type', 'application/json')])
         return [payload.encode('utf-8')]
 
     return app

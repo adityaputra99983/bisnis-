@@ -31,12 +31,22 @@ def custom_404(request, exception=None):
         return HttpResponse('<html lang="id"><body style="background:#050505;color:#e0d5c0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#c9a13b">Halaman Tidak Ditemukan</h2><p style="color:#a09880">Halaman yang kamu tuju tidak tersedia.</p><a href="/" style="color:#c9a13b">Kembali ke Beranda</a></div></body></html>', status=404)
 
 
-def custom_500(request):
+def custom_500(request, exception=None):
     try:
         return render(request, 'tattoo/500.html', status=500)
     except Exception:
+        import traceback, sys
+        tb = traceback.format_exc()
+        path = request.path if hasattr(request, 'path') else '?'
+        err = ''
+        if exception:
+            err += f'<p><strong>Exception:</strong> {exception}</p>'
+        err += f'<p><strong>Path:</strong> {path}</p>'
+        if tb and tb != 'NoneType: None\n':
+            safe = tb.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('\n', '<br>')
+            err += f'<hr><pre style="font-size:12px;text-align:left;max-width:800px;overflow:auto">{safe}</pre>'
         from django.http import HttpResponse
-        return HttpResponse('<html lang="id"><body style="background:#050505;color:#e0d5c0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#c9a13b">Mohon Maaf</h2><p style="color:#a09880">Permintaanmu tidak bisa diproses saat ini. Silakan coba beberapa saat lagi.</p><a href="/" style="color:#c9a13b">Kembali ke Beranda</a></div></body></html>', status=500)
+        return HttpResponse(f'<html lang="id"><body style="background:#050505;color:#e0d5c0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="text-align:center"><h2 style="color:#c9a13b">Mohon Maaf</h2><p style="color:#a09880">Permintaanmu tidak bisa diproses saat ini. Silakan coba beberapa saat lagi.</p>{err}<a href="/" style="color:#c9a13b">Kembali ke Beranda</a></div></body></html>', status=500)
 
 
 def home(request):

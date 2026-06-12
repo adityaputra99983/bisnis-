@@ -237,7 +237,14 @@ def login_view(request):
                     return _render_login(request)
                 messages.success(request, f'Selamat datang kembali, {user.username}!')
                 try:
-                    return redirect(_safe_next_url(request))
+                    target = _safe_next_url(request)
+                    if target == 'home':
+                        try:
+                            if user.artist is not None:
+                                target = 'artist_dashboard'
+                        except Exception:
+                            pass
+                    return redirect(target)
                 except Exception:
                     return redirect('home')
             messages.error(request, 'Username atau password salah.')

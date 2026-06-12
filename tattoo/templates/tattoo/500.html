@@ -1,0 +1,13 @@
+{% extends 'tattoo/base.html' %}
+{% load static %}
+{% block title %}Server Error | Bali Tattoo Studio{% endblock %}
+{% block content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background:#050505;color:#e0d5c0">
+  <div class="text-center px-3">
+    <h1 style="font-size:5rem;font-weight:700;color:#c9a13b;font-family:'Playfair Display',serif">500</h1>
+    <h2 style="color:#c9a13b;margin-bottom:1rem">Mohon Maaf</h2>
+    <p style="color:#a09880;max-width:400px;margin:0 auto 1.5rem">Permintaanmu tidak bisa diproses saat ini. Silakan coba beberapa saat lagi.</p>
+    <a href="/" class="btn" style="background:#c9a13b;color:#050505;border:none;padding:.6rem 2rem;border-radius:2rem;font-weight:600;text-decoration:none">Kembali ke Beranda</a>
+  </div>
+</div>
+{% endblock %}

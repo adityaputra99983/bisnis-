@@ -159,7 +159,7 @@ if _DATABASE_URL:
     )}
     DATABASES['default']['OPTIONS'] = {
         **DATABASES['default'].get('OPTIONS', {}),
-        'connect_timeout': 5,
+        'connect_timeout': 30,
     }
     # Direct connection (session pooler) untuk migrations
     if _DIRECT_URL:
@@ -337,7 +337,7 @@ CORS_ALLOWED_ORIGINS = config(
 CORS_ALLOWED_ORIGIN_REGEXES = config(
     'CORS_ALLOWED_ORIGIN_REGEXES',
     default=r'^https?://(localhost|127\.0\.0\.1)(:\d+)?$',
-    cast=lambda v: [r.strip() for r in v.split('|') if r.strip()] if v else [],
+    cast=lambda v: [r.strip() for r in v.split(';;') if r.strip()] if v else [],
 )
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']

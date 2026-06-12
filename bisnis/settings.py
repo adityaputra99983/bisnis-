@@ -45,7 +45,8 @@ ALLOWED_HOSTS = config(
 
 # CSRF_TRUSTED_ORIGINS: untuk HTTPS / cross-site form post
 # Format lengkap URL: https://domain.com
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000', cast=Csv())
+# Wildcard https://*.vercel.app support semua Vercel deployment (production & preview)
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000,https://*.vercel.app', cast=Csv())
 
 
 # ============================================================
@@ -191,6 +192,10 @@ else:
         }
     }
 
+# Session backend: signed cookies agar session TIDAK butuh database.
+# Ini penting untuk Vercel (in-memory SQLite tanpa tabel session) dan
+# juga lebih cepat (tanpa DB read/write tiap request).
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # ============================================================
 # PASSWORD VALIDATION

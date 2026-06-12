@@ -218,7 +218,6 @@ def ping(request):
 
 
 def login_view(request):
-    stored_messages = []
     try:
         if request.user.is_authenticated:
             return redirect('home')
@@ -228,28 +227,28 @@ def login_view(request):
             try:
                 user = authenticate(request, username=username, password=password)
             except Exception:
-                stored_messages.append(('danger', 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'))
-                return _render_login(request, stored_messages)
+                messages.error(request, 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.')
+                return _render_login(request)
             if user:
                 try:
                     login(request, user)
                 except Exception:
-                    stored_messages.append(('danger', 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.'))
-                    return _render_login(request, stored_messages)
-                stored_messages.append(('success', f'Selamat datang kembali, {user.username}!'))
+                    messages.error(request, 'Maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.')
+                    return _render_login(request)
+                messages.success(request, f'Selamat datang kembali, {user.username}!')
                 try:
                     return redirect(_safe_next_url(request))
                 except Exception:
                     return redirect('home')
-            stored_messages.append(('danger', 'Username atau password salah.'))
-        return _render_login(request, stored_messages)
+            messages.error(request, 'Username atau password salah.')
+        return _render_login(request)
     except Exception:
         return _render_login_failsafe()
 
 
-def _render_login(request, extra_messages=None):
+def _render_login(request):
     try:
-        return render(request, 'tattoo/login.html')
+        return render(request, 'tattoo/login.html', {})
     except Exception:
         return _render_login_failsafe()
 

@@ -9,7 +9,7 @@ class ServiceCategory(models.Model):
     icon = models.CharField(max_length=100, default="bi-palette",
                             help_text="Bootstrap icon class")
     sort_order = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         verbose_name_plural = "Service Categories"
@@ -26,7 +26,7 @@ class Style(models.Model):
                             help_text="Bootstrap icon class")
     image = models.ImageField(upload_to='styles/', blank=True, null=True)
     sort_order = models.PositiveIntegerField(default=0)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -60,8 +60,8 @@ class Service(models.Model):
     )
     image = models.ImageField(upload_to='services/', blank=True, null=True)
     styles = models.ManyToManyField(Style, blank=True, related_name='services')
-    is_popular = models.BooleanField(default=False, help_text="Tandai sebagai layanan populer")
-    is_active = models.BooleanField(default=True)
+    is_popular = models.BooleanField(default=False, db_index=True, help_text="Tandai sebagai layanan populer")
+    is_active = models.BooleanField(default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -103,12 +103,12 @@ class Artist(models.Model):
         Style, through='ArtistStyle', blank=True, related_name='artists'
     )
     is_available_mobile = models.BooleanField(
-        default=True,
+        default=True, db_index=True,
         verbose_name="Bisa panggil ke rumah",
         help_text="Bersedia datang ke lokasi customer"
     )
     is_available_studio = models.BooleanField(
-        default=True,
+        default=True, db_index=True,
         verbose_name="Bisa di studio",
         help_text="Melayani di studio"
     )
@@ -122,7 +122,7 @@ class Artist(models.Model):
         help_text="Wilayah layanan"
     )
     instagram = models.CharField(max_length=200, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -198,8 +198,8 @@ class Booking(models.Model):
         related_name='bookings'
     )
     mode = models.CharField(max_length=10, choices=MODE_CHOICES, default='studio')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    booking_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_index=True)
+    booking_date = models.DateField(db_index=True)
     booking_time = models.TimeField()
     location_address = models.TextField(
         blank=True, null=True,
@@ -225,7 +225,7 @@ class Booking(models.Model):
         ('refunded', 'Dikembalikan'),
     ]
     payment_status = models.CharField(
-        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid'
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', db_index=True
     )
     transaction_id = models.CharField(max_length=200, blank=True, null=True,
                                        help_text="ID transaksi dari payment gateway")

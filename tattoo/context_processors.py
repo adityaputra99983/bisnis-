@@ -1,3 +1,4 @@
+from django.db.models import Q, Count
 from .models import ServiceCategory, Booking, Artist
 
 
@@ -21,13 +22,14 @@ def navbar_data(request):
             qs = Booking.objects.filter(user=request.user).select_related(
                 'artist', 'service'
             )
-            user_bookings_count = qs.count()
-            user_unpaid_count = qs.filter(
-                payment_status__in=['unpaid', 'pending']
-            ).exclude(status='cancelled').count()
-            user_active_count = qs.filter(
-                status__in=['pending', 'confirmed', 'in_progress']
-            ).count()
+            counts = qs.aggregate(
+                total=Count('id'),
+                unpaid=Count('id', filter=Q(payment_status__in=['unpaid', 'pending']) & ~Q(status='cancelled')),
+                active=Count('id', filter=Q(status__in=['pending', 'confirmed', 'in_progress'])),
+            )
+            user_bookings_count = counts['total']
+            user_unpaid_count = counts['unpaid']
+            user_active_count = counts['active']
             user_recent_bookings = list(qs.order_by('-created_at')[:4])
             has_new_activity = user_unpaid_count > 0 or user_active_count > 0
         except Exception:

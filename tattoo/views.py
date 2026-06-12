@@ -58,7 +58,7 @@ def home(request):
     except _DBErr:
         categories = []
     try:
-        services_popular = Service.objects.filter(is_active=True, is_popular=True)[:6]
+        services_popular = Service.objects.filter(is_active=True, is_popular=True).prefetch_related('styles')[:6]
     except _DBErr:
         services_popular = []
     try:
@@ -70,18 +70,16 @@ def home(request):
     try:
         artists = Artist.objects.filter(is_active=True).prefetch_related(
             'portfolios', 'specialties', 'artist_styles__style'
+        ).annotate(
+            avg_rating=Avg('bookings__review__rating')
         )[:8]
     except _DBErr:
         artists = []
     artists_with_rating = []
     for artist in artists:
-        try:
-            avg = Review.objects.filter(booking__artist=artist).aggregate(Avg('rating'))['rating__avg']
-        except _DBErr:
-            avg = None
         artists_with_rating.append({
             'artist': artist,
-            'avg_rating': round(avg, 1) if avg else None,
+            'avg_rating': round(artist.avg_rating, 1) if artist.avg_rating else None,
         })
     try:
         stats = {
@@ -128,6 +126,9 @@ def service_detail(request, service_id):
 def artist_list(request):
     artists = Artist.objects.filter(is_active=True).prefetch_related(
         'portfolios', 'specialties', 'artist_styles__style'
+    ).annotate(
+        avg_rating=Avg('bookings__review__rating'),
+        review_count=Count('bookings__review'),
     )
     mode = request.GET.get('mode')
     if mode == 'mobile':
@@ -137,12 +138,10 @@ def artist_list(request):
 
     artists_data = []
     for artist in artists:
-        avg = Review.objects.filter(booking__artist=artist).aggregate(Avg('rating'))['rating__avg']
-        review_count = Review.objects.filter(booking__artist=artist).count()
         artists_data.append({
             'artist': artist,
-            'avg_rating': round(avg, 1) if avg else None,
-            'review_count': review_count,
+            'avg_rating': round(artist.avg_rating, 1) if artist.avg_rating else None,
+            'review_count': artist.review_count,
             'portfolio_count': artist.portfolios.count(),
         })
     all_styles = Style.objects.filter(is_active=True).order_by('sort_order', 'name')
@@ -368,12 +367,12 @@ def booking_list(request):
     else:
         bookings = bookings_qs.filter(status=status_filter)
 
-    stats = {
-        'total': bookings_qs.count(),
-        'active': bookings_qs.filter(status__in=['pending', 'confirmed', 'in_progress']).count(),
-        'completed': bookings_qs.filter(status='completed').count(),
-        'unpaid': bookings_qs.filter(payment_status__in=['unpaid', 'pending']).exclude(status='cancelled').count(),
-    }
+    stats = Booking.objects.filter(user=request.user).aggregate(
+        total=Count('id'),
+        active=Count('id', filter=Q(status__in=['pending', 'confirmed', 'in_progress'])),
+        completed=Count('id', filter=Q(status='completed')),
+        unpaid=Count('id', filter=Q(payment_status__in=['unpaid', 'pending']) & ~Q(status='cancelled')),
+    )
 
     filter_tabs = [
         ('all', 'Semua', 'bi-collection', stats['total']),
@@ -636,7 +635,7 @@ def _get_enabled_methods_for_artist(artist):
 def _get_artist_or_404(user):
     try:
         return user.artist
-    except ObjectDoesNotExist:
+    except (ObjectDoesNotExist, AttributeError):
         raise PermissionDenied('Anda bukan seorang tattoo artist.')
 
 
@@ -647,12 +646,20 @@ def artist_dashboard(request):
         'user', 'service', 'package'
     )
 
-    total_bookings = bookings_qs.count()
-    pending_count = bookings_qs.filter(status='pending').count()
-    confirmed_count = bookings_qs.filter(status='confirmed').count()
-    in_progress_count = bookings_qs.filter(status='in_progress').count()
-    completed_count = bookings_qs.filter(status='completed').count()
-    cancelled_count = bookings_qs.filter(status='cancelled').count()
+    status_counts = Booking.objects.filter(artist=artist).aggregate(
+        total=Count('id'),
+        pending=Count('id', filter=Q(status='pending')),
+        confirmed=Count('id', filter=Q(status='confirmed')),
+        in_progress=Count('id', filter=Q(status='in_progress')),
+        completed=Count('id', filter=Q(status='completed')),
+        cancelled=Count('id', filter=Q(status='cancelled')),
+    )
+    total_bookings = status_counts['total']
+    pending_count = status_counts['pending']
+    confirmed_count = status_counts['confirmed']
+    in_progress_count = status_counts['in_progress']
+    completed_count = status_counts['completed']
+    cancelled_count = status_counts['cancelled']
 
     total_revenue = bookings_qs.filter(
         payment_status='paid'
@@ -864,6 +871,9 @@ def artist_settings(request):
         return redirect('artist_settings')
     all_services = Service.objects.filter(is_active=True).order_by('category__name', 'name')
     all_styles = Style.objects.filter(is_active=True).order_by('sort_order', 'name')
+    artist = Artist.objects.prefetch_related(
+        'artist_styles__style', 'style_expertise'
+    ).get(id=artist.id)
     return render(request, 'tattoo/artist_settings.html', {
         'artist': artist,
         'all_services': all_services,
@@ -888,60 +898,60 @@ def artist_settings_specialties(request):
 
 
 @login_required
+@require_POST
 def artist_settings_styles(request):
-    if request.method != 'POST':
-        return redirect('artist_settings')
-    artist = _get_artist_or_404(request.user)
-    style_ids = request.POST.getlist('styles')
-    experience_data = {}
+    try:
+        artist = _get_artist_or_404(request.user)
+        style_ids = request.POST.getlist('styles')
+        experience_data = {}
 
-    for key, value in request.POST.items():
-        if key.startswith('exp_'):
-            sid = key.replace('exp_', '')
-            if sid.isdigit():
-                try:
-                    experience_data[int(sid)] = int(value)
-                except (ValueError, TypeError):
-                    experience_data[int(sid)] = 0
+        for key, value in request.POST.items():
+            if key.startswith('exp_'):
+                sid = key.replace('exp_', '')
+                if sid.isdigit():
+                    try:
+                        experience_data[int(sid)] = int(value)
+                    except (ValueError, TypeError):
+                        experience_data[int(sid)] = 0
 
-    skill_data = {}
-    for key, value in request.POST.items():
-        if key.startswith('skill_'):
-            sid = key.replace('skill_', '')
-            if sid.isdigit() and value in ['beginner', 'intermediate', 'advanced', 'master']:
-                skill_data[int(sid)] = value
+        skill_data = {}
+        for key, value in request.POST.items():
+            if key.startswith('skill_'):
+                sid = key.replace('skill_', '')
+                if sid.isdigit() and value in ['beginner', 'intermediate', 'advanced', 'master']:
+                    skill_data[int(sid)] = value
 
-    primary_style_id = request.POST.get('primary_style', '')
-    primary_id = int(primary_style_id) if primary_style_id.isdigit() else None
+        primary_style_id = request.POST.get('primary_style', '')
+        primary_id = int(primary_style_id) if primary_style_id.isdigit() else None
 
-    if style_ids:
-        styles = Style.objects.filter(id__in=[int(x) for x in style_ids if x.isdigit()])
-        current_ids = set(artist.style_expertise.values_list('style_id', flat=True))
-        new_ids = set(s.id for s in styles)
+        if style_ids:
+            styles = Style.objects.filter(id__in=[int(x) for x in style_ids if x.isdigit()])
+            current_ids = set(artist.artist_styles.values_list('style_id', flat=True))
+            new_ids = set(s.id for s in styles)
 
-        # Remove unselected
-        for old_id in current_ids - new_ids:
-            ArtistStyle.objects.filter(artist=artist, style_id=old_id).delete()
+            for old_id in current_ids - new_ids:
+                ArtistStyle.objects.filter(artist=artist, style_id=old_id).delete()
 
-        # Add or update selected
-        for style in styles:
-            years = experience_data.get(style.id, 0)
-            skill = skill_data.get(style.id, 'intermediate')
-            is_primary = (style.id == primary_id)
+            for style in styles:
+                years = experience_data.get(style.id, 0)
+                skill = skill_data.get(style.id, 'intermediate')
+                is_primary = (style.id == primary_id)
 
-            ArtistStyle.objects.update_or_create(
-                artist=artist, style=style,
-                defaults={
-                    'experience_years': years,
-                    'skill_level': skill,
-                    'is_primary': is_primary,
-                },
-            )
-    else:
-        artist.style_expertise.clear()
+                ArtistStyle.objects.update_or_create(
+                    artist=artist, style=style,
+                    defaults={
+                        'experience_years': years,
+                        'skill_level': skill,
+                        'is_primary': is_primary,
+                    },
+                )
+        else:
+            artist.style_expertise.clear()
 
-    artist.save()
-    messages.success(request, 'Keahlian style tattoo berhasil diperbarui!')
+        artist.save()
+        messages.success(request, 'Keahlian style tattoo berhasil diperbarui!')
+    except DatabaseError:
+        messages.error(request, 'Kesalahan database. Silakan coba lagi.')
     return redirect('artist_settings')
 
 

@@ -334,10 +334,26 @@ CORS_ALLOWED_ORIGINS = config(
     cast=Csv(),
 )
 # Regex tambahan untuk subdomain dinamis (mis. *.vercel.app)
+import re as _re
+
+def _parse_regex_list(v):
+    if not v:
+        return []
+    patterns = []
+    for r in v.split(';;'):
+        r = r.strip()
+        if r:
+            try:
+                _re.compile(r)
+                patterns.append(r)
+            except _re.error:
+                _startup_logger.warning(f"Ignoring invalid regex in CORS_ALLOWED_ORIGIN_REGEXES: {r!r}")
+    return patterns
+
 CORS_ALLOWED_ORIGIN_REGEXES = config(
     'CORS_ALLOWED_ORIGIN_REGEXES',
     default=r'^https?://(localhost|127\.0\.0\.1)(:\d+)?$',
-    cast=lambda v: [r.strip() for r in v.split(';;') if r.strip()] if v else [],
+    cast=_parse_regex_list,
 )
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']

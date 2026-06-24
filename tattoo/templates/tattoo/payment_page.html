@@ -2,10 +2,10 @@
 {% load static %}
 {% load currency_tags %}
 
-{% block title %}Pilih Metode Pembayaran - Bali Tattoo Studio{% endblock %}
+{% block title %}Pilih Metode Pembayaran - Bali Ink Hub{% endblock %}
 
 {% block content %}
-<section class="py-5 mt-5 pay-section-page">
+<section class="section-padding pay-section-page">
     <div class="container">
 
         {% if instructions %}
@@ -427,7 +427,7 @@
                 {% endif %}
 
                 {# Help footer #}
-                <div class="pay-help-footer" data-aos="fade-up" data-aos-delay="200">
+                <div class="pay-help-footer pay-luxury-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="pay-help-icon"><i class="bi bi-headset"></i></div>
                     <div class="pay-help-text">
                         <strong>Ada masalah dengan pembayaran?</strong>
@@ -518,7 +518,7 @@
                                     <span class="pay-sub-count">6</span>
                                 </div>
                                 <div class="pay-grid">
-                                    <a href="?method=bca_va" class="pay-card">
+                                    <a href="?method=bca_va" class="pay-card" data-method="bca_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bca.svg' %}" alt="BCA"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_bca_va">BCA Virtual Account</div>
@@ -527,7 +527,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=mandiri_va" class="pay-card">
+                                    <a href="?method=mandiri_va" class="pay-card" data-method="mandiri_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/mandiri.svg' %}" alt="Mandiri"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_mandiri_va">Mandiri Virtual Account</div>
@@ -536,7 +536,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=bni_va" class="pay-card">
+                                    <a href="?method=bni_va" class="pay-card" data-method="bni_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bni.svg' %}" alt="BNI"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_bni_va">BNI Virtual Account</div>
@@ -545,7 +545,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=bri_va" class="pay-card">
+                                    <a href="?method=bri_va" class="pay-card" data-method="bri_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/bri.svg' %}" alt="BRI"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_bri_va">BRI Virtual Account</div>
@@ -554,7 +554,7 @@
                                         <span class="pay-card-badge pay-badge-popular">POPULER</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=permata_va" class="pay-card">
+                                    <a href="?method=permata_va" class="pay-card" data-method="permata_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/permata.svg' %}" alt="Permata"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_permata_va">Permata Virtual Account</div>
@@ -563,7 +563,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=cimb_va" class="pay-card">
+                                    <a href="?method=cimb_va" class="pay-card" data-method="cimb_va">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/cimb.svg' %}" alt="CIMB"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_cimb_va">CIMB Niaga VA</div>
@@ -583,7 +583,7 @@
                                     <span class="pay-sub-count">1</span>
                                 </div>
                                 <div class="pay-grid">
-                                    <a href="?method=qris" class="pay-card">
+                                    <a href="?method=qris" class="pay-card" data-method="qris">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/qris.svg' %}" alt="QRIS"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name">QRIS</div>
@@ -603,7 +603,7 @@
                                     <span class="pay-sub-count">5</span>
                                 </div>
                                 <div class="pay-grid">
-                                    <a href="?method=gopay" class="pay-card">
+                                    <a href="?method=gopay" class="pay-card" data-method="gopay">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/gopay.svg' %}" alt="GoPay"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_gopay">GoPay</div>
@@ -612,7 +612,7 @@
                                         <span class="pay-card-badge pay-badge-popular">POPULER</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=shopeepay" class="pay-card">
+                                    <a href="?method=shopeepay" class="pay-card" data-method="shopeepay">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/shopeepay.svg' %}" alt="ShopeePay"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_shopeepay">ShopeePay</div>
@@ -621,7 +621,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=dana" class="pay-card">
+                                    <a href="?method=dana" class="pay-card" data-method="dana">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/dana.svg' %}" alt="DANA"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_dana">DANA</div>
@@ -630,7 +630,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=ovo" class="pay-card">
+                                    <a href="?method=ovo" class="pay-card" data-method="ovo">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/ovo.svg' %}" alt="OVO"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_ovo">OVO</div>
@@ -639,7 +639,7 @@
                                         <span class="pay-card-badge pay-badge-instant">INSTANT</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=linkaja" class="pay-card">
+                                    <a href="?method=linkaja" class="pay-card" data-method="linkaja">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/linkaja.svg' %}" alt="LinkAja"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_linkaja">LinkAja</div>
@@ -659,7 +659,7 @@
                                     <span class="pay-sub-count">2</span>
                                 </div>
                                 <div class="pay-grid">
-                                    <a href="?method=indomaret" class="pay-card">
+                                    <a href="?method=indomaret" class="pay-card" data-method="indomaret">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/indomaret.svg' %}" alt="Indomaret"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_indomaret">Indomaret</div>
@@ -668,7 +668,7 @@
                                         <span class="pay-card-badge pay-badge-cash">TUNAI</span>
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
-                                    <a href="?method=alfamart" class="pay-card">
+                                    <a href="?method=alfamart" class="pay-card" data-method="alfamart">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/alfamart.svg' %}" alt="Alfamart"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name" data-t="pm_alfamart">Alfamart</div>
@@ -704,7 +704,7 @@
                                 </div>
 
                                 <div class="pay-grid">
-                                    <a href="?method=credit_card&brand=visa" class="pay-card">
+                                    <a href="?method=credit_card&brand=visa" class="pay-card" data-method="credit_card">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/visa.svg' %}" alt="Visa"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name">Visa</div>
@@ -714,7 +714,7 @@
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
 
-                                    <a href="?method=credit_card&brand=mastercard" class="pay-card">
+                                    <a href="?method=credit_card&brand=mastercard" class="pay-card" data-method="credit_card">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/mastercard.svg' %}" alt="Mastercard"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name">Mastercard</div>
@@ -724,7 +724,7 @@
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
 
-                                    <a href="?method=credit_card&brand=jcb" class="pay-card">
+                                    <a href="?method=credit_card&brand=jcb" class="pay-card" data-method="credit_card">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/jcb.svg' %}" alt="JCB"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name">JCB</div>
@@ -734,7 +734,7 @@
                                         <div class="pay-card-arrow"><i class="bi bi-arrow-right"></i></div>
                                     </a>
 
-                                    <a href="?method=credit_card&brand=amex" class="pay-card">
+                                    <a href="?method=credit_card&brand=amex" class="pay-card" data-method="credit_card">
                                         <div class="pay-card-logo"><img src="{% static 'tattoo/img/payments/amex.svg' %}" alt="American Express"></div>
                                         <div class="pay-card-info">
                                             <div class="pay-card-name">American Express</div>
@@ -750,27 +750,27 @@
 
                     <aside class="pay-sidebar">
                         <div class="pay-sticky">
-                            <div class="pay-trust-card">
-                                <div class="pay-trust-icon">
-                                    <i class="bi bi-shield-fill-check"></i>
+                                <div class="pay-trust-card pay-luxury-card">
+                                    <div class="pay-trust-icon">
+                                        <i class="bi bi-shield-fill-check"></i>
+                                    </div>
+                                    <h4 data-t="pay_trust_title">Transaksi 100% Aman</h4>
+                                    <p data-t="pay_trust">Transaksi aman & terenkripsi. Pembayaran diproses secara internal.</p>
+                                    <div class="pay-trust-badges">
+                                        <span class="pay-trust-badge"><i class="bi bi-lock-fill"></i> SSL</span>
+                                        <span class="pay-trust-badge"><i class="bi bi-shield-check"></i> Verified</span>
+                                    </div>
                                 </div>
-                                <h4 data-t="pay_trust_title">Transaksi 100% Aman</h4>
-                                <p data-t="pay_trust">Transaksi aman & terenkripsi. Pembayaran diproses secara internal.</p>
-                                <div class="pay-trust-badges">
-                                    <span class="pay-trust-badge"><i class="bi bi-lock-fill"></i> SSL</span>
-                                    <span class="pay-trust-badge"><i class="bi bi-shield-check"></i> Verified</span>
+    
+                                <div class="pay-help-card pay-luxury-card">
+                                    <div class="pay-help-icon"><i class="bi bi-headset"></i></div>
+                                    <h4 data-t="pay_help_title">Butuh Bantuan?</h4>
+                                    <p data-t="pay_help_desc">Tim customer service kami siap membantu kamu 24/7.</p>
+                                    <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-outline-gold btn-sm w-100">
+                                        <i class="bi bi-whatsapp"></i> <span data-t="chat_wa">Chat WhatsApp</span>
+                                    </a>
                                 </div>
                             </div>
-
-                            <div class="pay-help-card">
-                                <div class="pay-help-icon"><i class="bi bi-headset"></i></div>
-                                <h4 data-t="pay_help_title">Butuh Bantuan?</h4>
-                                <p data-t="pay_help_desc">Tim customer service kami siap membantu kamu 24/7.</p>
-                                <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-outline-gold btn-sm w-100">
-                                    <i class="bi bi-whatsapp"></i> <span data-t="chat_wa">Chat WhatsApp</span>
-                                </a>
-                            </div>
-                        </div>
                     </aside>
                 </div>
 
@@ -784,15 +784,27 @@
 {% block extra_js %}
 <script>
 (function() {
-    var enabledMethods = {{ enabled_methods|safe|default:"{}" }};
+    var enabledData = {{ enabled_methods|safe|default:"{}" }};
+    var enabledGroups = enabledData.groups || enabledData; // backward compat
+    var enabledMethodsList = enabledData.methods || [];
 
     // Hide method groups yang di-disable oleh artist
-    Object.keys(enabledMethods).forEach(function(group) {
-        if (!enabledMethods[group]) {
+    Object.keys(enabledGroups).forEach(function(group) {
+        if (!enabledGroups[group]) {
             var subgroups = document.querySelectorAll('[data-pay-group="' + group + '"]');
             subgroups.forEach(function(el) { el.style.display = 'none'; });
         }
     });
+
+    // Hide individual methods yang di-disable oleh artist (per-bank / per-ewallet)
+    if (enabledMethodsList.length > 0) {
+        document.querySelectorAll('.pay-card[data-method]').forEach(function(card) {
+            var method = card.getAttribute('data-method');
+            if (enabledMethodsList.indexOf(method) === -1) {
+                card.style.display = 'none';
+            }
+        });
+    }
 
     document.querySelectorAll('.pay-group').forEach(function(group) {
         var subgroups = group.querySelectorAll('.pay-sub');

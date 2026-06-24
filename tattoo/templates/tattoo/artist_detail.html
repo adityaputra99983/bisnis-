@@ -1,10 +1,10 @@
 {% extends 'tattoo/base.html' %}
 {% load static %}
 
-{% block title %}{{ artist.nickname }} - Bali Tattoo Studio{% endblock %}
+{% block title %}{{ artist.nickname }} - Bali Ink Hub{% endblock %}
 
 {% block content %}
-<section class="py-5 mt-5">
+<section class="section-padding">
     <div class="container">
         <div class="artist-profile-header" data-aos="fade-up">
             <div class="row g-0">
@@ -12,7 +12,7 @@
                     {% if artist.photo.name %}
                         <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 400px;">
                     {% else %}
-                        <div style="height: 400px; background: var(--gradient-card); display: flex; align-items: center; justify-content: center;">
+                        <div style="height: 400px; background: var(--bg-alt); display: flex; align-items: center; justify-content: center;">
                             <i class="bi bi-person-badge" style="font-size: 5rem; color: var(--gold);"></i>
                         </div>
                     {% endif %}

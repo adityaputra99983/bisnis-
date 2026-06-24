@@ -135,7 +135,7 @@ def _make_error_app(error_msg, hint):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mohon Maaf - Bali Tattoo Studio</title>
+<title>Mohon Maaf - Bali Ink Hub</title>
 <style>
   body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           max-width: 780px; margin: 60px auto; padding: 20px; line-height: 1.6; color: #222; }}

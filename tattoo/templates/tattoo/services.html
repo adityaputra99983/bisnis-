@@ -2,7 +2,7 @@
 {% load static %}
 {% load currency_tags %}
 
-{% block title %}Layanan Tattoo - Bali Tattoo Studio{% endblock %}
+{% block title %}Layanan Tattoo - Bali Ink Hub{% endblock %}
 
 {% block content %}
 <section class="page-header" data-aos="fade-down">
@@ -83,7 +83,7 @@
                             {% if service.styles.all %}
                             <div class="d-flex flex-wrap gap-1 mb-2">
                                 {% for style in service.styles.all %}
-                                <span class="badge" style="background: var(--gradient-gold); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                                <span class="specialty-chip"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
                                 {% endfor %}
                             </div>
                             {% endif %}

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <defs>
+    <radialGradient id="inkCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.25"/>
+      <stop offset="30%" stop-color="#d4af37" stop-opacity="0.12"/>
+      <stop offset="60%" stop-color="#d4af37" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="inkBlob" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#d4af37" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="splatter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0.2"/>
+      <stop offset="40%" stop-color="#d4af37" stop-opacity="0.08"/>
+      <stop offset="70%" stop-color="#d4af37" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blurLg">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <filter id="blurMd">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="blurSm">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+  <!-- Large ambient glow -->
+  <circle cx="500" cy="500" r="450" fill="url(#splatter)" filter="url(#blurLg)"/>
+  <!-- Main ink pool -->
+  <circle cx="350" cy="400" r="250" fill="url(#inkCore)" filter="url(#blurMd)"/>
+  <circle cx="650" cy="550" r="200" fill="url(#inkCore)" filter="url(#blurMd)"/>
+  <!-- Secondary blobs -->
+  <circle cx="200" cy="250" r="120" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <circle cx="800" cy="300" r="100" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <circle cx="250" cy="700" r="140" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <circle cx="750" cy="750" r="110" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <circle cx="500" cy="200" r="80" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <circle cx="500" cy="800" r="90" fill="url(#inkBlob)" filter="url(#blurMd)"/>
+  <!-- Splatter trails -->
+  <ellipse cx="150" cy="350" rx="60" ry="30" fill="url(#inkBlob)" filter="url(#blurSm)" transform="rotate(-30 150 350)"/>
+  <ellipse cx="850" cy="450" rx="50" ry="25" fill="url(#inkBlob)" filter="url(#blurSm)" transform="rotate(20 850 450)"/>
+  <ellipse cx="350" cy="150" rx="40" ry="20" fill="url(#inkBlob)" filter="url(#blurSm)" transform="rotate(-15 350 150)"/>
+  <ellipse cx="700" cy="850" rx="55" ry="28" fill="url(#inkBlob)" filter="url(#blurSm)" transform="rotate(40 700 850)"/>
+  <!-- Droplets - large -->
+  <circle cx="120" cy="200" r="25" fill="#d4af37" opacity="0.08" filter="url(#blurSm)"/>
+  <circle cx="880" cy="220" r="20" fill="#d4af37" opacity="0.07" filter="url(#blurSm)"/>
+  <circle cx="100" cy="600" r="30" fill="#d4af37" opacity="0.06" filter="url(#blurSm)"/>
+  <circle cx="900" cy="700" r="22" fill="#d4af37" opacity="0.08" filter="url(#blurSm)"/>
+  <circle cx="300" cy="880" r="28" fill="#d4af37" opacity="0.07" filter="url(#blurSm)"/>
+  <circle cx="680" cy="120" r="18" fill="#d4af37" opacity="0.06" filter="url(#blurSm)"/>
+  <!-- Droplets - medium -->
+  <circle cx="160" cy="450" r="12" fill="#d4af37" opacity="0.1"/>
+  <circle cx="830" cy="380" r="10" fill="#d4af37" opacity="0.09"/>
+  <circle cx="450" cy="120" r="14" fill="#d4af37" opacity="0.08"/>
+  <circle cx="550" cy="880" r="11" fill="#d4af37" opacity="0.1"/>
+  <circle cx="140" cy="750" r="13" fill="#d4af37" opacity="0.09"/>
+  <circle cx="860" cy="600" r="9" fill="#d4af37" opacity="0.08"/>
+  <circle cx="250" cy="100" r="8" fill="#d4af37" opacity="0.1"/>
+  <circle cx="780" cy="850" r="15" fill="#d4af37" opacity="0.09"/>
+  <!-- Droplets - small -->
+  <circle cx="80" cy="300" r="5" fill="#d4af37" opacity="0.12"/>
+  <circle cx="920" cy="500" r="6" fill="#d4af37" opacity="0.1"/>
+  <circle cx="400" cy="90" r="4" fill="#d4af37" opacity="0.11"/>
+  <circle cx="600" cy="920" r="7" fill="#d4af37" opacity="0.1"/>
+  <circle cx="200" cy="820" r="5" fill="#d4af37" opacity="0.12"/>
+  <circle cx="820" cy="150" r="4" fill="#d4af37" opacity="0.1"/>
+  <circle cx="50" cy="500" r="6" fill="#d4af37" opacity="0.11"/>
+  <circle cx="950" cy="350" r="5" fill="#d4af37" opacity="0.1"/>
+  <circle cx="340" cy="940" r="4" fill="#d4af37" opacity="0.12"/>
+  <circle cx="660" cy="60" r="6" fill="#d4af37" opacity="0.1"/>
+  <!-- Tiny specks -->
+  <circle cx="130" cy="150" r="2" fill="#d4af37" opacity="0.15"/>
+  <circle cx="870" cy="130" r="2" fill="#d4af37" opacity="0.13"/>
+  <circle cx="50" cy="700" r="3" fill="#d4af37" opacity="0.14"/>
+  <circle cx="950" cy="800" r="2" fill="#d4af37" opacity="0.12"/>
+  <circle cx="170" cy="550" r="3" fill="#d4af37" opacity="0.15"/>
+  <circle cx="800" cy="480" r="2" fill="#d4af37" opacity="0.13"/>
+  <circle cx="470" cy="60" r="2" fill="#d4af37" opacity="0.14"/>
+  <circle cx="530" cy="950" r="3" fill="#d4af37" opacity="0.12"/>
+  <circle cx="720" cy="50" r="2" fill="#d4af37" opacity="0.15"/>
+  <circle cx="280" cy="950" r="2" fill="#d4af37" opacity="0.13"/>
+</svg>

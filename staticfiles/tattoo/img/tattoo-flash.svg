@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <defs>
+    <style>
+      .flash-line { stroke: #d4af37; stroke-width: 1.5; fill: none; opacity: 0.12; }
+      .flash-line-thin { stroke: #d4af37; stroke-width: 0.8; fill: none; opacity: 0.08; }
+      .flash-fill { fill: #d4af37; opacity: 0.04; stroke: #d4af37; stroke-width: 0.8; stroke-opacity: 0.12; }
+      .flash-fill-light { fill: #f5e6a3; opacity: 0.03; stroke: #d4af37; stroke-width: 0.6; stroke-opacity: 0.08; }
+      .flash-dot { fill: #d4af37; opacity: 0.06; }
+      .flash-star { fill: #d4af37; opacity: 0.07; stroke: #d4af37; stroke-width: 0.5; stroke-opacity: 0.12; }
+    </style>
+  </defs>
+
+  <!-- Traditional Tattoo Rose - Center -->
+  <g transform="translate(500,420)">
+    <!-- Outer large petals -->
+    <path class="flash-fill" d="M0,-160 C-80,-160 -140,-90 -120,-20 C-100,50 -60,80 0,60 C60,80 100,50 120,-20 C140,-90 80,-160 0,-160Z"/>
+    <path class="flash-fill" d="M-130,-80 C-180,-130 -250,-100 -230,-20 C-210,60 -150,80 -100,40 C-50,0 -80,-30 -130,-80Z"/>
+    <path class="flash-fill" d="M130,-80 C180,-130 250,-100 230,-20 C210,60 150,80 100,40 C50,0 80,-30 130,-80Z"/>
+    <path class="flash-fill" d="M-90,80 C-140,130 -120,200 -50,200 C20,200 60,150 40,100 C20,50 -40,30 -90,80Z"/>
+    <path class="flash-fill" d="M90,80 C140,130 120,200 50,200 C-20,200 -60,150 -40,100 C-20,50 40,30 90,80Z"/>
+
+    <!-- Mid petals -->
+    <path class="flash-fill-light" d="M0,-120 C-50,-120 -100,-70 -90,-10 C-80,50 -40,70 0,50 C40,70 80,50 90,-10 C100,-70 50,-120 0,-120Z"/>
+    <path class="flash-fill" d="M-100,-40 C-140,-70 -180,-40 -160,10 C-140,60 -90,70 -60,40 C-30,10 -60,-10 -100,-40Z"/>
+    <path class="flash-fill" d="M100,-40 C140,-70 180,-40 160,10 C140,60 90,70 60,40 C30,10 60,-10 100,-40Z"/>
+
+    <!-- Inner petals / bud -->
+    <path class="flash-fill" d="M0,-80 C-20,-80 -50,-50 -45,-10 C-40,30 -20,45 0,35 C20,45 40,30 45,-10 C50,-50 20,-80 0,-80Z"/>
+    <path class="flash-fill-light" d="M0,-50 C-15,-50 -30,-25 -25,0 C-20,25 -10,30 0,25 C10,30 20,25 25,0 C30,-25 15,-50 0,-50Z"/>
+
+    <!-- Fold lines inside petals -->
+    <path class="flash-line" d="M0,-160 C-40,-140 -60,-90 -50,-40"/>
+    <path class="flash-line" d="M0,-160 C40,-140 60,-90 50,-40"/>
+    <path class="flash-line" d="M-120,-20 C-100,-60 -60,-80 0,-80"/>
+    <path class="flash-line" d="M120,-20 C100,-60 60,-80 0,-80"/>
+    <path class="flash-line" d="M-50,200 C-30,140 0,100 0,50"/>
+    <path class="flash-line" d="M50,200 C30,140 0,100 0,50"/>
+
+    <!-- Stippling / shading dots on petals -->
+    <circle cx="-70" cy="-100" r="2" class="flash-dot"/>
+    <circle cx="-80" cy="-80" r="1.5" class="flash-dot"/>
+    <circle cx="-60" cy="-70" r="1.5" class="flash-dot"/>
+    <circle cx="-90" cy="-60" r="2" class="flash-dot"/>
+    <circle cx="70" cy="-100" r="2" class="flash-dot"/>
+    <circle cx="80" cy="-80" r="1.5" class="flash-dot"/>
+    <circle cx="60" cy="-70" r="1.5" class="flash-dot"/>
+    <circle cx="90" cy="-60" r="2" class="flash-dot"/>
+    <circle cx="-40" cy="-50" r="1.5" class="flash-dot"/>
+    <circle cx="40" cy="-50" r="1.5" class="flash-dot"/>
+    <circle cx="-110" cy="-30" r="2" class="flash-dot"/>
+    <circle cx="110" cy="-30" r="2" class="flash-dot"/>
+    <circle cx="-120" cy="10" r="1.5" class="flash-dot"/>
+    <circle cx="120" cy="10" r="1.5" class="flash-dot"/>
+    <circle cx="-70" cy="50" r="1.5" class="flash-dot"/>
+    <circle cx="70" cy="50" r="1.5" class="flash-dot"/>
+    <circle cx="-30" cy="30" r="1" class="flash-dot"/>
+    <circle cx="30" cy="30" r="1" class="flash-dot"/>
+    <circle cx="-15" cy="-15" r="1" class="flash-dot"/>
+    <circle cx="15" cy="-15" r="1" class="flash-dot"/>
+
+    <!-- Center spiral -->
+    <path class="flash-line" d="M0,-20 C-10,-20 -15,-5 -10,5 C-5,15 5,15 10,5 C15,-5 10,-15 0,-12"/>
+    <circle cx="0" cy="-18" r="1.5" class="flash-dot"/>
+    <circle cx="-8" cy="-5" r="1" class="flash-dot"/>
+    <circle cx="8" cy="-5" r="1" class="flash-dot"/>
+    <circle cx="0" cy="5" r="1" class="flash-dot"/>
+
+    <!-- Sepals at base -->
+    <path class="flash-fill" d="M-20,80 L-50,140 L0,100 Z"/>
+    <path class="flash-fill" d="M20,80 L50,140 L0,100 Z"/>
+    <path class="flash-fill" d="M-10,85 L-30,130 L0,95 Z"/>
+    <path class="flash-fill" d="M10,85 L30,130 L0,95 Z"/>
+  </g>
+
+  <!-- Stem -->
+  <g transform="translate(500,620)">
+    <path class="flash-line" d="M0,0 Q-15,80 -10,160 Q-5,240 5,280"/>
+    <path class="flash-line-thin" d="M-8,20 Q-25,90 -18,170 Q-12,240 -2,280"/>
+    <path class="flash-line-thin" d="M8,20 Q-5,90 0,170 Q5,240 12,280"/>
+  </g>
+
+  <!-- Leaves -->
+  <g transform="translate(480,670)">
+    <path class="flash-fill" d="M0,0 C-60,-30 -90,-70 -70,-100 C-50,-130 -20,-100 0,-60 C20,-100 50,-130 70,-100 C90,-70 60,-30 0,0Z"/>
+    <path class="flash-line" d="M0,0 C-20,-30 -40,-60 -40,-90"/>
+    <path class="flash-line-thin" d="M-20,-30 C-35,-50 -50,-60 -60,-75"/>
+    <path class="flash-line-thin" d="M-15,-50 C-25,-65 -40,-75 -50,-85"/>
+  </g>
+  <g transform="translate(520,710)">
+    <path class="flash-fill" d="M0,0 C60,-40 100,-80 80,-110 C60,-140 20,-110 0,-70 C-20,-110 -60,-140 -80,-110 C-100,-80 -60,-40 0,0Z"/>
+    <path class="flash-line" d="M0,0 C20,-40 45,-70 45,-100"/>
+    <path class="flash-line-thin" d="M20,-40 C35,-60 55,-70 65,-85"/>
+    <path class="flash-line-thin" d="M15,-60 C25,-75 40,-85 55,-95"/>
+  </g>
+
+  <!-- Banner / Ribbon -->
+  <g transform="translate(500,780)">
+    <path class="flash-fill" d="M-200,0 C-180,-30 -120,-35 -80,-15 L-40,10 L40,10 L80,-15 C120,-35 180,-30 200,0 C220,30 180,50 140,40 L100,25 L-100,25 L-140,40 C-180,50 -220,30 -200,0Z"/>
+    <path class="flash-line" d="M-200,0 C-180,-30 -120,-35 -80,-15 L-40,10 L40,10 L80,-15 C120,-35 180,-30 200,0 C220,30 180,50 140,40 L100,25 L-100,25 L-140,40 C-180,50 -220,30 -200,0Z"/>
+    <path class="flash-line-thin" d="M-80,-15 C-60,0 -20,10 0,10"/>
+    <path class="flash-line-thin" d="M80,-15 C60,0 20,10 0,10"/>
+    <!-- Banner tail folds -->
+    <path class="flash-fill" d="M-200,0 L-220,30 L-200,10 Z"/>
+    <path class="flash-fill" d="M200,0 L220,30 L200,10 Z"/>
+  </g>
+
+  <!-- Traditional 5-pointed stars -->
+  <g transform="translate(150,180)">
+    <polygon class="flash-star" points="0,-25 6,-8 24,-8 9,4 14,22 0,12 -14,22 -9,4 -24,-8 -6,-8"/>
+  </g>
+  <g transform="translate(850,180)">
+    <polygon class="flash-star" points="0,-25 6,-8 24,-8 9,4 14,22 0,12 -14,22 -9,4 -24,-8 -6,-8"/>
+  </g>
+  <g transform="translate(150,820)">
+    <polygon class="flash-star" points="0,-20 5,-7 19,-7 7,3 11,18 0,10 -11,18 -7,3 -19,-7 -5,-7"/>
+  </g>
+  <g transform="translate(850,820)">
+    <polygon class="flash-star" points="0,-20 5,-7 19,-7 7,3 11,18 0,10 -11,18 -7,3 -19,-7 -5,-7"/>
+  </g>
+
+  <!-- Small dots / filler -->
+  <circle cx="100" cy="350" r="3" class="flash-dot"/>
+  <circle cx="900" cy="350" r="3" class="flash-dot"/>
+  <circle cx="120" cy="400" r="2" class="flash-dot"/>
+  <circle cx="880" cy="400" r="2" class="flash-dot"/>
+  <circle cx="80" cy="500" r="2.5" class="flash-dot"/>
+  <circle cx="920" cy="500" r="2.5" class="flash-dot"/>
+  <circle cx="110" cy="650" r="2" class="flash-dot"/>
+  <circle cx="890" cy="650" r="2" class="flash-dot"/>
+  <circle cx="140" cy="750" r="3" class="flash-dot"/>
+  <circle cx="860" cy="750" r="3" class="flash-dot"/>
+  <circle cx="300" cy="120" r="2" class="flash-dot"/>
+  <circle cx="700" cy="120" r="2" class="flash-dot"/>
+  <circle cx="400" cy="90" r="1.5" class="flash-dot"/>
+  <circle cx="600" cy="90" r="1.5" class="flash-dot"/>
+  <circle cx="350" cy="950" r="2" class="flash-dot"/>
+  <circle cx="650" cy="950" r="2" class="flash-dot"/>
+
+  <!-- Fine decorative lines -->
+  <path class="flash-line-thin" d="M50,300 Q80,280 100,300 Q120,320 150,300"/>
+  <path class="flash-line-thin" d="M950,300 Q920,280 900,300 Q880,320 850,300"/>
+  <path class="flash-line-thin" d="M50,700 Q80,680 100,700 Q120,720 150,700"/>
+  <path class="flash-line-thin" d="M950,700 Q920,680 900,700 Q880,720 850,700"/>
+</svg>

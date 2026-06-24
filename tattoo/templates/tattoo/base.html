@@ -5,56 +5,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Bali Tattoo Studio | Premium Ink{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="{% static 'tattoo/img/favicon.svg' %}">
-    <link rel="alternate icon" type="image/x-icon" href="{% static 'tattoo/img/favicon.svg' %}">
-    <link rel="apple-touch-icon" href="{% static 'tattoo/img/favicon.svg' %}">
+    <title>{% block title %}Bali Ink Hub | Verified Tattoo Marketplace{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'tattoo/img/bali_ink_logo.png' %}">
+    <link rel="alternate icon" type="image/png" href="{% static 'tattoo/img/bali_ink_logo.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'tattoo/img/bali_ink_logo.png' %}">
     <meta name="theme-color" content="#050505">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=3.3">
+    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=13.0">
     {% block head_extra %}{% endblock %}
 </head>
 
 <body {% block body_class %}{% endblock %}>
 
+    <!-- Background Layers -->
+    <div class="bg-layer">
+        <div class="bg-ambient-orb"></div>
+        <div class="bg-ambient-orb"></div>
+        <div class="bg-ambient-orb"></div>
+    </div>
+
+    <div class="bg-tattoo-flash">
+        <img src="{% static 'tattoo/img/tattoo-flash.svg' %}" alt="" class="bg-tattoo-flash-img" aria-hidden="true">
+    </div>
+
+    <div class="bg-tattoo-ornament bg-orn-tl">
+        <img src="{% static 'tattoo/img/tattoo-ornament.svg' %}" alt="" aria-hidden="true" style="width:100%;height:100%;">
+    </div>
+    <div class="bg-tattoo-ornament bg-orn-br">
+        <img src="{% static 'tattoo/img/tattoo-ornament.svg' %}" alt="" aria-hidden="true" style="width:100%;height:100%;">
+    </div>
+
+    <div class="bg-tribal">
+        <img src="{% static 'tattoo/img/tattoo-tribal.svg' %}" alt="" class="bg-tribal-img" aria-hidden="true">
+    </div>
+
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
-            <div class="loading-logo"><i class="bi bi-droplet"></i> Bali Tattoo</div>
+            <div class="loading-brand-unified">
+                <img src="{% static 'tattoo/img/bali_ink_logo.png' %}" alt="Logo" class="loading-logo-img">
+                <div class="loading-logo-text">Bali Ink Hub</div>
+            </div>
             <div class="loading-bar">
                 <div class="loading-bar-fill"></div>
             </div>
         </div>
     </div>
 
-    <div class="ink-bg">
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-        <div class="ink-blob"></div>
-    </div>
-    <div class="ink-pattern"></div>
-    <div class="ink-vignette"></div>
-    <div class="ink-drip"></div>
-    <div class="ink-drip"></div>
-    <div class="ink-drip"></div>
-    <div class="ink-drip"></div>
-    <div class="ink-drip"></div>
-    <div class="ink-spot"></div>
-    <div class="ink-spot"></div>
-    <div class="ink-spot"></div>
-
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="bi bi-droplet"></i> Bali Tattoo
+                <img src="{% static 'tattoo/img/bali_ink_logo.png' %}" alt="Bali Ink Hub Logo" class="brand-logo-img">
+                <span>Bali Ink Hub</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -62,63 +66,43 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% block navbar_navigation %}
                 <ul class="navbar-nav me-auto">
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}" data-t="home">Beranda</a>
+                        <a class="nav-link" href="{% url 'home' %}" data-t="home">Home</a>
                     </li>
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            data-t="services">
-                            Layanan
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-t="services">
+                            Explore
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'service_list' %}" data-t="all_services"><i
-                                        class="bi bi-grid"></i> Semua Layanan</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><a class="dropdown-item" href="{% url 'service_list' %}" data-t="all_services"><i class="bi bi-grid"></i> Semua Layanan</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             {% for cat in nav_categories %}
-                            <li><a class="dropdown-item" href="{% url 'service_list' %}#cat-{{ cat.id }}"><i
-                                        class="bi {{ cat.icon }}"></i> {{ cat.name }}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'service_list' %}#cat-{{ cat.id }}"><i class="bi {{ cat.icon }}"></i> {{ cat.name }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'artist_list' %}" data-t="artists">Artist</a>
+                        <a class="nav-link" href="{% url 'artist_list' %}" data-t="artists">Artists</a>
                     </li>
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            data-t="info">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-t="info">
                             Info
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'home' %}" data-t="about_us"><i
-                                        class="bi bi-info-circle"></i> Tentang Kami</a></li>
-                            <li><a class="dropdown-item" href="{% url 'home' %}#cara-kerja" data-t="how_it_works"><i
-                                        class="bi bi-question-circle"></i> Cara Booking</a></li>
-                            <li><a class="dropdown-item" href="{% url 'service_list' %}" data-t="pricing"><i
-                                        class="bi bi-palette"></i> Layanan & Harga</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><a class="dropdown-item" href="{% url 'home' %}" data-t="about_us"><i class="bi bi-info-circle"></i> Tentang Kami</a></li>
+                            <li><a class="dropdown-item" href="{% url 'home' %}#cara-kerja" data-t="how_it_works"><i class="bi bi-question-circle"></i> Cara Booking</a></li>
+                            <li><a class="dropdown-item" href="{% url 'service_list' %}" data-t="pricing"><i class="bi bi-palette"></i> Layanan & Harga</a></li>
                         </ul>
                     </li>
-
                 </ul>
                 {% endblock %}
                 <ul class="navbar-nav align-items-lg-center">
-                    <!-- Global Persona Switcher -->
                     <li class="nav-item dropdown ms-lg-3">
-                        <a class="nav-link dropdown-toggle region-selector-trigger" href="#" role="button"
-                            data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle region-selector-trigger" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-globe-americas"></i> <span id="current-region-label">Region</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end region-dropdown luxury-dropdown">
-                            <li><button class="dropdown-item region-btn active" data-region="IDR">🇮🇩 IDR (ID)</button>
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-end region-dropdown">
+                            <li><button class="dropdown-item region-btn active" data-region="IDR">🇮🇩 IDR (ID)</button></li>
                             <li><button class="dropdown-item region-btn" data-region="USD">🇺🇸 USD (EN)</button></li>
                             <li><button class="dropdown-item region-btn" data-region="EUR">🇪🇺 EUR (FR)</button></li>
                             <li><button class="dropdown-item region-btn" data-region="AUD">🇦🇺 AUD (EN)</button></li>
@@ -129,32 +113,23 @@
 
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown nav-orders-item ms-lg-2">
-                        <a class="nav-link nav-orders-trigger {% if nav_has_new_activity %}has-activity{% endif %}"
-                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                            aria-label="Pesanan & Notifikasi">
+                        <a class="nav-link nav-orders-trigger {% if nav_has_new_activity %}has-activity{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Pesanan & Notifikasi">
                             <span class="nav-orders-icon-wrap">
                                 <i class="bi bi-bell-fill nav-orders-bell"></i>
                                 {% if nav_user_active_count or nav_user_unpaid_count %}
-                                <span class="nav-orders-badge" aria-hidden="true">
-                                    {{ nav_user_active_count|add:nav_user_unpaid_count }}
-                                </span>
+                                <span class="nav-orders-badge" aria-hidden="true">{{ nav_user_active_count|add:nav_user_unpaid_count }}</span>
                                 {% endif %}
                             </span>
                             <span class="nav-orders-label" data-t="my_orders">Pesanan Saya</span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end luxury-dropdown nav-orders-panel">
+                        <div class="dropdown-menu dropdown-menu-end nav-orders-panel">
                             <div class="nav-orders-head">
                                 <div>
                                     <div class="nav-orders-title" data-t="my_orders">Pesanan Saya</div>
-                                    <div class="nav-orders-sub">
-                                        <span data-t="total_bookings">Total pesanan</span>:
-                                        <strong>{{ nav_user_bookings_count }}</strong>
-                                    </div>
+                                    <div class="nav-orders-sub"><span data-t="total_bookings">Total pesanan</span>: <strong>{{ nav_user_bookings_count }}</strong></div>
                                 </div>
-                                <a href="{% url 'booking_list' %}" class="nav-orders-viewall"
-                                    data-t="view_all">Lihat Semua</a>
+                                <a href="{% url 'booking_list' %}" class="nav-orders-viewall" data-t="view_all">Lihat Semua</a>
                             </div>
-
                             <div class="nav-orders-stats">
                                 <div class="nav-orders-stat stat-active">
                                     <span class="nos-num">{{ nav_user_active_count }}</span>
@@ -169,13 +144,10 @@
                                     <span class="nos-label" data-t="total_label">Total</span>
                                 </div>
                             </div>
-
                             <div class="nav-orders-list">
                                 {% for b in nav_user_recent_bookings %}
                                 <a href="{% url 'booking_detail' b.id %}" class="nav-orders-row">
-                                    <div class="nor-icon">
-                                        <i class="bi bi-journal-text"></i>
-                                    </div>
+                                    <div class="nor-icon"><i class="bi bi-journal-text"></i></div>
                                     <div class="nor-main">
                                         <div class="nor-title">{{ b.service.name|truncatechars:28 }}</div>
                                         <div class="nor-meta">
@@ -195,14 +167,9 @@
                                 </div>
                                 {% endfor %}
                             </div>
-
                             <div class="nav-orders-foot">
-                                <a href="{% url 'booking_create' %}" class="btn btn-gold-sm">
-                                    <i class="bi bi-calendar-plus"></i>
-                                    <span data-t="new_booking">Booking Baru</span>
-                                </a>
-                                <a href="{% url 'booking_list' %}" class="btn btn-ghost-sm"
-                                    data-t="manage_orders">Kelola Pesanan</a>
+                                <a href="{% url 'booking_create' %}" class="btn-gold-sm"><i class="bi bi-calendar-plus"></i> <span data-t="new_booking">Booking Baru</span></a>
+                                <a href="{% url 'booking_list' %}" class="btn-ghost-sm" data-t="manage_orders">Kelola Pesanan</a>
                             </div>
                         </div>
                     </li>
@@ -210,10 +177,9 @@
 
                     {% block navbar_booking_button %}
                     <li class="nav-item nav-new-booking-item me-lg-2">
-                        <a class="nav-link btn btn-nav-cta nav-new-booking-cta"
-                            href="{% url 'booking_create' %}" data-t="new_booking">
+                        <a class="nav-link btn-nav-cta" href="{% url 'booking_create' %}" data-t="new_booking">
                             <i class="bi bi-calendar-plus"></i>
-                            <span class="nav-cta-label">Booking Baru</span>
+                            <span class="nav-cta-label">BOOK NOW</span>
                         </a>
                     </li>
                     {% endblock %}
@@ -221,13 +187,10 @@
                     {% if user.is_authenticated %}
                     {% if nav_artist_obj %}
                     <li class="nav-item ms-lg-2">
-                        <a class="nav-link btn btn-nav-cta artist-dash-link"
-                            href="{% url 'artist_dashboard' %}">
+                        <a class="nav-link btn-nav-cta artist-dash-link" href="{% url 'artist_dashboard' %}">
                             <i class="bi bi-speedometer2"></i>
                             <span class="nav-cta-label">Dashboard Artist</span>
-                            {% if nav_artist_pending_count %}
-                            <span class="artist-pending-badge">{{ nav_artist_pending_count }}</span>
-                            {% endif %}
+                            {% if nav_artist_pending_count %}<span class="artist-pending-badge">{{ nav_artist_pending_count }}</span>{% endif %}
                         </a>
                     </li>
                     {% endif %}
@@ -237,21 +200,13 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             {% if nav_artist_obj %}
-                            <li><a class="dropdown-item" href="{% url 'artist_dashboard' %}"><i
-                                        class="bi bi-speedometer2"></i> Dashboard Artist</a></li>
-                            <li><a class="dropdown-item" href="{% url 'artist_booking_list' %}"><i
-                                        class="bi bi-journal-text"></i> Pesanan Masuk</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            <li><a class="dropdown-item" href="{% url 'artist_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard Artist</a></li>
+                            <li><a class="dropdown-item" href="{% url 'artist_booking_list' %}"><i class="bi bi-journal-text"></i> Pesanan Masuk</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             {% endif %}
-                            <li><a class="dropdown-item" href="{% url 'booking_list' %}" data-t="my_orders"><i
-                                        class="bi bi-journal-text"></i> Pesanan Saya</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}" data-t="logout"><i
-                                        class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'booking_list' %}" data-t="my_orders"><i class="bi bi-journal-text"></i> Pesanan Saya</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}" data-t="logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                         </ul>
                     </li>
                     {% else %}
@@ -259,7 +214,7 @@
                         <a class="nav-link" href="{% url 'login' %}" data-t="login">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-nav-cta" href="{% url 'register' %}" data-t="register">Daftar</a>
+                        <a class="nav-link btn-nav-cta" href="{% url 'register' %}" data-t="register">Daftar</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -267,74 +222,76 @@
         </div>
     </nav>
 
-    {% if messages %}
-    <div class="container mt-5 pt-4">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <main class="content-wrap">
+        {% if messages %}
+        <div class="container py-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-0" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="footer-section">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-4">
-                    <h5><i class="bi bi-droplet"></i> Bali Tattoo</h5>
-                    <p class="text-muted" style="line-height: 1.8;" data-t="footer_desc">
-                        Premium tattoo studio di Bali. Melayani panggilan ke seluruh area Bali.
-                        Wujudkan karya seni di tubuhmu bersama artist terbaik kami.
+                    <h5><i class="bi bi-droplet"></i> BALI INK HUB</h5>
+                    <p style="line-height: 1.8;" data-t="footer_desc">
+                        BALI INK HUB — Discover verified tattoo artists & studios in Bali. Book home service or studio sessions instantly.
                     </p>
                     <div class="social-links">
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-whatsapp"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <h6 data-t="navigation">Navigasi</h6>
+                    <h6 data-t="navigation">EXPLORE</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'home' %}" data-t="home">Beranda</a></li>
-                        <li><a href="{% url 'service_list' %}" data-t="services">Layanan</a></li>
-                        <li><a href="{% url 'artist_list' %}" data-t="artists">Artist</a></li>
-                        <li><a href="{% url 'booking_create' %}" data-t="booking">Booking</a></li>
+                        <li><a href="{% url 'home' %}" data-t="home">Home</a></li>
+                        <li><a href="{% url 'artist_list' %}" data-t="artists">Artists</a></li>
+                        <li><a href="{% url 'artist_list' %}?mode=studio">Studios</a></li>
+                        <li><a href="{% url 'artist_list' %}?mode=mobile" data-t="home_service">Home Service</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
-                    <h6 data-t="services">Layanan</h6>
+                    <h6 data-t="services">SERVICES</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{% url 'artist_list' %}?mode=studio" data-t="studio_location">Tattoo di Studio</a>
-                        </li>
-                        <li><a href="{% url 'artist_list' %}?mode=mobile" data-t="home_service">Panggil ke Rumah</a>
-                        </li>
-                        <li><a href="{% url 'service_list' %}" data-t="all_services">Semua Layanan</a></li>
+                        <li><a href="{% url 'service_list' %}" data-t="studio_location">Studio Appointment</a></li>
+                        <li><a href="{% url 'artist_list' %}?mode=mobile" data-t="home_service">Villa Service</a></li>
+                        <li><a href="{% url 'service_list' %}">Custom Design</a></li>
+                        <li><a href="{% url 'service_list' %}">Cover-Up</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
-                    <h6 data-t="our_contact">Kontak</h6>
+                    <h6 data-t="our_contact">CONTACT</h6>
                     <ul class="list-unstyled">
-                        <li><i class="bi bi-geo-alt text-gold"></i> Jl. Raya Ubud No. 123, Bali</li>
-                        <li><a href="https://wa.me/6281234567890" target="_blank"><i
-                                    class="bi bi-whatsapp text-gold"></i> +62 812-3456-7890</a></li>
-                        <li><a href="mailto:hello@balitattoo.com"><i class="bi bi-envelope text-gold"></i>
-                                hello@balitattoo.com</a></li>
+                        <li><i class="bi bi-geo-alt text-gold"></i> Jl. Kayu Aya No. 88, Seminyak, Bali</li>
+                        <li><a href="https://wa.me/6281234567890" target="_blank"><i class="bi bi-whatsapp text-gold"></i> +62 812 3456 7890</a></li>
+                        <li><a href="mailto:hello@baliinkhub.com"><i class="bi bi-envelope text-gold"></i> hello@baliinkhub.com</a></li>
                     </ul>
                 </div>
             </div>
             <hr class="footer-divider">
-            <p class="text-center text-muted mb-0 small">
-                &copy; 2026 <span class="text-gold">Bali Tattoo Studio</span>. All rights reserved.
+            <p class="text-center mb-0 small">
+                &copy; 2026 <span class="text-gold">BALI INK HUB</span>. ALL RIGHTS RESERVED.
+                &nbsp;|&nbsp; <a href="#">Privacy Policy</a>
+                &nbsp;|&nbsp; <a href="#">Terms of Service</a>
+                &nbsp;|&nbsp; <a href="#">Cookie Policy</a>
             </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{% static 'tattoo/js/main.js' %}?v=3.3"></script>
+    <script src="{% static 'tattoo/js/main.js' %}?v=4.0"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

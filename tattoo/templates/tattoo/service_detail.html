@@ -2,10 +2,10 @@
 {% load static %}
 {% load currency_tags %}
 
-{% block title %}{{ service.name }} - Bali Tattoo Studio{% endblock %}
+{% block title %}{{ service.name }} - Bali Ink Hub{% endblock %}
 
 {% block content %}
-<section class="py-5 mt-5">
+<section class="section-padding">
     <div class="container">
         <div class="row">
             <div class="col-md-6" data-aos="fade-right">
@@ -13,7 +13,7 @@
                     {% if service.image.name %}
                         <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-100" style="height: 400px; object-fit: cover;">
                     {% else %}
-                        <div style="height: 400px; background: var(--gradient-card); display: flex; align-items: center; justify-content: center;">
+                        <div style="height: 400px; background: var(--bg-alt); display: flex; align-items: center; justify-content: center;">
                             <i class="bi bi-palette" style="font-size: 5rem; color: var(--gold);"></i>
                         </div>
                     {% endif %}
@@ -110,7 +110,7 @@
                     {% for artist in artists %}
                         <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
                             <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
-                                <div class="artist-card">
+                                <div class="artist-card h-100">
                                     {% if artist.photo.name %}
                                         <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="artist-card-img" style="height: 200px;">
                                     {% else %}

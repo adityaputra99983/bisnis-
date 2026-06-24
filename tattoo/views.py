@@ -276,7 +276,7 @@ def _render_login_failsafe():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mohon Maaf - Bali Tattoo Studio</title>
+<title>Mohon Maaf - Bali Ink Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   body { font-family: 'Inter', sans-serif; background: #050505; color: #e0d5c0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 20px; }
@@ -420,7 +420,10 @@ def booking_detail(request, booking_id):
 
 @login_required
 def payment_initiate(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    booking = get_object_or_404(
+        Booking,
+        Q(id=booking_id) & (Q(user=request.user) | Q(artist__user=request.user))
+    )
 
     if booking.payment_status == 'paid':
         messages.info(request, 'Pesanan ini sudah lunas.')
@@ -462,50 +465,82 @@ def payment_initiate(request, booking_id):
     selected_method = request.GET.get('method', '').strip()
     selected_brand = request.GET.get('brand', '').strip().lower()
     instructions = None
+    accounts = dict(settings.PLATFORM_PAYMENT_ACCOUNTS)
+
+    # Override dengan akun artist jika ada
+    try:
+        ps = booking.artist.payment_settings
+        artist_accounts_loaded = True
+    except ArtistPaymentSettings.DoesNotExist:
+        ps = None
+        artist_accounts_loaded = False
+
+    if artist_accounts_loaded and ps:
+        # Override bank VA accounts dengan rekening artist
+        bank_map = {
+            'bca_va': ('bca', 'bank_bca_number', 'bank_bca_name', 'BCA'),
+            'mandiri_va': ('mandiri', 'bank_mandiri_number', 'bank_mandiri_name', 'Mandiri'),
+            'bni_va': ('bni', 'bank_bni_number', 'bank_bni_name', 'BNI'),
+            'bri_va': ('bri', 'bank_bri_number', 'bank_bri_name', 'BRI'),
+            'permata_va': ('permata', 'bank_permata_number', 'bank_permata_name', 'Permata'),
+            'cimb_va': ('cimb', 'bank_cimb_number', 'bank_cimb_name', 'CIMB Niaga'),
+        }
+        for method_key, (acct_key, num_field, name_field, default_bank) in bank_map.items():
+            acct_num = getattr(ps, num_field, None)
+            acct_name = getattr(ps, name_field, None)
+            if acct_num and acct_name:
+                accounts[acct_key] = {
+                    'bank_name': default_bank,
+                    'account_number': acct_num,
+                    'account_name': acct_name,
+                }
+
+        # Override e-wallet accounts dengan nomor artist
+        ewallet_map = {
+            'gopay': ('ewallet_gopay', 'GoPay'),
+            'shopeepay': ('ewallet_shopeepay', 'ShopeePay'),
+            'dana': ('ewallet_dana', 'DANA'),
+            'ovo': ('ewallet_ovo', 'OVO'),
+            'linkaja': ('ewallet_linkaja', 'LinkAja'),
+        }
+        for method_key, (field, provider) in ewallet_map.items():
+            number = getattr(ps, field, None)
+            if number:
+                accounts[method_key] = {
+                    'provider': provider,
+                    'number': number,
+                    'name': ps.artist.nickname,
+                }
+
     if selected_method and selected_method in METHOD_LABELS:
-        accounts = dict(settings.PLATFORM_PAYMENT_ACCOUNTS)
+        # Override khusus credit_card dan qris (sudah ada sebelumnya)
         if selected_method == 'credit_card':
-            try:
-                ps = booking.artist.payment_settings
-                accounts['credit_card'] = {
-                    'processing_method': ps.card_processing_method or 'manual',
-                    'payment_link': ps.card_payment_link or '',
-                    'fee_percent': float(ps.card_fee_percent or 0),
-                    'note': ps.card_note or '',
-                }
-            except ArtistPaymentSettings.DoesNotExist:
-                accounts['credit_card'] = {
-                    'processing_method': 'manual',
-                    'payment_link': '',
-                    'fee_percent': 0,
-                    'note': '',
-                }
+            accounts['credit_card'] = {
+                'processing_method': (ps.card_processing_method if ps else 'manual') or 'manual',
+                'payment_link': (ps.card_payment_link if ps else '') or '',
+                'fee_percent': float(ps.card_fee_percent or 0) if ps else 0,
+                'note': (ps.card_note if ps else '') or '',
+            }
         elif selected_method == 'qris':
-            try:
-                ps = booking.artist.payment_settings
-                accounts['qris'] = {
-                    'merchant_name': ps.qris_merchant_name or (ps.artist.nickname if hasattr(ps, 'artist') else 'Merchant'),
-                    'image_url': ps.qris_image.url if ps.qris_image else '',
-                    'fee_percent': float(ps.qris_fee_percent or 0),
-                    'note': ps.qris_note or '',
-                }
-            except ArtistPaymentSettings.DoesNotExist:
-                accounts['qris'] = {
-                    'merchant_name': 'Merchant',
-                    'image_url': '',
-                    'fee_percent': 0.7,
-                    'note': '',
-                }
+            accounts['qris'] = {
+                'merchant_name': (ps.qris_merchant_name if ps else None) or (booking.artist.nickname if hasattr(booking.artist, 'nickname') else 'Merchant'),
+                'image_url': (ps.qris_image.url if ps and ps.qris_image else ''),
+                'fee_percent': float(ps.qris_fee_percent or 0) if ps else 0.7,
+                'note': (ps.qris_note if ps else '') or '',
+            }
+
         instructions = get_payment_instructions(
             selected_method, booking, accounts
         )
+
+    enabled_data = _get_enabled_methods_for_artist(booking.artist)
 
     return render(request, 'tattoo/payment_page.html', {
         'booking': booking,
         'instructions': instructions,
         'selected_method': selected_method,
         'selected_brand': selected_brand,
-        'enabled_methods': _get_enabled_methods_for_artist(booking.artist),
+        'enabled_methods': enabled_data,
         'method_labels': METHOD_LABELS,
         'card_processing_method': accounts.get('credit_card', {}).get('processing_method', 'manual') if selected_method == 'credit_card' else None,
         'verification_pending': booking.payment_verification_status == 'pending',
@@ -618,17 +653,48 @@ def payment_verify(request, booking_id):
 
 
 def _get_enabled_methods_for_artist(artist):
-    """Return dict of method-group -> enabled, sesuai settingan artist."""
+    """Return dict dengan group flags dan list metode individual yang enabled."""
     try:
         s = artist.payment_settings
     except ArtistPaymentSettings.DoesNotExist:
         s = None
+
+    def _flag(field, default):
+        return getattr(s, field, default) if s else default
+
+    group_flags = {
+        'bank_va': _flag('enable_bank_va', True),
+        'ewallet': _flag('enable_ewallet', True),
+        'credit_card': _flag('enable_credit_card', False),
+        'convenience_store': _flag('enable_convenience_store', True),
+        'qris': _flag('enable_qris', False),
+    }
+
+    # Build list of individually enabled methods
+    enabled_methods = []
+    if group_flags['bank_va']:
+        if _flag('enable_bca', True):    enabled_methods.append('bca_va')
+        if _flag('enable_mandiri', True): enabled_methods.append('mandiri_va')
+        if _flag('enable_bni', True):    enabled_methods.append('bni_va')
+        if _flag('enable_bri', True):    enabled_methods.append('bri_va')
+        if _flag('enable_permata', False): enabled_methods.append('permata_va')
+        if _flag('enable_cimb', False):  enabled_methods.append('cimb_va')
+    if group_flags['ewallet']:
+        if _flag('enable_gopay', True):     enabled_methods.append('gopay')
+        if _flag('enable_shopeepay', True): enabled_methods.append('shopeepay')
+        if _flag('enable_dana', True):      enabled_methods.append('dana')
+        if _flag('enable_ovo', True):       enabled_methods.append('ovo')
+        if _flag('enable_linkaja', False):  enabled_methods.append('linkaja')
+    if group_flags['qris']:
+        enabled_methods.append('qris')
+    if group_flags['convenience_store']:
+        enabled_methods.extend(['indomaret', 'alfamart'])
+    if group_flags['credit_card']:
+        enabled_methods.append('credit_card')
+
     return {
-        'bank_va': (s.enable_bank_va if s else True),
-        'ewallet': (s.enable_ewallet if s else True),
-        'credit_card': (s.enable_credit_card if s else False),
-        'convenience_store': (s.enable_convenience_store if s else True),
-        'qris': (getattr(s, 'enable_qris', False) if s else False),
+        'groups': group_flags,
+        'methods': enabled_methods,
     }
 
 

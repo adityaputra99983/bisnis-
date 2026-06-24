@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <style>
+      .mandala-line { stroke: #d4af37; stroke-width: 0.8; fill: none; opacity: 0.08; }
+      .mandala-line-thick { stroke: #d4af37; stroke-width: 1.5; fill: none; opacity: 0.06; }
+      .mandala-dot { fill: #d4af37; opacity: 0.08; }
+      .mandala-fill { fill: #d4af37; opacity: 0.03; stroke: none; }
+    </style>
+  </defs>
+  <!-- Outermost ring -->
+  <circle cx="300" cy="300" r="280" class="mandala-line-thick"/>
+  <circle cx="300" cy="300" r="270" class="mandala-line"/>
+  <circle cx="300" cy="300" r="260" class="mandala-line"/>
+  <!-- Petal layer 1 -->
+  <g opacity="0.06">
+    <path d="M300,40 Q340,160 300,300 Q260,160 300,40" class="mandala-fill"/>
+    <path d="M300,560 Q340,440 300,300 Q260,440 300,560" class="mandala-fill"/>
+    <path d="M40,300 Q160,260 300,300 Q160,340 40,300" class="mandala-fill"/>
+    <path d="M560,300 Q440,260 300,300 Q440,340 560,300" class="mandala-fill"/>
+  </g>
+  <!-- Petal outlines -->
+  <path d="M300,40 Q340,160 300,300 Q260,160 300,40" class="mandala-line"/>
+  <path d="M300,560 Q340,440 300,300 Q260,440 300,560" class="mandala-line"/>
+  <path d="M40,300 Q160,260 300,300 Q160,340 40,300" class="mandala-line"/>
+  <path d="M560,300 Q440,260 300,300 Q440,340 560,300" class="mandala-line"/>
+  <!-- Diagonal petal layer -->
+  <g opacity="0.04">
+    <path d="M116,116 Q220,180 300,300 Q180,220 116,116" class="mandala-fill"/>
+    <path d="M484,484 Q380,420 300,300 Q420,380 484,484" class="mandala-fill"/>
+    <path d="M484,116 Q380,180 300,300 Q420,220 484,116" class="mandala-fill"/>
+    <path d="M116,484 Q220,420 300,300 Q180,380 116,484" class="mandala-fill"/>
+  </g>
+  <path d="M116,116 Q220,180 300,300 Q180,220 116,116" class="mandala-line"/>
+  <path d="M484,484 Q380,420 300,300 Q420,380 484,484" class="mandala-line"/>
+  <path d="M484,116 Q380,180 300,300 Q420,220 484,116" class="mandala-line"/>
+  <path d="M116,484 Q220,420 300,300 Q180,380 116,484" class="mandala-line"/>
+  <!-- Middle rings -->
+  <circle cx="300" cy="300" r="200" class="mandala-line-thick"/>
+  <circle cx="300" cy="300" r="180" class="mandala-line"/>
+  <circle cx="300" cy="300" r="160" class="mandala-line"/>
+  <!-- Inner petal layer -->
+  <g opacity="0.05">
+    <path d="M300,120 Q320,200 300,300 Q280,200 300,120" class="mandala-fill"/>
+    <path d="M300,480 Q320,400 300,300 Q280,400 300,480" class="mandala-fill"/>
+    <path d="M120,300 Q200,280 300,300 Q200,320 120,300" class="mandala-fill"/>
+    <path d="M480,300 Q400,280 300,300 Q400,320 480,300" class="mandala-fill"/>
+  </g>
+  <path d="M300,120 Q320,200 300,300 Q280,200 300,120" class="mandala-line"/>
+  <path d="M300,480 Q320,400 300,300 Q280,400 300,480" class="mandala-line"/>
+  <path d="M120,300 Q200,280 300,300 Q200,320 120,300" class="mandala-line"/>
+  <path d="M480,300 Q400,280 300,300 Q400,320 480,300" class="mandala-line"/>
+  <!-- Inner diagonal petals -->
+  <g opacity="0.04">
+    <path d="M188,188 Q240,240 300,300 Q240,240 188,188" class="mandala-fill"/>
+    <path d="M412,412 Q360,360 300,300 Q360,360 412,412" class="mandala-fill"/>
+    <path d="M412,188 Q360,240 300,300 Q360,240 412,188" class="mandala-fill"/>
+    <path d="M188,412 Q240,360 300,300 Q240,360 188,412" class="mandala-fill"/>
+  </g>
+  <path d="M188,188 Q240,240 300,300 Q240,240 188,188" class="mandala-line"/>
+  <path d="M412,412 Q360,360 300,300 Q360,360 412,412" class="mandala-line"/>
+  <path d="M412,188 Q360,240 300,300 Q360,240 412,188" class="mandala-line"/>
+  <path d="M188,412 Q240,360 300,300 Q240,360 188,412" class="mandala-line"/>
+  <!-- Inner rings -->
+  <circle cx="300" cy="300" r="100" class="mandala-line-thick"/>
+  <circle cx="300" cy="300" r="80" class="mandala-line"/>
+  <circle cx="300" cy="300" r="60" class="mandala-line"/>
+  <!-- Center star -->
+  <g opacity="0.06">
+    <polygon points="300,250 308,290 350,290 316,312 328,350 300,328 272,350 284,312 250,290 292,290" class="mandala-fill"/>
+  </g>
+  <polygon points="300,250 308,290 350,290 316,312 328,350 300,328 272,350 284,312 250,290 292,290" class="mandala-line"/>
+  <!-- Center dot -->
+  <circle cx="300" cy="300" r="12" class="mandala-line-thick"/>
+  <circle cx="300" cy="300" r="4" class="mandala-dot"/>
+  <!-- Outer dots -->
+  <circle cx="300" cy="30" r="3" class="mandala-dot"/>
+  <circle cx="300" cy="570" r="3" class="mandala-dot"/>
+  <circle cx="30" cy="300" r="3" class="mandala-dot"/>
+  <circle cx="570" cy="300" r="3" class="mandala-dot"/>
+  <circle cx="109" cy="109" r="2.5" class="mandala-dot"/>
+  <circle cx="491" cy="109" r="2.5" class="mandala-dot"/>
+  <circle cx="109" cy="491" r="2.5" class="mandala-dot"/>
+  <circle cx="491" cy="491" r="2.5" class="mandala-dot"/>
+  <!-- Mid dots -->
+  <circle cx="300" cy="110" r="2" class="mandala-dot"/>
+  <circle cx="300" cy="490" r="2" class="mandala-dot"/>
+  <circle cx="110" cy="300" r="2" class="mandala-dot"/>
+  <circle cx="490" cy="300" r="2" class="mandala-dot"/>
+  <circle cx="166" cy="166" r="2" class="mandala-dot"/>
+  <circle cx="434" cy="166" r="2" class="mandala-dot"/>
+  <circle cx="166" cy="434" r="2" class="mandala-dot"/>
+  <circle cx="434" cy="434" r="2" class="mandala-dot"/>
+  <!-- Tribal spearheads on outer ring -->
+  <path d="M300,30 L295,50 L300,65 L305,50 Z" class="mandala-line"/>
+  <path d="M300,570 L295,550 L300,535 L305,550 Z" class="mandala-line"/>
+  <path d="M30,300 L50,295 L65,300 L50,305 Z" class="mandala-line"/>
+  <path d="M570,300 L550,295 L535,300 L550,305 Z" class="mandala-line"/>
+  <path d="M109,109 L120,120 L130,115 L118,104 Z" class="mandala-line"/>
+  <path d="M491,109 L480,120 L485,130 L496,118 Z" class="mandala-line"/>
+  <path d="M109,491 L120,480 L130,485 L118,496 Z" class="mandala-line"/>
+  <path d="M491,491 L480,480 L485,470 L496,482 Z" class="mandala-line"/>
+</svg>

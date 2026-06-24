@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" width="600" height="900">
+  <defs>
+    <style>
+      .tribal-fill { fill: #d4af37; opacity: 0.05; stroke: #d4af37; stroke-width: 0.6; stroke-opacity: 0.1; }
+      .tribal-line { stroke: #d4af37; stroke-width: 1.2; fill: none; opacity: 0.1; }
+      .tribal-line-thin { stroke: #d4af37; stroke-width: 0.7; fill: none; opacity: 0.07; }
+      .tribal-dot { fill: #d4af37; opacity: 0.06; }
+    </style>
+  </defs>
+
+  <!-- Maori/Polynesian inspired tribal tattoo panel -->
+  <g transform="translate(300,450)">
+
+    <!-- Central spiral (Koru) -->
+    <path class="tribal-fill" d="M0,0 C-20,-40 -60,-60 -80,-40 C-100,-20 -80,20 -50,30 C-20,40 10,20 20,0 C30,-20 20,-40 10,-45"/>
+    <path class="tribal-line" d="M0,0 C-20,-40 -60,-60 -80,-40 C-100,-20 -80,20 -50,30 C-20,40 10,20 20,0 C30,-20 20,-40 10,-45"/>
+    <circle cx="-30" cy="-10" r="3" class="tribal-dot"/>
+    <circle cx="-35" cy="-20" r="2" class="tribal-dot"/>
+    <circle cx="-20" cy="-25" r="1.5" class="tribal-dot"/>
+
+    <!-- Second spiral -->
+    <path class="tribal-fill" d="M0,0 C20,-40 60,-60 80,-40 C100,-20 80,20 50,30 C20,40 -10,20 -20,0 C-30,-20 -20,-40 -10,-45"/>
+    <path class="tribal-line" d="M0,0 C20,-40 60,-60 80,-40 C100,-20 80,20 50,30 C20,40 -10,20 -20,0 C-30,-20 -20,-40 -10,-45"/>
+    <circle cx="30" cy="-10" r="3" class="tribal-dot"/>
+    <circle cx="35" cy="-20" r="2" class="tribal-dot"/>
+    <circle cx="20" cy="-25" r="1.5" class="tribal-dot"/>
+
+    <!-- Spearhead rows - top -->
+    <g transform="translate(0,-120)">
+      <path class="tribal-fill" d="M-80,0 L-60,-40 L-40,0 Z"/>
+      <path class="tribal-fill" d="M-60,-40 L-50,-80 L-40,-40 Z"/>
+      <path class="tribal-fill" d="M-40,0 L-20,-40 L0,0 Z"/>
+      <path class="tribal-fill" d="M-20,-40 L-10,-80 L0,-40 Z"/>
+      <path class="tribal-fill" d="M0,0 L20,-40 L40,0 Z"/>
+      <path class="tribal-fill" d="M20,-40 L30,-80 L40,-40 Z"/>
+      <path class="tribal-fill" d="M40,0 L60,-40 L80,0 Z"/>
+      <path class="tribal-fill" d="M60,-40 L70,-80 L80,-40 Z"/>
+      <path class="tribal-line" d="M-80,0 L-60,-40 L-40,0"/>
+      <path class="tribal-line" d="M-60,-40 L-50,-80 L-40,-40"/>
+      <path class="tribal-line" d="M-40,0 L-20,-40 L0,0"/>
+      <path class="tribal-line" d="M-20,-40 L-10,-80 L0,-40"/>
+      <path class="tribal-line" d="M0,0 L20,-40 L40,0"/>
+      <path class="tribal-line" d="M20,-40 L30,-80 L40,-40"/>
+      <path class="tribal-line" d="M40,0 L60,-40 L80,0"/>
+      <path class="tribal-line" d="M60,-40 L70,-80 L80,-40"/>
+    </g>
+
+    <!-- Spearhead rows - bottom -->
+    <g transform="translate(0,120)">
+      <path class="tribal-fill" d="M-80,0 L-60,40 L-40,0 Z"/>
+      <path class="tribal-fill" d="M-60,40 L-50,80 L-40,40 Z"/>
+      <path class="tribal-fill" d="M-40,0 L-20,40 L0,0 Z"/>
+      <path class="tribal-fill" d="M-20,40 L-10,80 L0,40 Z"/>
+      <path class="tribal-fill" d="M0,0 L20,40 L40,0 Z"/>
+      <path class="tribal-fill" d="M20,40 L30,80 L40,40 Z"/>
+      <path class="tribal-fill" d="M40,0 L60,40 L80,0 Z"/>
+      <path class="tribal-fill" d="M60,40 L70,80 L80,40 Z"/>
+      <path class="tribal-line" d="M-80,0 L-60,40 L-40,0"/>
+      <path class="tribal-line" d="M-60,40 L-50,80 L-40,40"/>
+      <path class="tribal-line" d="M-40,0 L-20,40 L0,0"/>
+      <path class="tribal-line" d="M-20,40 L-10,80 L0,40"/>
+      <path class="tribal-line" d="M0,0 L20,40 L40,0"/>
+      <path class="tribal-line" d="M20,40 L30,80 L40,40"/>
+      <path class="tribal-line" d="M40,0 L60,40 L80,0"/>
+      <path class="tribal-line" d="M60,40 L70,80 L80,40"/>
+    </g>
+
+    <!-- Ocean wave patterns (parallel curved lines) -->
+    <g transform="translate(-140,0)">
+      <path class="tribal-line" d="M0,-80 Q20,-40 0,0 Q-20,40 0,80"/>
+      <path class="tribal-line-thin" d="M12,-75 Q30,-40 12,0 Q-8,40 12,80"/>
+      <path class="tribal-line-thin" d="M24,-65 Q38,-40 24,0 Q10,40 24,65"/>
+    </g>
+    <g transform="translate(140,0)">
+      <path class="tribal-line" d="M0,-80 Q-20,-40 0,0 Q20,40 0,80"/>
+      <path class="tribal-line-thin" d="M-12,-75 Q-30,-40 -12,0 Q8,40 -12,80"/>
+      <path class="tribal-line-thin" d="M-24,-65 Q-38,-40 -24,0 Q-10,40 -24,65"/>
+    </g>
+
+    <!-- Horizontal bands -->
+    <path class="tribal-line" d="M-160,-100 L160,-100"/>
+    <path class="tribal-line-thin" d="M-160,-95 L160,-95"/>
+    <path class="tribal-line" d="M-160,100 L160,100"/>
+    <path class="tribal-line-thin" d="M-160,95 L160,95"/>
+
+    <!-- Triangle dotted borders -->
+    <g transform="translate(0,-160)">
+      <path class="tribal-line-thin" d="M-140,0 L-130,-8 L-120,0 L-110,-8 L-100,0 L-90,-8 L-80,0 L-70,-8 L-60,0 L-50,-8 L-40,0 L-30,-8 L-20,0 L-10,-8 L0,0 L10,-8 L20,0 L30,-8 L40,0 L50,-8 L60,0 L70,-8 L80,0 L90,-8 L100,0 L110,-8 L120,0 L130,-8 L140,0"/>
+    </g>
+    <g transform="translate(0,160)">
+      <path class="tribal-line-thin" d="M-140,0 L-130,8 L-120,0 L-110,8 L-100,0 L-90,8 L-80,0 L-70,8 L-60,0 L-50,8 L-40,0 L-30,8 L-20,0 L-10,8 L0,0 L10,8 L20,0 L30,8 L40,0 L50,8 L60,0 L70,8 L80,0 L90,8 L100,0 L110,8 L120,0 L130,8 L140,0"/>
+    </g>
+
+    <!-- Ngaru (wave) motifs -->
+    <g transform="translate(-160,-60)">
+      <path class="tribal-fill" d="M0,0 C15,-20 35,-20 50,0 C65,-20 85,-20 100,0 C115,-20 135,-20 150,0"/>
+      <path class="tribal-line" d="M0,0 C15,-20 35,-20 50,0 C65,-20 85,-20 100,0 C115,-20 135,-20 150,0"/>
+    </g>
+    <g transform="translate(-160,60)">
+      <path class="tribal-fill" d="M0,0 C15,20 35,20 50,0 C65,20 85,20 100,0 C115,20 135,20 150,0"/>
+      <path class="tribal-line" d="M0,0 C15,20 35,20 50,0 C65,20 85,20 100,0 C115,20 135,20 150,0"/>
+    </g>
+
+    <!-- Vertical connecting lines with dots -->
+    <path class="tribal-line-thin" d="M-120,-160 L-120,-100"/>
+    <path class="tribal-line-thin" d="M-120,100 L-120,160"/>
+    <circle cx="-120" cy="-130" r="2" class="tribal-dot"/>
+    <circle cx="-120" cy="130" r="2" class="tribal-dot"/>
+    <path class="tribal-line-thin" d="M120,-160 L120,-100"/>
+    <path class="tribal-line-thin" d="M120,100 L120,160"/>
+    <circle cx="120" cy="-130" r="2" class="tribal-dot"/>
+    <circle cx="120" cy="130" r="2" class="tribal-dot"/>
+
+    <!-- Additional decorative dots -->
+    <circle cx="-60" cy="-80" r="2" class="tribal-dot"/>
+    <circle cx="-40" cy="-80" r="2" class="tribal-dot"/>
+    <circle cx="40" cy="-80" r="2" class="tribal-dot"/>
+    <circle cx="60" cy="-80" r="2" class="tribal-dot"/>
+    <circle cx="-60" cy="80" r="2" class="tribal-dot"/>
+    <circle cx="-40" cy="80" r="2" class="tribal-dot"/>
+    <circle cx="40" cy="80" r="2" class="tribal-dot"/>
+    <circle cx="60" cy="80" r="2" class="tribal-dot"/>
+  </g>
+</svg>

@@ -5,40 +5,66 @@
 {% block content %}
 
 <section class="hero-section">
-    <div class="ink-splash ink-splash-1"></div>
-    <div class="ink-splash ink-splash-2"></div>
-    <div class="ink-splash ink-splash-3"></div>
-    <div class="ink-splash ink-splash-4"></div>
     <div class="container text-center">
-        <div class="hero-badge" data-t="hero_badge">Premium Tattoo Studio Bali</div>
+        <div class="hero-badge" data-t="hero_badge">BALI INK HUB — Verified Tattoo Marketplace</div>
         <h1 class="hero-title">
-            Bali Tattoo Studio<br>
-            <span class="text-gold">Premium Ink</span>
+            Discover Verified<br>
+            <span class="text-gold">Tattoo Artists in Bali</span>
         </h1>
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;">
+            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-patch-check-fill"></i> 200+ Artists
+            </span>
+            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-building"></i> 50+ Studios
+            </span>
+            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-shield-check"></i> Verified
+            </span>
+            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
+                <i class="bi bi-house-heart"></i> Home Service
+            </span>
+        </div>
         <p class="hero-subtitle" data-t="hero_subtitle">
-            Wujudkan seni abadi di tubuhmu. Artist profesional, studio premium,
-            atau kami yang datang ke tempatmu. Seluruh area Bali.
+            Find the best tattoo artists in Bali — from Seminyak to Canggu and Ubud. Browse verified studios
+            & mobile artists, compare real-time availability & prices, and book home service or studio session instantly.
         </p>
+
+        <div class="hero-search">
+            <select class="search-select">
+                <option>Seminyak</option>
+                <option>Canggu</option>
+                <option>Ubud</option>
+                <option>Kuta</option>
+            </select>
+            <div class="search-input-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search..." id="heroSearch">
+            </div>
+            <a href="{% url 'artist_list' %}" class="btn-gold">SEARCH</a>
+        </div>
+
         <div class="hero-cta">
-            <a href="{% url 'booking_create' %}" class="btn btn-gold btn-lg" data-t="booking_now">
-                <i class="bi bi-calendar-check"></i> Booking Sekarang
+            <a href="{% url 'artist_list' %}" class="btn-gold btn-lg" data-t="see_artist">
+                <i class="bi bi-people"></i> EXPLORE ARTISTS
             </a>
-            <a href="{% url 'artist_list' %}" class="btn btn-outline-light btn-lg" data-t="see_artist">
-                <i class="bi bi-people"></i> Lihat Artist
+            <a href="{% url 'artist_list' %}?mode=mobile" class="btn-outline-light btn-lg" data-t="booking_now">
+                <i class="bi bi-house-heart"></i> BOOK HOME SERVICE
             </a>
         </div>
+
         <div class="hero-stats">
             <div class="hero-stat">
                 <div class="hero-stat-number">{{ stats.artists_count }}+</div>
-                <div class="hero-stat-label" data-t="stats_artists">Artist Profesional</div>
+                <div class="hero-stat-label" data-t="stats_artists">Verified Artists</div>
             </div>
             <div class="hero-stat">
-                <div class="hero-stat-number">{{ stats.services_count }}+</div>
-                <div class="hero-stat-label" data-t="stats_services">Layanan Tattoo</div>
+                <div class="hero-stat-number">{{ stats.studio_count|default:"50" }}+</div>
+                <div class="hero-stat-label">Tattoo Studios</div>
             </div>
             <div class="hero-stat">
                 <div class="hero-stat-number">{{ stats.completed_orders }}+</div>
-                <div class="hero-stat-label" data-t="stats_satisfied">Pelanggan Puas</div>
+                <div class="hero-stat-label" data-t="stats_satisfied">Happy Clients</div>
             </div>
         </div>
     </div>
@@ -46,82 +72,250 @@
 
 <section id="cara-kerja" class="how-it-works section-padding" data-aos="fade-up">
     <div class="container">
-        <h2 class="section-title text-center" data-t="step_title">Cara <span class="text-gold" data-t="step_title">Kerja</span></h2>
-        <p class="section-subtitle text-center" data-t="step_sub">Gampang kayak pesan Gojek, hasilnya premium</p>
+        <h2 class="section-title text-center" data-t="step_title">Your Tattoo <br><span class="text-gold">Journey in 4 Steps</span></h2>
+        <p class="section-subtitle text-center" data-t="step_sub">From browsing to getting inked — a seamless, premium experience designed for your comfort and confidence.</p>
         <div class="section-divider"></div>
         <div class="row g-4 mt-4">
             <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
                 <div class="step-card">
                     <div class="step-number">1</div>
                     <i class="bi bi-search step-icon"></i>
-                    <h5 data-t="step_1_title">Pilih Artist & Layanan</h5>
-                    <p class="text-muted" data-t="step_1_desc">Lihat portofolio artist dan pilih desain impianmu</p>
+                    <h5 data-t="step_1_title">Browse & Discover</h5>
+                    <p class="text-muted" data-t="step_1_desc">Explore verified tattoo artists and premium studios across Bali. Filter by style, location, and availability.</p>
                 </div>
             </div>
             <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <i class="bi bi-geo-alt step-icon"></i>
-                    <h5 data-t="step_2_title">Pilih Mode</h5>
-                    <p class="text-muted" data-t="step_2_desc">Datang ke studio premium atau panggil ke rumahmu</p>
+                    <i class="bi bi-brush step-icon"></i>
+                    <h5 data-t="step_2_title">Choose Your Style</h5>
+                    <p class="text-muted" data-t="step_2_desc">View artist portfolios, read reviews, and pick a style that speaks to you. From fine line to traditional Balinese.</p>
                 </div>
             </div>
             <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
                 <div class="step-card">
                     <div class="step-number">3</div>
                     <i class="bi bi-calendar-check step-icon"></i>
-                    <h5 data-t="step_3_title">Booking</h5>
-                    <p class="text-muted" data-t="step_3_desc">Tentukan jadwal yang pas buat kamu</p>
+                    <h5 data-t="step_3_title">Book Your Session</h5>
+                    <p class="text-muted" data-t="step_3_desc">Select studio appointment or home service, choose your date and time, and confirm your booking.</p>
                 </div>
             </div>
             <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
                 <div class="step-card">
                     <div class="step-number">4</div>
                     <i class="bi bi-droplet step-icon"></i>
-                    <h5 data-t="step_4_title">Tattoo-on!</h5>
-                    <p class="text-muted" data-t="step_4_desc">Dapatkan tattoo impianmu!</p>
+                    <h5 data-t="step_4_title">Get Inked</h5>
+                    <p class="text-muted" data-t="step_4_desc">Meet your artist at the studio or have them come to your villa. Enjoy a professional, hygienic tattoo experience.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="mode-section section-padding" data-aos="fade-up">
+{% if artists_with_rating %}
+<section class="artists-section section-padding" data-aos="fade-up">
     <div class="container">
-        <h2 class="section-title text-center" data-t="choose_mode_title">Pilih Cara <span class="text-gold" data-t="choose_mode_title">Kamu</span></h2>
-        <p class="section-subtitle text-center" data-t="choose_mode_sub">Dua pilihan flexibel, satu hasil maksimal</p>
+        <h2 class="section-title text-center" data-t="artist_title">Featured <span class="text-gold" data-t="artist_title">Artists</span></h2>
+        <p class="section-subtitle text-center" data-t="artist_sub">Meet Bali's Verified Tattoo Artists</p>
         <div class="section-divider"></div>
         <div class="row g-4 mt-4">
+            {% for item in artists_with_rating|slice:":4" %}
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
+                    <a href="{% url 'artist_detail' item.artist.id %}" class="text-decoration-none">
+                        <div class="artist-card">
+                            <div class="artist-card-img-wrap">
+                                {% if item.artist.photo.name %}
+                                    <img src="{{ item.artist.photo.url }}" alt="{{ item.artist.name }}" class="artist-card-img">
+                                {% else %}
+                                    <div class="artist-card-img-placeholder">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="artist-card-body">
+                                <h5 class="artist-name">{{ item.artist.nickname }}</h5>
+                                <p class="artist-realname">{{ item.artist.short_bio|default:item.artist.bio|truncatechars:50 }}</p>
+                                <div class="artist-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    {% if item.avg_rating %}
+                                        <span>{{ item.avg_rating }}({{ item.review_count }})</span>
+                                    {% else %}
+                                        <span data-t="no_rating">Baru</span>
+                                    {% endif %}
+                                </div>
+                                {% if item.artist.specialties.all %}
+                                <div class="artist-specialties mt-2">
+                                    {% for service in item.artist.specialties.all|slice:":3" %}
+                                    <span class="specialty-chip">{{ service.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="artist-tags mt-2">
+                                    {% if item.artist.is_available_studio %}
+                                        <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="available_studio">Studio</span></span>
+                                    {% endif %}
+                                    {% if item.artist.is_available_mobile %}
+                                        <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="available_mobile">Home Service</span></span>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-2 text-muted small">
+                                    <i class="bi bi-geo-alt"></i> {{ item.artist.service_area|default:"Bali" }}
+                                </div>
+                                <span class="btn btn-outline-gold w-100 mt-3" data-t="see_profile">View Profile</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'artist_list' %}" class="btn btn-outline-gold btn-lg">
+                <i class="bi bi-people"></i> <span data-t="artists">View All Artists</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="section-padding" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center">Tattoo <span class="text-gold">Studios</span></h2>
+        <p class="section-subtitle text-center">Verified Tattoo Studios in Bali</p>
+        <div class="section-divider"></div>
+        <div class="row g-4 mt-4">
+            {% for item in artists_with_rating|slice:":6" %}
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                    <a href="{% url 'artist_detail' item.artist.id %}" class="text-decoration-none">
+                        <div class="luxury-service-card">
+                            <div class="lc-img-wrap" style="height: 180px;">
+                                {% if item.artist.photo.name %}
+                                    <img src="{{ item.artist.photo.url }}" alt="{{ item.artist.name }}" class="lc-img">
+                                {% else %}
+                                    <div class="lc-placeholder"><i class="bi bi-building"></i></div>
+                                {% endif %}
+                            </div>
+                            <div class="lc-content">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="artist-rating"><i class="bi bi-star-fill"></i> {{ item.avg_rating|default:"5.0" }}</span>
+                                    <span class="text-muted small">({{ item.review_count|default:"0" }})</span>
+                                    <span class="bg-studio ms-auto"><i class="bi bi-geo-alt"></i> {{ item.artist.service_area|default:"Bali" }}</span>
+                                </div>
+                                <h3 class="lc-title">{{ item.artist.nickname }}</h3>
+                                <p class="lc-desc">{{ item.artist.short_bio|default:item.artist.bio|truncatewords:20 }}</p>
+                                {% if item.artist.specialties.all %}
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    {% for service in item.artist.specialties.all|slice:":4" %}
+                                    <span class="specialty-chip">{{ service.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                <div class="lc-actions mt-2">
+                                    <span class="btn btn-detail-outline w-100">View Studio →</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-building" style="font-size: 3rem; color: var(--text-muted);"></i>
+                    <p class="text-muted mt-3">Belum ada studio tersedia</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% if all_styles %}
+<section class="section-padding" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center">Browse <span class="text-gold">Styles</span></h2>
+        <p class="section-subtitle text-center">Find Your Style</p>
+        <div class="section-divider"></div>
+        <div class="row g-4 mt-4">
+            {% for style in all_styles %}
+                <div class="col-md-3 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                    <a href="{% url 'service_list' %}?style={{ style.id }}" class="text-decoration-none">
+                        <div class="category-card">
+                            <div class="category-icon"><i class="bi {{ style.icon }}"></i></div>
+                            <h5>{{ style.name }}</h5>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="mode-section section-padding" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title text-center" data-t="choose_mode_title">Home <span class="text-gold" data-t="choose_mode_title">Service</span></h2>
+        <p class="section-subtitle text-center" data-t="choose_mode_sub">Artists Come to Your Address</p>
+        <div class="section-divider"></div>
+        <p class="text-center text-muted mt-3" style="max-width: 700px; margin: 16px auto 0;">
+            Just provide your villa, hotel, or location address in Bali — a professional tattoo artist will come directly to you. 
+            Convenient, private, and still premium.
+        </p>
+        <div class="row g-4 mt-4">
             <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
-                <div class="mode-card mode-studio">
-                    <div class="mode-icon"><i class="bi bi-shop"></i></div>
-                    <h3 data-t="mode_studio_title">Tattoo di Studio</h3>
-                    <p class="text-muted" data-t="mode_studio_desc">Datang langsung ke studio premium kami yang nyaman, higienis, dan ber-AC. Konsultasi desain langsung dengan artist.</p>
+                <div class="mode-card mode-mobile">
+                    <div class="mode-icon"><i class="bi bi-house-heart"></i></div>
+                    <h3 data-t="mode_studio_title">Studio Appointment</h3>
+                    <p class="text-muted" data-t="mode_studio_desc">Visit our partner studios across Bali for a premium, hygienic tattoo experience with direct design consultation.</p>
                     <ul class="mode-features">
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_ac">Studio premium ber-AC</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_sterile">Alat steril & higienis</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_consult">Konsultasi desain tatap muka</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_free">Free minuman & snack</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_ac">Premium studio with AC</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_sterile">Sterile & hygienic equipment</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_consult">Face-to-face design consultation</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_free">Free drinks & snacks</span></li>
                     </ul>
                     <a href="{% url 'artist_list' %}?mode=studio" class="btn btn-gold w-100">
-                        <i class="bi bi-shop"></i> <span data-t="see_artist">Lihat Artist Studio</span>
+                        <i class="bi bi-shop"></i> <span data-t="see_artist">Book Studio</span>
                     </a>
                 </div>
             </div>
             <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
                 <div class="mode-card mode-mobile">
                     <div class="mode-icon"><i class="bi bi-house-heart"></i></div>
-                    <h3 data-t="available_mobile">Panggil ke Rumah</h3>
-                    <p class="text-muted" data-t="mode_mobile_desc">Males keluar? Tenang, artist kami siap datang ke lokasi kamu! Villa, hotel, atau rumah pribadi — seluruh area Bali.</p>
+                    <h3 data-t="available_mobile">Villa & Hotel Service</h3>
+                    <p class="text-muted" data-t="mode_mobile_desc">Prefer to stay in? Our artists come directly to your villa, hotel, or private residence across all Bali areas.</p>
                     <ul class="mode-features">
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_home">Artist datang ke tempatmu</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_mobile_gear">Peralatan mobile lengkap</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_all_bali">Layanan seluruh area Bali</span></li>
-                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_privacy">Privasi & kenyamanan maksimal</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_home">Artist comes to your location</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_mobile_gear">Full mobile equipment</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_all_bali">Service across all Bali</span></li>
+                        <li><i class="bi bi-check-circle-fill"></i> <span data-t="feat_privacy">Maximum privacy & comfort</span></li>
                     </ul>
                     <a href="{% url 'artist_list' %}?mode=mobile" class="btn btn-gold w-100">
-                        <i class="bi bi-house-heart"></i> <span data-t="see_artist">Lihat Artist Mobile</span>
+                        <i class="bi bi-house-heart"></i> <span data-t="see_artist">Book Home Service</span>
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-section section-padding">
+    <div class="container">
+        <div class="row" data-aos="fade-up">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item text-center">
+                    <i class="bi bi-droplet"></i>
+                    <div class="stat-number">{{ stats.artists_count }}+</div>
+                    <div class="stat-label" data-t="stats_artists">Verified Artists</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item text-center">
+                    <i class="bi bi-building"></i>
+                    <div class="stat-number">{{ stats.studio_count|default:"50" }}+</div>
+                    <div class="stat-label">Tattoo Studios</div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item text-center">
+                    <i class="bi bi-emoji-smile"></i>
+                    <div class="stat-number">{{ stats.completed_orders }}+</div>
+                    <div class="stat-label" data-t="stats_satisfied">Happy Clients</div>
                 </div>
             </div>
         </div>
@@ -131,8 +325,8 @@
 {% if categories %}
 <section class="categories-preview section-padding" data-aos="fade-up">
     <div class="container">
-        <h2 class="section-title text-center" data-t="cat_title">Kategori <span class="text-gold" data-t="cat_title">Layanan</span></h2>
-        <p class="section-subtitle text-center" data-t="cat_sub">Temukan gaya tattoo yang sesuai dengan karaktermu</p>
+        <h2 class="section-title text-center" data-t="cat_title">Service <span class="text-gold" data-t="cat_title">Categories</span></h2>
+        <p class="section-subtitle text-center" data-t="cat_sub">Find the tattoo style that matches your character</p>
         <div class="section-divider"></div>
         <div class="row g-4 mt-4">
             {% for category in categories %}
@@ -141,7 +335,7 @@
                         <div class="category-card">
                             <div class="category-icon"><i class="bi {{ category.icon }}"></i></div>
                             <h5>{{ category.name }}</h5>
-                            <div class="count">{{ category.services.count }} <span data-t="services_label">layanan</span></div>
+                            <div class="count">{{ category.services.count }} <span data-t="services_label">services</span></div>
                         </div>
                     </a>
                 </div>
@@ -151,77 +345,11 @@
 </section>
 {% endif %}
 
-{% if services_all %}
-<section class="services-section section-padding" data-aos="fade-up">
-    <div class="container">
-        <h2 class="section-title text-center" data-t="services_title">Layanan & <span class="text-gold" data-t="services_title_gold">Harga</span></h2>
-        <p class="section-subtitle text-center" data-t="services_sub">Temukan layanan tattoo impianmu dengan harga terbaik</p>
-        <div class="section-divider" data-aos="fade-up"></div>
-        <div class="row g-4 mt-4">
-            {% for service in services_all %}
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
-                    <div class="luxury-service-card">
-                        <div class="lc-img-wrap">
-                            {% if service.image.name %}
-                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="lc-img">
-                            {% else %}
-                                <div class="lc-placeholder"><i class="bi bi-palette"></i></div>
-                            {% endif %}
-                            <div class="lc-img-overlay"></div>
-                            {% if service.is_popular %}
-                                <span class="lc-badge" data-t="popular_badge">Populer</span>
-                            {% endif %}
-                            <div class="lc-tags">
-                                <span class="tag tag-diff-{{ service.difficulty }}">{{ service.get_difficulty_display }}</span>
-                                <span class="tag tag-clock"><i class="bi bi-clock"></i> {{ service.duration }}</span>
-                            </div>
-                        </div>
-                        <div class="lc-content">
-                            <h3 class="lc-title">{{ service.name }}</h3>
-                            <p class="lc-desc">{{ service.short_desc|default:service.description|truncatewords:20 }}</p>
-                            {% if service.styles.all %}
-                            <div class="d-flex flex-wrap gap-1 mb-2">
-                                {% for style in service.styles.all %}
-                                <span class="badge" style="background: linear-gradient(135deg, #d4af37, #f0d68a); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                            <div class="lc-pricing-panel">
-                                <div class="lc-pricing-header">
-                                    <span><i class="bi bi-currency-exchange"></i> <span data-t="est_kurs">Estimasi Kurs</span></span>
-                                    <span class="lc-pricing-badge" data-t="intl">Internasional</span>
-                                </div>
-                                <div class="lc-grid">
-                                    {{ service.price|multi_currency_detail }}
-                                </div>
-                            </div>
-                            <div class="lc-actions">
-                                <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline">
-                                    <i class="bi bi-eye"></i> <span data-t="see_detail">Detail</span>
-                                </a>
-                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking">
-                                    <i class="bi bi-calendar-check"></i> <span data-t="booking">Booking</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="{% url 'service_list' %}" class="btn btn-outline-gold btn-lg">
-                <i class="bi bi-grid"></i> <span data-t="all_services">Lihat Semua Layanan</span>
-            </a>
-        </div>
-    </div>
-</section>
-{% endif %}
-
 {% if services_popular %}
-<section class="popular-section section-padding">
+<section class="popular-section section-padding" data-aos="fade-up">
     <div class="container">
-        <h2 class="section-title text-center" data-aos="fade-up" data-t="popular_title">Layanan <span class="text-gold" data-t="popular_title">Populer</span></h2>
-        <p class="section-subtitle text-center" data-aos="fade-up" data-aos-delay="50" data-t="popular_sub">Paling banyak dicari dan direkomendasikan</p>
+        <h2 class="section-title text-center" data-aos="fade-up" data-t="popular_title">Popular <span class="text-gold" data-t="popular_title">Services</span></h2>
+        <p class="section-subtitle text-center" data-aos="fade-up" data-aos-delay="50" data-t="popular_sub">Most searched and highly recommended</p>
         <div class="section-divider" data-aos="fade-up" data-aos-delay="100"></div>
         <div class="row g-4 mt-4">
             {% for service in services_popular %}
@@ -235,10 +363,9 @@
                             {% endif %}
                             <div class="lc-img-overlay"></div>
                             {% if service.is_popular %}
-                                <span class="lc-badge" data-t="popular_badge">Populer</span>
+                                <span class="lc-badge" data-t="popular_badge">Popular</span>
                             {% endif %}
                             <div class="lc-tags">
-                                <span class="tag tag-diff-{{ service.difficulty }}">{{ service.get_difficulty_display }}</span>
                                 <span class="tag tag-clock"><i class="bi bi-clock"></i> {{ service.duration }}</span>
                             </div>
                         </div>
@@ -252,7 +379,7 @@
                             {% if service.styles.all %}
                             <div class="d-flex flex-wrap gap-1 mb-2">
                                 {% for style in service.styles.all %}
-                                <span class="badge" style="background: linear-gradient(135deg, #d4af37, #f0d68a); color: #000; font-weight: 500;"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
+                                <span class="specialty-chip"><i class="bi {{ style.icon }}"></i> {{ style.name }}</span>
                                 {% endfor %}
                             </div>
                             {% endif %}
@@ -268,12 +395,8 @@
                             </div>
                             
                             <div class="lc-actions">
-                                <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline" title="Detail">
-                                    <i class="bi bi-eye"></i> <span data-t="see_detail">Detail</span>
-                                </a>
-                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking">
-                                    <i class="bi bi-calendar-check"></i> <span data-t="booking">Booking</span>
-                                </a>
+                                <a href="{% url 'service_detail' service.id %}" class="btn btn-detail-outline" data-t="see_detail">Detail</a>
+                                <a href="{% url 'booking_create' %}?service={{ service.id }}" class="btn btn-gold-booking" data-t="booking">Booking</a>
                             </div>
                         </div>
                     </div>
@@ -282,114 +405,56 @@
         </div>
         <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="300">
             <a href="{% url 'service_list' %}" class="btn btn-outline-gold btn-lg">
-                <i class="bi bi-grid"></i> <span data-t="all_services">Lihat Semua Layanan</span>
+                <i class="bi bi-grid"></i> <span data-t="all_services">View All Services</span>
             </a>
         </div>
     </div>
 </section>
 {% endif %}
 
-<section class="artists-section section-padding" data-aos="fade-up">
+{% if testimonials|default:"" %}
+<section class="section-padding" data-aos="fade-up">
     <div class="container">
-        <h2 class="section-title text-center" data-t="artist_title">Artist <span class="text-gold" data-t="artist_title">Kami</span></h2>
-        <p class="section-subtitle text-center" data-t="artist_sub">Kenalan dengan tattoo artist berbakat di Bali</p>
+        <h2 class="section-title text-center">What <span class="text-gold">Clients Say</span></h2>
+        <p class="section-subtitle text-center">Testimonials from our happy customers</p>
         <div class="section-divider"></div>
         <div class="row g-4 mt-4">
-            {% for item in artists_with_rating %}
-                <div class="col-md-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'100' }}">
-                    <a href="{% url 'artist_detail' item.artist.id %}" class="text-decoration-none">
-                        <div class="artist-card">
-                            {% if item.artist.photo.name %}
-                                <img src="{{ item.artist.photo.url }}" alt="{{ item.artist.name }}" class="artist-card-img">
-                            {% else %}
-                                <div class="artist-card-img-placeholder">
-                                    <i class="bi bi-person-badge"></i>
-                                </div>
-                            {% endif %}
-                            <div class="artist-card-body">
-                                <h5>{{ item.artist.nickname }}</h5>
-                                <p class="artist-realname">{{ item.artist.name }}</p>
-                                <div class="artist-rating">
+            {% for review in testimonials|slice:":6" %}
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
+                <div class="review-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>{{ review.user.username }}</strong>
+                        <span class="text-gold">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= review.rating %}
                                     <i class="bi bi-star-fill"></i>
-                                    {% if item.avg_rating %}
-                                        <span>{{ item.avg_rating }} / 5.0</span>
-                                    {% else %}
-                                        <span data-t="no_rating">Belum ada rating</span>
-                                    {% endif %}
-                                </div>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <i class="bi bi-shield-check text-gold"></i>
-                                    <span class="text-muted" style="font-size: 0.85rem;">{{ item.artist.experience_years }} tahun</span>
-                                </div>
-                                {% if item.artist.specialties.all %}
-                                <div class="artist-specialties mb-2">
-                                    {% for service in item.artist.specialties.all|slice:":3" %}
-                                    <span class="specialty-chip">{{ service.name }}</span>
-                                    {% endfor %}
-                                    {% if item.artist.specialties.all|length > 3 %}
-                                    <span class="specialty-chip specialty-more">+{{ item.artist.specialties.all|length|add:"-3" }}</span>
-                                    {% endif %}
-                                </div>
+                                {% else %}
+                                    <i class="bi bi-star"></i>
                                 {% endif %}
-                                <div class="artist-tags">
-                                    {% if item.artist.is_available_studio %}
-                                        <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="available_studio">Studio</span></span>
-                                    {% endif %}
-                                    {% if item.artist.is_available_mobile %}
-                                        <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="available_mobile">Mobile</span></span>
-                                    {% endif %}
-                                </div>
-                                <span class="btn btn-outline-gold w-100 mt-2" data-t="see_profile">Lihat Profil</span>
-                            </div>
-                        </div>
-                    </a>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% if review.comment %}
+                        <p class="mt-2 mb-1 text-secondary" style="font-size: 0.9rem; line-height: 1.6;">{{ review.comment }}</p>
+                    {% endif %}
+                    <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
                 </div>
+            </div>
             {% endfor %}
         </div>
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="{% url 'artist_list' %}" class="btn btn-outline-gold btn-lg">
-                <i class="bi bi-people"></i> <span data-t="artists">Lihat Semua Artist</span>
-            </a>
-        </div>
     </div>
 </section>
-
-<section class="stats-section section-padding">
-    <div class="container">
-        <div class="row" data-aos="fade-up">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="stat-item text-center">
-                    <i class="bi bi-droplet"></i>
-                    <div class="stat-number">{{ stats.artists_count }}</div>
-                    <div class="stat-label" data-t="stats_artists">Artist Profesional</div>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-item text-center">
-                    <i class="bi bi-palette"></i>
-                    <div class="stat-number">{{ stats.services_count }}</div>
-                    <div class="stat-label" data-t="stats_services">Layanan Tattoo</div>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="stat-item text-center">
-                    <i class="bi bi-emoji-smile"></i>
-                    <div class="stat-number">{{ stats.completed_orders }}</div>
-                    <div class="stat-label" data-t="stats_satisfied">Pelanggan Puas</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+{% endif %}
 
 <section class="cta-section section-padding" data-aos="fade-up">
     <div class="container text-center">
-        <h2 data-aos="fade-up" data-t="ready_title">Siap Bikin <span class="text-gold" data-t="ready_title">Tattoo</span>?</h2>
+        <h2 data-aos="fade-up" data-t="ready_title">Ready for Your <span class="text-gold" data-t="ready_title">Tattoo</span>?</h2>
         <p class="lead text-muted mt-3" style="max-width: 600px; margin: 0 auto;" data-aos="fade-up" data-aos-delay="100" data-t="ready_sub">
-            Yuk booking sekarang! Bisa di studio premium atau kami yang dateng ke tempatmu.
+            Book a session at one of our premium studios or have a trusted artist come to your villa. 
+            The best tattoo experience in Bali starts here.
         </p>
         <a href="{% url 'booking_create' %}" class="btn btn-gold btn-lg mt-4" data-aos="fade-up" data-aos-delay="200" data-t="booking_now">
-            <i class="bi bi-calendar-check"></i> Booking Sekarang
+            <i class="bi bi-calendar-check"></i> Start Your Journey
         </a>
     </div>
 </section>

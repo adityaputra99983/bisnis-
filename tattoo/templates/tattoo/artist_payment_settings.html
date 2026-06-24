@@ -8,72 +8,79 @@
 <form method="post" action="{% url 'artist_payment_settings' %}" id="apForm" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <div class="ap-welcome mb-4">
-        <div class="ap-welcome-text">
-            <h2 class="mb-1">
+    <div class="ap-welcome mb-4" style="background:linear-gradient(135deg, rgba(212,175,55,0.06), rgba(212,175,55,0.01), var(--card-bg));border:1px solid rgba(212,175,55,0.12);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,0.06),transparent 70%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-40px;left:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,0.04),transparent 70%);pointer-events:none;"></div>
+        <div class="ap-welcome-text" style="position:relative;z-index:1;">
+            <h2 class="mb-1" style="font-size:1.4rem;">
                 {% if settings.accept_online_payment %}
-                    <i class="bi bi-shield-fill-check text-gold"></i> Payment Gateway Aktif
+                    <i class="bi bi-shield-fill-check" style="color:#2ecc71;"></i> Payment Gateway <span class="text-gold">Aktif</span>
                 {% else %}
-                    <i class="bi bi-shield-fill-x text-muted"></i> Payment Gateway Nonaktif
+                    <i class="bi bi-shield-slash" style="color:#e74c3c;"></i> Payment Gateway <span style="color:#e74c3c;">Nonaktif</span>
                 {% endif %}
             </h2>
-            <p class="text-muted mb-0">
+            <p class="mb-0" style="color:rgba(255,255,255,0.45);font-size:0.9rem;">
                 {% if settings.accept_online_payment %}
-                    {{ enabled_count }} metode pembayaran tersedia untuk customer. Kelola rekening, QRIS, biaya, dan notifikasi.
+                    <i class="bi bi-check-circle-fill text-gold" style="font-size:0.7rem;"></i> {{ enabled_count }} metode aktif
+                    &nbsp;<span style="color:rgba(255,255,255,0.15);">|</span>&nbsp;
+                    <i class="bi bi-bank2" style="color:#5fa3ff;font-size:0.7rem;"></i> {{ stats.bank_count }} rekening
+                    &nbsp;<span style="color:rgba(255,255,255,0.15);">|</span>&nbsp;
+                    <i class="bi bi-phone" style="color:#c084fc;font-size:0.7rem;"></i> {{ stats.ewallet_count }} e-wallet
                 {% else %}
-                    Aktifkan payment gateway untuk menerima pembayaran otomatis dari customer.
+                    Aktifkan payment gateway agar customer bisa bayar online dengan mudah.
                 {% endif %}
             </p>
         </div>
-        <div class="ap-welcome-cta">
-            <label class="ap-toggle-label {% if settings.accept_online_payment %}active{% endif %}">
+        <div class="ap-welcome-cta" style="position:relative;z-index:1;">
+            <label class="ap-switch">
                 <input type="checkbox" name="accept_online_payment" value="1" {% if settings.accept_online_payment %}checked{% endif %}>
-                <span><i class="bi bi-power"></i> {% if settings.accept_online_payment %}Aktif{% else %}Nonaktif{% endif %}</span>
+                <span class="ap-switch-track"></span>
+                <span class="ap-switch-label"><i class="bi bi-power"></i> {% if settings.accept_online_payment %}Aktif{% else %}Nonaktif{% endif %}</span>
             </label>
         </div>
     </div>
 
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
-            <div class="ap-stat">
-                <div class="ap-stat-icon" style="background:rgba(59,130,246,0.15);color:#5fa3ff;">
+            <div class="ap-stat" style="border:1px solid rgba(59,130,246,0.06);">
+                <div class="ap-stat-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(59,130,246,0.04));color:#5fa3ff;box-shadow:0 4px 12px rgba(59,130,246,0.1);">
                     <i class="bi bi-bank"></i>
                 </div>
                 <div class="ap-stat-body">
-                    <div class="ap-stat-num">{{ stats.bank_count }}</div>
+                    <div class="ap-stat-num" style="font-size:1.6rem;">{{ stats.bank_count }}</div>
                     <div class="ap-stat-label">Akun Bank</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="ap-stat">
-                <div class="ap-stat-icon" style="background:rgba(168,85,247,0.15);color:#c084fc;">
+            <div class="ap-stat" style="border:1px solid rgba(168,85,247,0.06);">
+                <div class="ap-stat-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(168,85,247,0.04));color:#c084fc;box-shadow:0 4px 12px rgba(168,85,247,0.1);">
                     <i class="bi bi-phone"></i>
                 </div>
                 <div class="ap-stat-body">
-                    <div class="ap-stat-num">{{ stats.ewallet_count }}</div>
+                    <div class="ap-stat-num" style="font-size:1.6rem;">{{ stats.ewallet_count }}</div>
                     <div class="ap-stat-label">E-Wallet</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3">
-            <div class="ap-stat">
-                <div class="ap-stat-icon" style="background:rgba(0,184,148,0.15);color:#00d2a3;">
+            <div class="ap-stat" style="border:1px solid rgba(0,184,148,0.06);">
+                <div class="ap-stat-icon" style="background:linear-gradient(135deg,rgba(0,184,148,0.12),rgba(0,184,148,0.04));color:#00d2a3;box-shadow:0 4px 12px rgba(0,184,148,0.1);">
                     <i class="bi bi-qr-code-scan"></i>
                 </div>
                 <div class="ap-stat-body">
-                    <div class="ap-stat-num">{% if settings.enable_qris and settings.qris_image.name %}✓{% else %}–{% endif %}</div>
+                    <div class="ap-stat-num" style="font-size:1.6rem;">{% if settings.enable_qris and settings.qris_image.name %}✓{% else %}–{% endif %}</div>
                     <div class="ap-stat-label">QRIS</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3">
             <div class="ap-stat">
-                <div class="ap-stat-icon">
-                    <i class="bi bi-credit-card-2-front"></i>
+                <div class="ap-stat-icon" style="background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.04));box-shadow:0 4px 12px rgba(212,175,55,0.1);">
+                    <i class="bi bi-credit-card-2-front text-gold"></i>
                 </div>
                 <div class="ap-stat-body">
-                    <div class="ap-stat-num">{{ stats.method_count }}/{{ stats.method_total }}</div>
+                    <div class="ap-stat-num" style="font-size:1.6rem;">{{ stats.method_count }}/{{ stats.method_total }}</div>
                     <div class="ap-stat-label">Metode Aktif</div>
                 </div>
             </div>
@@ -88,18 +95,25 @@
         <li><button type="button" class="ap-nav-tab" data-tab="tab-fees" role="tab"><i class="bi bi-percent"></i><span>Biaya</span></button></li>
         <li><button type="button" class="ap-nav-tab" data-tab="tab-behavior" role="tab"><i class="bi bi-clock-history"></i><span>Perilaku</span></button></li>
         <li><button type="button" class="ap-nav-tab" data-tab="tab-notify" role="tab"><i class="bi bi-bell"></i><span>Notifikasi</span></button></li>
-        <li><button type="button" class="ap-nav-tab" data-tab="tab-advanced" role="tab"><i class="bi bi-sliders"></i><span>Lanjutan</span></button></li>
+        <li id="apAdvancedTabWrapper" style="display:none"><button type="button" class="ap-nav-tab" data-tab="tab-advanced" role="tab"><i class="bi bi-sliders"></i><span>Lanjutan</span></button></li>
     </ul>
+    <div class="text-end mb-3">
+        <button type="button" id="apShowAdvanced" class="btn btn-outline-gold btn-sm">
+            <i class="bi bi-sliders"></i> Pengaturan Lanjutan
+        </button>
+    </div>
+
+    <hr class="ap-gold-divider">
 
     <!-- TAB: METODE PEMBAYARAN -->
     <div class="ap-tab-pane active" id="tab-methods" role="tabpanel">
         <div class="ap-card">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-grid-3x3-gap text-gold"></i> Pilih Metode Pembayaran</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> Metode Pembayaran</h5>
                 <span class="ap-pill ap-pill-gold">{{ stats.method_count }} / {{ stats.method_total }} Aktif</span>
             </div>
-            <div class="ap-card-body">
-                <p class="text-muted small mb-3">Aktifkan/nonaktifkan metode yang ingin ditawarkan ke customer.</p>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Aktifkan metode yang ingin ditawarkan ke customer. Customer hanya melihat metode yang aktif.</p>
                 <div class="row g-3">
                     <div class="col-md-6 col-lg-4">
                         <label class="ap-method-tile {% if settings.enable_bank_va %}active{% endif %}">
@@ -213,11 +227,11 @@
     <!-- TAB: REKENING & E-WALLET -->
     <div class="ap-tab-pane" id="tab-accounts" role="tabpanel">
         <div class="ap-card mb-4">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-bank2 text-gold"></i> Pilih Bank yang Aktif</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-bank2"></i> Pilih Bank Aktif</h5>
             </div>
-            <div class="ap-card-body">
-                <p class="text-muted small mb-3">Customer hanya akan melihat bank yang kamu aktifkan di halaman pembayaran.</p>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Customer hanya melihat bank yang kamu aktifkan.</p>
                 <div class="d-flex flex-wrap gap-2">
                     {% for bank_key, bank_label, bank_logo in bank_options %}
                     <label class="ap-chip-check">
@@ -236,11 +250,11 @@
         </div>
 
         <div class="ap-card mb-4">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-phone text-gold"></i> Pilih E-Wallet yang Aktif</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-phone"></i> Pilih E-Wallet Aktif</h5>
             </div>
-            <div class="ap-card-body">
-                <p class="text-muted small mb-3">Nonaktifkan e-wallet yang jarang dipakai customer-mu.</p>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Nonaktifkan e-wallet yang jarang dipakai.</p>
                 <div class="d-flex flex-wrap gap-2">
                     {% for ew_key, ew_label, ew_logo in ewallet_options %}
                     <label class="ap-chip-check">
@@ -257,15 +271,16 @@
             </div>
         </div>
 
+        <hr class="ap-gold-divider">
         <div class="row g-3">
             <div class="col-lg-6">
                 <div class="ap-card h-100">
-                    <div class="ap-card-head">
-                        <h5 class="mb-0"><i class="bi bi-bank2 text-gold"></i> Detail Rekening Bank</h5>
+                    <div class="ap-card-head-gold">
+                        <h5 class="mb-0"><i class="bi bi-bank2"></i> Rekening Bank</h5>
                         <span class="ap-pill ap-pill-blue">{{ stats.bank_count }} / 6</span>
                     </div>
-                    <div class="ap-card-body">
-                        <p class="text-muted small mb-3">Akun penampungan payout customer.</p>
+                    <div class="ap-card-body ap-card-body-luxury">
+                        <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Nomor rekening untuk payout dari customer.</p>
                         {% for bank_key, bank_label, bank_logo in bank_options %}
                         <div class="ap-bank-row">
                             <div class="ap-bank-row-logo">
@@ -287,12 +302,12 @@
 
             <div class="col-lg-6">
                 <div class="ap-card h-100">
-                    <div class="ap-card-head">
-                        <h5 class="mb-0"><i class="bi bi-phone text-gold"></i> Nomor E-Wallet</h5>
-                        <span class="ap-pill" style="background:rgba(168,85,247,0.15);color:#c084fc;">{{ stats.ewallet_count }} / 5</span>
+                    <div class="ap-card-head-gold">
+                        <h5 class="mb-0"><i class="bi bi-phone"></i> Nomor E-Wallet</h5>
+                        <span class="ap-pill" style="background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.12);">{{ stats.ewallet_count }} / 5</span>
                     </div>
-                    <div class="ap-card-body">
-                        <p class="text-muted small mb-3">Nomor HP terdaftar di masing-masing e-wallet.</p>
+                    <div class="ap-card-body ap-card-body-luxury">
+                        <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Nomor HP terdaftar di masing-masing e-wallet.</p>
                         {% for ew_key, ew_label, ew_logo in ewallet_options %}
                         <div class="ap-bank-row">
                             <div class="ap-bank-row-logo">
@@ -314,14 +329,15 @@
     <!-- TAB: QRIS -->
     <div class="ap-tab-pane" id="tab-qris" role="tabpanel">
         <div class="ap-card">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-qr-code-scan text-gold"></i> Konfigurasi QRIS</h5>
-                <label class="ap-toggle-label ap-toggle-label-sm">
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-qr-code-scan"></i> Konfigurasi QRIS</h5>
+                <label class="ap-switch">
                     <input type="checkbox" name="enable_qris" value="1" {% if settings.enable_qris %}checked{% endif %}>
-                    <span>{% if settings.enable_qris %}Aktif{% else %}Nonaktif{% endif %}</span>
+                    <span class="ap-switch-track"></span>
+                    <span class="ap-switch-label">{% if settings.enable_qris %}Aktif{% else %}Nonaktif{% endif %}</span>
                 </label>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <div class="row g-4">
                     <div class="col-lg-7">
                         <div class="mb-3">
@@ -384,12 +400,12 @@
     <!-- TAB: KARTU KREDIT -->
     <div class="ap-tab-pane" id="tab-card" role="tabpanel">
         <div class="ap-card">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-credit-card-2-front text-gold"></i> Konfigurasi Kartu Kredit / Debit</h5>
-                <span class="ap-pill">VISA · MC · JCB · AMEX</span>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-credit-card-2-front"></i> Kartu Kredit / Debit</h5>
+                <span class="ap-pill" style="background:rgba(212,175,55,0.08);color:var(--gold);border:1px solid rgba(212,175,55,0.1);font-size:0.7rem;">VISA · MC · JCB · AMEX</span>
             </div>
-            <div class="ap-card-body">
-                <p class="text-muted small mb-3">Atur bagaimana customer membayar via kartu (diproses manual).</p>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Atur cara customer bayar via kartu (diproses manual).</p>
 
                 <div class="mb-4">
                     <label class="ap-form-label">Metode Proses Pembayaran Kartu</label>
@@ -457,11 +473,11 @@
     <!-- TAB: BIAYA & FEE -->
     <div class="ap-tab-pane" id="tab-fees" role="tabpanel">
         <div class="ap-card">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-percent text-gold"></i> Struktur Biaya</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-percent"></i> Struktur Biaya</h5>
             </div>
-            <div class="ap-card-body">
-                <p class="text-muted small mb-3">Atur biaya tambahan per metode pembayaran (otomatis ditambahkan ke total tagihan customer).</p>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="mb-3" style="color:rgba(255,255,255,0.35);font-size:0.85rem;">Biaya tambahan per metode — otomatis ditambahkan ke total tagihan customer.</p>
                 <div class="row g-3">
                     <div class="col-sm-6 col-lg-4">
                         <div class="ap-fee-card">
@@ -551,10 +567,10 @@
         <div class="row g-3">
             <div class="col-lg-7">
                 <div class="ap-card">
-                    <div class="ap-card-head">
-                        <h5 class="mb-0"><i class="bi bi-clock-history text-gold"></i> Perilaku Pembayaran</h5>
+                    <div class="ap-card-head-gold">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Perilaku Pembayaran</h5>
                     </div>
-                    <div class="ap-card-body">
+                    <div class="ap-card-body ap-card-body-luxury">
                         <div class="mb-3">
                             <label class="ap-form-label">Mode Konfirmasi Pembayaran</label>
                             <div class="row g-2">
@@ -599,14 +615,15 @@
 
             <div class="col-lg-5">
                 <div class="ap-card">
-                    <div class="ap-card-head">
-                        <h5 class="mb-0"><i class="bi bi-clock text-gold"></i> Jam Operasional</h5>
-                        <label class="ap-toggle-label ap-toggle-label-sm">
+                    <div class="ap-card-head-gold">
+                        <h5 class="mb-0"><i class="bi bi-clock"></i> Jam Operasional</h5>
+                        <label class="ap-switch">
                             <input type="checkbox" name="accept_payment_247" value="1" {% if settings.accept_payment_247 %}checked{% endif %}>
-                            <span>24/7</span>
+                            <span class="ap-switch-track"></span>
+                            <span class="ap-switch-label">24/7</span>
                         </label>
                     </div>
-                    <div class="ap-card-body">
+                    <div class="ap-card-body ap-card-body-luxury">
                         <p class="text-muted small mb-3">Batasi kapan customer bisa membayar online.</p>
                         <div id="apTimeGrid" class="row g-2 {% if settings.accept_payment_247 %}opacity-50{% endif %}">
                             <div class="col-5">
@@ -630,10 +647,10 @@
         </div>
 
         <div class="ap-card mt-3">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-file-text text-gold"></i> Catatan & Kebijakan</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-file-text"></i> Catatan & Kebijakan</h5>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="ap-form-label" for="general_payment_note">Catatan Umum Pembayaran</label>
@@ -655,10 +672,10 @@
     <!-- TAB: NOTIFIKASI -->
     <div class="ap-tab-pane" id="tab-notify" role="tabpanel">
         <div class="ap-card">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-bell text-gold"></i> Notifikasi Pembayaran</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-bell"></i> Notifikasi Pembayaran</h5>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <p class="text-muted small mb-3">Pilih channel & event yang ingin kamu terima notifikasi.</p>
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
@@ -726,10 +743,10 @@
     <!-- TAB: ADVANCED -->
     <div class="ap-tab-pane" id="tab-advanced" role="tabpanel">
         <div class="ap-card mb-3">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-sliders text-gold"></i> Integrasi Midtrans (Opsional)</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-sliders"></i> Integrasi Midtrans</h5>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <p class="text-muted small mb-3">Untuk sistem marketplace / bagi hasil otomatis via Midtrans Split Payment.</p>
                 <div class="mb-3">
                     <label class="ap-toggle-row">
@@ -751,10 +768,10 @@
         </div>
 
         <div class="ap-card mb-3">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-shield-check text-gold"></i> Persetujuan</h5>
+            <div class="ap-card-head-gold">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> Persetujuan</h5>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <label class="ap-toggle-row">
                     <input type="checkbox" name="terms_accepted" value="1" {% if settings.terms_accepted %}checked{% endif %}>
                     <span><i class="bi bi-check2-square text-gold"></i></span>
@@ -776,13 +793,19 @@
     </div>
 
     <div class="ap-save-bar" id="apSaveBar">
-        <div class="d-flex gap-2 justify-content-end flex-wrap">
-            <button type="button" class="btn btn-outline-gold" id="apResetBtn">
-                <i class="bi bi-arrow-counterclockwise"></i> Reset
-            </button>
-            <button type="submit" class="btn btn-gold" id="apSaveBtn">
-                <i class="bi bi-check-lg"></i> <span>Simpan Pengaturan</span>
-            </button>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="ap-save-status">
+                <i class="bi bi-info-circle"></i>
+                <span id="apSaveStatusText">Belum ada perubahan</span>
+            </div>
+            <div class="ms-auto d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-gold" id="apResetBtn">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </button>
+                <button type="submit" class="btn btn-gold" id="apSaveBtn">
+                    <i class="bi bi-check-lg"></i> <span>Simpan Pengaturan</span>
+                </button>
+            </div>
         </div>
     </div>
 </form>
@@ -862,16 +885,25 @@
     cardRadios.forEach(function(r) { r.addEventListener('change', updateLinkRow); });
     updateLinkRow();
 
-    // ===== Welcome CTA toggle text update =====
+    // ===== Welcome toggle text update =====
     var welcomeToggle = document.querySelector('.ap-welcome input[name="accept_online_payment"]');
-    var welcomeLabel = welcomeToggle ? welcomeToggle.closest('label') : null;
+    var welcomeLabel = welcomeToggle ? welcomeToggle.closest('.ap-switch') : null;
     if (welcomeToggle && welcomeLabel) {
+        var welcomeLabelSpan = welcomeLabel.querySelector('.ap-switch-label');
         welcomeToggle.addEventListener('change', function() {
-            var span = welcomeLabel.querySelector('span');
-            if (span) {
-                span.innerHTML = '<i class="bi bi-power"></i> ' + (welcomeToggle.checked ? 'Aktif' : 'Nonaktif');
+            if (welcomeLabelSpan) {
+                welcomeLabelSpan.innerHTML = '<i class="bi bi-power"></i> ' + (welcomeToggle.checked ? 'Aktif' : 'Nonaktif');
             }
-            welcomeLabel.classList.toggle('active', welcomeToggle.checked);
+        });
+    }
+
+    // ===== QRIS toggle label sync =====
+    var qrisToggle = document.querySelector('#tab-qris .ap-switch input[type="checkbox"]');
+    var qrisToggleLabel = qrisToggle ? qrisToggle.closest('.ap-switch') : null;
+    if (qrisToggle && qrisToggleLabel) {
+        var qrisToggleSpan = qrisToggleLabel.querySelector('.ap-switch-label');
+        qrisToggle.addEventListener('change', function() {
+            if (qrisToggleSpan) qrisToggleSpan.textContent = qrisToggle.checked ? 'Aktif' : 'Nonaktif';
         });
     }
 
@@ -967,9 +999,40 @@
         });
     }
 
+    // ===== Show Advanced Tab =====
+    var showAdvancedBtn = document.getElementById('apShowAdvanced');
+    var advancedTabWrapper = document.getElementById('apAdvancedTabWrapper');
+    if (showAdvancedBtn && advancedTabWrapper) {
+        showAdvancedBtn.addEventListener('click', function() {
+            advancedTabWrapper.style.display = '';
+            showAdvancedBtn.style.display = 'none';
+            var advTab = advancedTabWrapper.querySelector('.ap-nav-tab');
+            if (advTab) {
+                requestAnimationFrame(function() {
+                    advTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                });
+            }
+        });
+    }
+
+    // ===== Section completion tracking =====
+    function countCompletedSections() {
+        var total = 6;
+        var done = 0;
+        if (document.querySelector('#tab-methods .ap-method-tile.active')) done++;
+        if (document.querySelectorAll('.ap-bank-row .ap-input[value]').length > 0) done++;
+        if (document.getElementById('apQrisPreviewImg') && document.getElementById('apQrisPreviewImg').src) done++;
+        if (document.querySelector('input[name="card_processing_method"]:checked')) done++;
+        if (document.querySelector('#tab-behavior input[name="confirmation_mode"]:checked')) done++;
+        if (document.querySelector('#tab-notify input[name="notification_email"]') &&
+            document.querySelector('#tab-notify input[name="notification_email"]').value) done++;
+        return { done: done, total: total };
+    }
+
     // ===== Save bar dirty state =====
     var form = document.getElementById('apForm');
     var saveBar = document.getElementById('apSaveBar');
+    var saveStatusText = document.getElementById('apSaveStatusText');
     if (form && saveBar) {
         var initialData = new FormData(form);
         function isDirty() {
@@ -984,7 +1047,13 @@
             return false;
         }
         function syncDirty() {
-            saveBar.classList.toggle('is-dirty', isDirty());
+            var dirty = isDirty();
+            saveBar.classList.toggle('is-dirty', dirty);
+            if (saveStatusText) {
+                saveStatusText.textContent = dirty
+                    ? 'Ada perubahan yang belum disimpan'
+                    : 'Belum ada perubahan';
+            }
         }
         form.addEventListener('input', syncDirty);
         form.addEventListener('change', syncDirty);

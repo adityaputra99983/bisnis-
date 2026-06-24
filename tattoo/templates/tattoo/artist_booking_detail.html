@@ -6,232 +6,232 @@
 {% block page_title %}Pesanan #{{ booking.id }}{% endblock %}
 
 {% block content %}
-<a href="{% url 'artist_booking_list' %}" class="ap-back-link mb-4">
+<a href="{% url 'artist_booking_list' %}" class="ap-back-link-luxury mb-4">
     <i class="bi bi-arrow-left"></i> Kembali ke Pesanan
 </a>
 
 <div class="row g-4 mt-2">
     <div class="col-lg-8">
-        <div class="ap-card">
-            <div class="ap-card-head">
+        <div class="ap-card ap-card-luxury">
+            <div class="ap-card-head ap-card-head-luxury">
                 <div>
-                    <h5 class="mb-0">Detail Pesanan</h5>
-                    <small class="text-muted">Dibuat {{ booking.created_at|date:"d M Y H:i" }}</small>
+                    <h5 class="mb-0 ap-card-title">Detail Pesanan</h5>
+                    <small class="ap-card-sub">Dibuat {{ booking.created_at|date:"d M Y H:i" }}</small>
                 </div>
                 <div class="d-flex gap-2">
-                    <span class="ap-pill status-{{ booking.status }}">{{ booking.get_status_display }}</span>
-                    <span class="ap-pill pay-{{ booking.payment_status }}">{{ booking.get_payment_status_display }}</span>
+                    <span class="ap-pill ap-pill-luxury status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                    <span class="ap-pill ap-pill-luxury pay-{{ booking.payment_status }}">{{ booking.get_payment_status_display }}</span>
                 </div>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <label class="ap-field-label">Customer</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-person-circle"></i>
+                        <label class="ap-field-label ap-field-label-luxury">Customer</label>
+                        <div class="ap-field-value ap-field-value-luxury">
+                            <i class="bi bi-person-circle ap-field-icon"></i>
                             <div>
-                                <strong>{{ booking.user.username }}</strong>
-                                <span class="text-muted small">{{ booking.user.email }}</span>
+                                <strong class="ap-field-strong">{{ booking.user.username }}</strong>
+                                <span class="ap-field-email">{{ booking.user.email }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="ap-field-label">Mode Layanan</label>
-                        <div class="ap-field-value">
-                            <i class="bi {% if booking.mode == 'studio' %}bi-shop{% else %}bi-house-heart{% endif %}"></i>
-                            <span>{{ booking.get_mode_display }}</span>
+                        <label class="ap-field-label ap-field-label-luxury">Mode Layanan</label>
+                        <div class="ap-field-value ap-field-value-luxury">
+                            <i class="bi {% if booking.mode == 'studio' %}bi-shop{% else %}bi-house-heart{% endif %} ap-field-icon"></i>
+                            <span class="ap-field-text">{{ booking.get_mode_display }}</span>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="ap-field-label">Layanan</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-tag"></i>
+                        <label class="ap-field-label ap-field-label-luxury">Layanan</label>
+                        <div class="ap-field-value ap-field-value-luxury">
+                            <i class="bi bi-tag ap-field-icon"></i>
                             <div>
-                                <strong>{{ booking.service.name }}</strong>
-                                {% if booking.package %}<span class="text-muted small">({{ booking.package.name }})</span>{% endif %}
+                                <strong class="ap-field-strong">{{ booking.service.name }}</strong>
+                                {% if booking.package %}<span class="ap-field-package">({{ booking.package.name }})</span>{% endif %}
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="ap-field-label">Jadwal</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-calendar3"></i>
-                            <span>{{ booking.booking_date|date:"l, d M Y" }} — {{ booking.booking_time|time:"H:i" }}</span>
+                        <label class="ap-field-label ap-field-label-luxury">Jadwal</label>
+                        <div class="ap-field-value ap-field-value-luxury">
+                            <i class="bi bi-calendar3 ap-field-icon"></i>
+                            <span class="ap-field-schedule">{{ booking.booking_date|date:"l, d M Y" }} — {{ booking.booking_time|time:"H:i" }}</span>
                         </div>
                     </div>
                     {% if booking.mode == 'mobile' and booking.location_address %}
                     <div class="col-12">
-                        <label class="ap-field-label">Alamat Customer</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-geo-alt"></i>
-                            <span>{{ booking.location_address }}</span>
+                        <label class="ap-field-label ap-field-label-luxury">Alamat Customer</label>
+                        <div class="ap-field-value ap-field-value-luxury ap-field-multiline">
+                            <i class="bi bi-geo-alt ap-field-icon"></i>
+                            <span class="ap-field-text">{{ booking.location_address }}</span>
                         </div>
                     </div>
                     {% endif %}
                     {% if booking.notes %}
                     <div class="col-12">
-                        <label class="ap-field-label">Catatan Customer</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-chat-dots"></i>
-                            <span>{{ booking.notes|linebreaks }}</span>
+                        <label class="ap-field-label ap-field-label-luxury">Catatan Customer</label>
+                        <div class="ap-field-value ap-field-value-luxury ap-field-multiline">
+                            <i class="bi bi-chat-dots ap-field-icon"></i>
+                            <span class="ap-field-text">{{ booking.notes|linebreaks }}</span>
                         </div>
                     </div>
                     {% endif %}
                     {% if booking.design_reference.name %}
                     <div class="col-12">
-                        <label class="ap-field-label">Referensi Desain</label>
-                        <div class="ap-field-value">
-                            <i class="bi bi-image"></i>
-                            <a href="{{ booking.design_reference.url }}" target="_blank" class="text-gold">Lihat Gambar</a>
+                        <label class="ap-field-label ap-field-label-luxury">Referensi Desain</label>
+                        <div class="ap-field-value ap-field-value-luxury">
+                            <i class="bi bi-image ap-field-icon"></i>
+                            <a href="{{ booking.design_reference.url }}" target="_blank" class="ap-link-luxury">Lihat Gambar</a>
                         </div>
                     </div>
                     {% endif %}
                 </div>
 
-                <div class="ap-price-box mt-4">
-                    <div class="ap-price-row">
-                        <span>Harga Layanan</span>
-                        <span>Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
+                <div class="ap-price-box ap-price-box-luxury mt-4">
+                    <div class="ap-price-row ap-price-row-luxury">
+                        <span class="ap-price-label">Harga Layanan</span>
+                        <span class="ap-price-value">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
                     </div>
                     {% if booking.travel_fee %}
-                    <div class="ap-price-row">
-                        <span>Biaya Travel</span>
-                        <span>Rp {{ booking.travel_fee|floatformat:0|intcomma }}</span>
+                    <div class="ap-price-row ap-price-row-luxury">
+                        <span class="ap-price-label">Biaya Travel</span>
+                        <span class="ap-price-value">Rp {{ booking.travel_fee|floatformat:0|intcomma }}</span>
                     </div>
                     {% endif %}
-                    <div class="ap-price-row ap-price-total">
-                        <span>Total</span>
-                        <span>Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
+                    <div class="ap-price-row ap-price-total ap-price-total-luxury">
+                        <span class="ap-price-label">Total</span>
+                        <span class="ap-price-total-amount">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
                     </div>
                 </div>
             </div>
         </div>
 
         {% if review %}
-        <div class="ap-card mt-4">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-star text-gold"></i> Ulasan Customer</h5>
+        <div class="ap-card ap-card-luxury mt-4">
+            <div class="ap-card-head ap-card-head-luxury">
+                <h5 class="mb-0 ap-card-title"><i class="bi bi-star ap-title-icon text-gold"></i> Ulasan Customer</h5>
             </div>
-            <div class="ap-card-body">
+            <div class="ap-card-body ap-card-body-luxury">
                 <div class="d-flex align-items-center gap-3 mb-2">
-                    <strong>{{ review.user.username }}</strong>
-                    <span class="text-gold">
+                    <strong class="ap-review-name">{{ review.user.username }}</strong>
+                    <span class="ap-review-stars text-gold">
                         {% for i in "12345"|make_list %}
                             {% if forloop.counter <= review.rating %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
                         {% endfor %}
                     </span>
                 </div>
-                {% if review.comment %}<p>{{ review.comment }}</p>{% endif %}
-                <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                {% if review.comment %}<p class="ap-review-comment">{{ review.comment }}</p>{% endif %}
+                <small class="ap-review-date">{{ review.created_at|date:"d M Y" }}</small>
             </div>
         </div>
         {% endif %}
     </div>
 
     <div class="col-lg-4">
-        <div class="ap-card ap-card-sticky">
-            <div class="ap-card-head">
-                <h5 class="mb-0"><i class="bi bi-gear"></i> Aksi</h5>
+        <div class="ap-card ap-card-sticky ap-card-action-luxury">
+            <div class="ap-card-head ap-card-head-luxury ap-card-head-action">
+                <h5 class="mb-0 ap-card-title"><i class="bi bi-gear ap-title-icon"></i> Aksi</h5>
             </div>
-            <div class="ap-card-body">
-                <p class="small text-muted mb-3">
-                    Status saat ini: <strong>{{ booking.get_status_display }}</strong>
+            <div class="ap-card-body ap-card-body-luxury">
+                <p class="ap-status-text mb-3">
+                    Status saat ini: <strong class="ap-status-strong">{{ booking.get_status_display }}</strong>
                 </p>
 
                 {% if booking.status == 'pending' %}
-                <form method="post" action="{% url 'artist_update_status' booking.id %}">
+                <form method="post" action="{% url 'artist_update_status' booking.id %}" class="ap-action-form">
                     {% csrf_token %}
-                    <button type="submit" name="status" value="confirmed" class="btn btn-gold w-100 mb-2">
+                    <button type="submit" name="status" value="confirmed" class="btn btn-gold btn-luxury w-100 mb-2">
                         <i class="bi bi-check-lg"></i> Konfirmasi Pesanan
                     </button>
-                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger w-100">
+                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger btn-luxury-outline w-100">
                         <i class="bi bi-x-lg"></i> Tolak / Batalkan
                     </button>
                 </form>
                 {% elif booking.status == 'confirmed' %}
-                <form method="post" action="{% url 'artist_update_status' booking.id %}">
+                <form method="post" action="{% url 'artist_update_status' booking.id %}" class="ap-action-form">
                     {% csrf_token %}
-                    <button type="submit" name="status" value="in_progress" class="btn btn-gold w-100 mb-2">
+                    <button type="submit" name="status" value="in_progress" class="btn btn-gold btn-luxury w-100 mb-2">
                         <i class="bi bi-play-fill"></i> Mulai Mengerjakan
                     </button>
-                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger w-100">
+                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger btn-luxury-outline w-100">
                         <i class="bi bi-x-lg"></i> Batalkan
                     </button>
                 </form>
                 {% elif booking.status == 'in_progress' %}
-                <form method="post" action="{% url 'artist_update_status' booking.id %}">
+                <form method="post" action="{% url 'artist_update_status' booking.id %}" class="ap-action-form">
                     {% csrf_token %}
-                    <button type="submit" name="status" value="completed" class="btn btn-gold w-100 mb-2">
+                    <button type="submit" name="status" value="completed" class="btn btn-gold btn-luxury w-100 mb-2">
                         <i class="bi bi-check-all"></i> Tandai Selesai
                     </button>
-                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger w-100">
+                    <button type="submit" name="status" value="cancelled" class="btn btn-outline-danger btn-luxury-outline w-100">
                         <i class="bi bi-x-lg"></i> Batalkan
                     </button>
                 </form>
                 {% elif booking.status == 'completed' %}
-                <div class="ap-alert ap-alert-success">
-                    <i class="bi bi-check-circle-fill"></i> Pesanan ini sudah selesai.
+                <div class="ap-alert ap-alert-success ap-alert-luxury">
+                    <i class="bi bi-check-circle-fill ap-alert-icon"></i> Pesanan ini sudah selesai.
                 </div>
                 {% elif booking.status == 'cancelled' %}
-                <div class="ap-alert ap-alert-danger">
-                    <i class="bi bi-x-circle-fill"></i> Pesanan ini dibatalkan.
+                <div class="ap-alert ap-alert-danger ap-alert-luxury">
+                    <i class="bi bi-x-circle-fill ap-alert-icon"></i> Pesanan ini dibatalkan.
                 </div>
                 {% endif %}
 
                 {% if booking.payment_status == 'paid' %}
-                <div class="ap-alert ap-alert-success mt-3">
-                    <i class="bi bi-credit-card-2-front"></i> Pembayaran sudah <strong>LUNAS</strong>
-                    {% if booking.paid_at %}<br><small class="text-muted">{{ booking.paid_at|date:"d M Y H:i" }}</small>{% endif %}
+                <div class="ap-alert ap-alert-success ap-alert-luxury mt-3">
+                    <i class="bi bi-credit-card-2-front ap-alert-icon"></i> Pembayaran sudah <strong class="ap-alert-strong">LUNAS</strong>
+                    {% if booking.paid_at %}<br><small class="ap-alert-sub">{{ booking.paid_at|date:"d M Y H:i" }}</small>{% endif %}
                 </div>
                 {% elif booking.payment_status == 'unpaid' %}
-                <div class="ap-alert ap-alert-warning mt-3">
-                    <i class="bi bi-exclamation-triangle"></i> Pembayaran <strong>BELUM LUNAS</strong>
+                <div class="ap-alert ap-alert-warning ap-alert-luxury mt-3">
+                    <i class="bi bi-exclamation-triangle ap-alert-icon"></i> Pembayaran <strong class="ap-alert-strong">BELUM LUNAS</strong>
                 </div>
                 {% endif %}
 
                 {% if booking.payment_verification_status == 'pending' %}
-                <div class="ap-card mt-3" style="border: 1px solid rgba(96, 165, 250, 0.4);">
-                    <div class="ap-card-head" style="background: rgba(96, 165, 250, 0.08);">
-                        <h6 class="mb-0"><i class="bi bi-hourglass-split text-info"></i> Verifikasi Pembayaran</h6>
+                <div class="ap-card ap-card-verify mt-3">
+                    <div class="ap-card-head ap-card-head-verify">
+                        <h6 class="mb-0 ap-verify-title"><i class="bi bi-hourglass-split ap-verify-icon"></i> Verifikasi Pembayaran</h6>
                     </div>
-                    <div class="ap-card-body">
-                        <p class="small text-muted mb-2">
+                    <div class="ap-card-body ap-card-body-luxury">
+                        <p class="ap-verify-text mb-2">
                             Customer sudah submit bukti pembayaran {{ booking.payment_method }}.
                             Silakan periksa dan putuskan untuk approve / reject.
                         </p>
                         {% if booking.payment_proof.name %}
-                        <a href="{{ booking.payment_proof.url }}" target="_blank" class="btn btn-outline-gold btn-sm w-100 mb-3">
+                        <a href="{{ booking.payment_proof.url }}" target="_blank" class="btn btn-outline-gold btn-luxury-outline btn-sm w-100 mb-3">
                             <i class="bi bi-image"></i> Lihat Bukti Pembayaran
                         </a>
                         {% endif %}
                         <form method="post" action="{% url 'payment_verify' booking.id %}">
                             {% csrf_token %}
-                            <textarea name="note" rows="2" class="form-control form-control-sm mb-2"
+                            <textarea name="note" rows="2" class="ap-textarea-luxury form-control form-control-sm mb-2"
                                       placeholder="Catatan (wajib diisi untuk reject)"></textarea>
-                            <button type="submit" name="action" value="approve" class="btn btn-success w-100 mb-2">
-                                <i class="bi bi-check-circle-fill"></i> Approve &amp; Konfirmasi
+                            <button type="submit" name="action" value="approve" class="btn btn-success btn-luxury w-100 mb-2">
+                                <i class="bi bi-check-circle-fill"></i> Approve & Konfirmasi
                             </button>
-                            <button type="submit" name="action" value="reject" class="btn btn-outline-danger w-100">
+                            <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-luxury-outline w-100">
                                 <i class="bi bi-x-circle"></i> Tolak Bukti
                             </button>
                         </form>
                     </div>
                 </div>
                 {% elif booking.payment_verification_status == 'approved' %}
-                <div class="ap-alert ap-alert-success mt-3">
-                    <i class="bi bi-patch-check-fill"></i> Bukti pembayaran <strong>DISETUJUI</strong>
+                <div class="ap-alert ap-alert-success ap-alert-luxury mt-3">
+                    <i class="bi bi-patch-check-fill ap-alert-icon"></i> Bukti pembayaran <strong class="ap-alert-strong">DISETUJUI</strong>
                     {% if booking.payment_verified_at %}
-                    <br><small class="text-muted">{{ booking.payment_verified_at|date:"d M Y H:i" }}</small>
+                    <br><small class="ap-alert-sub">{{ booking.payment_verified_at|date:"d M Y H:i" }}</small>
                     {% endif %}
                     {% if booking.payment_verification_note %}
-                    <br><em class="small">"{{ booking.payment_verification_note }}"</em>
+                    <br><em class="ap-alert-note">"{{ booking.payment_verification_note }}"</em>
                     {% endif %}
                 </div>
                 {% elif booking.payment_verification_status == 'rejected' %}
-                <div class="ap-alert ap-alert-danger mt-3">
-                    <i class="bi bi-x-octagon-fill"></i> Bukti pembayaran <strong>DITOLAK</strong>
+                <div class="ap-alert ap-alert-danger ap-alert-luxury mt-3">
+                    <i class="bi bi-x-octagon-fill ap-alert-icon"></i> Bukti pembayaran <strong class="ap-alert-strong">DITOLAK</strong>
                     {% if booking.payment_verification_note %}
-                    <br><em class="small">Alasan: {{ booking.payment_verification_note }}</em>
+                    <br><em class="ap-alert-note">Alasan: {{ booking.payment_verification_note }}</em>
                     {% endif %}
                 </div>
                 {% endif %}

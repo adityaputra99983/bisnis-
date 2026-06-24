@@ -229,6 +229,42 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Inject artist-specific config
         try:
             ps = booking.artist.payment_settings
+            # Override bank VA accounts dengan rekening artist
+            bank_map = {
+                'bca_va': ('bca', 'bank_bca_number', 'bank_bca_name', 'BCA'),
+                'mandiri_va': ('mandiri', 'bank_mandiri_number', 'bank_mandiri_name', 'Mandiri'),
+                'bni_va': ('bni', 'bank_bni_number', 'bank_bni_name', 'BNI'),
+                'bri_va': ('bri', 'bank_bri_number', 'bank_bri_name', 'BRI'),
+                'permata_va': ('permata', 'bank_permata_number', 'bank_permata_name', 'Permata'),
+                'cimb_va': ('cimb', 'bank_cimb_number', 'bank_cimb_name', 'CIMB Niaga'),
+            }
+            for method_key, (acct_key, num_field, name_field, default_bank) in bank_map.items():
+                acct_num = getattr(ps, num_field, None)
+                acct_name = getattr(ps, name_field, None)
+                if acct_num and acct_name:
+                    accounts[acct_key] = {
+                        'bank_name': default_bank,
+                        'account_number': acct_num,
+                        'account_name': acct_name,
+                    }
+
+            # Override e-wallet accounts dengan nomor artist
+            ewallet_map = {
+                'gopay': ('ewallet_gopay', 'GoPay'),
+                'shopeepay': ('ewallet_shopeepay', 'ShopeePay'),
+                'dana': ('ewallet_dana', 'DANA'),
+                'ovo': ('ewallet_ovo', 'OVO'),
+                'linkaja': ('ewallet_linkaja', 'LinkAja'),
+            }
+            for method_key, (field, provider) in ewallet_map.items():
+                number = getattr(ps, field, None)
+                if number:
+                    accounts[method_key] = {
+                        'provider': provider,
+                        'number': number,
+                        'name': ps.artist.nickname,
+                    }
+
             accounts['credit_card'] = {
                 'processing_method': ps.card_processing_method or 'manual',
                 'payment_link': ps.card_payment_link or '',
@@ -351,10 +387,32 @@ class PaymentMethodsView(APIView):
                         'retail': s.enable_convenience_store,
                         'qris': getattr(s, 'enable_qris', False),
                     }
+                    # Per-method enable flags
+                    per_method_enabled = set()
+                    if enabled.get('bank_va'):
+                        if getattr(s, 'enable_bca', True):    per_method_enabled.add('bca_va')
+                        if getattr(s, 'enable_mandiri', True): per_method_enabled.add('mandiri_va')
+                        if getattr(s, 'enable_bni', True):    per_method_enabled.add('bni_va')
+                        if getattr(s, 'enable_bri', True):    per_method_enabled.add('bri_va')
+                        if getattr(s, 'enable_permata', False): per_method_enabled.add('permata_va')
+                        if getattr(s, 'enable_cimb', False):  per_method_enabled.add('cimb_va')
+                    if enabled.get('ewallet'):
+                        if getattr(s, 'enable_gopay', True):     per_method_enabled.add('gopay')
+                        if getattr(s, 'enable_shopeepay', True): per_method_enabled.add('shopeepay')
+                        if getattr(s, 'enable_dana', True):      per_method_enabled.add('dana')
+                        if getattr(s, 'enable_ovo', True):       per_method_enabled.add('ovo')
+                        if getattr(s, 'enable_linkaja', False):  per_method_enabled.add('linkaja')
+                    if enabled.get('qris'):
+                        per_method_enabled.add('qris')
+                    if enabled.get('convenience_store'):
+                        per_method_enabled.update(['indomaret', 'alfamart'])
+                    if enabled.get('credit_card'):
+                        per_method_enabled.add('credit_card')
+
                     if not s.accept_online_payment:
                         methods = []
                     elif enabled_only:
-                        methods = [m for m in methods if enabled.get(m['group'], False)]
+                        methods = [m for m in methods if m['code'] in per_method_enabled]
                 except Exception:
                     pass
             except Artist.DoesNotExist:
@@ -383,7 +441,7 @@ def api_root(request):
     """GET /api/v1/ - root endpoint dengan daftar semua endpoint."""
     base = request.build_absolute_uri('/api/v1/')
     return Response({
-        'name': 'Bali Tattoo Studio API',
+        'name': 'Bali Ink Hub API',
         'version': 'v1',
         'endpoints': {
             'categories':     f'{base}categories/',

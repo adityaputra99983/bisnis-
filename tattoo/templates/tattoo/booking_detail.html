@@ -2,7 +2,7 @@
 {% load static %}
 {% load currency_tags %}
 
-{% block title %}Detail Pesanan #{{ booking.id }} - Bali Tattoo Studio{% endblock %}
+{% block title %}Detail Pesanan #{{ booking.id }} - Bali Ink Hub{% endblock %}
 
 {% block extra_js %}
 {% if booking.payment_status != 'paid' and booking.status != 'cancelled' %}
@@ -21,22 +21,28 @@
 {% endblock %}
 
 {% block content %}
-<section class="py-5 mt-5">
+<section class="section-padding">
     <div class="container">
 
-        <div class="booking-detail-header" data-aos="fade-up">
+        <div class="booking-detail-header luxury-header" data-aos="fade-up">
             <div class="bdh-back">
                 <a href="{% url 'booking_list' %}" class="btn-ghost-link">
                     <i class="bi bi-arrow-left"></i> <span data-t="back_to_orders">Kembali ke Pesanan</span>
                 </a>
             </div>
             <div class="bdh-main">
-                <div>
+                <div class="bdh-info">
                     <div class="bdh-id"><span data-t="order_id">Pesanan</span> #{{ booking.id }}</div>
                     <h1 class="bdh-title">{{ booking.service.name }}</h1>
                     <div class="bdh-meta">
-                        <span><i class="bi bi-calendar3"></i> <span data-t="created_at">Dibuat</span> {{ booking.created_at|date:"d M Y" }}</span>
-                        <span><i class="bi bi-person-badge"></i> {{ booking.artist.nickname }}</span>
+                        <span class="bdh-meta-item">
+                            <i class="bi bi-calendar3"></i>
+                            <span data-t="created_at">Dibuat</span> {{ booking.created_at|date:"d M Y" }}
+                        </span>
+                        <span class="bdh-meta-item">
+                            <i class="bi bi-person-badge"></i>
+                            {{ booking.artist.nickname }}
+                        </span>
                     </div>
                 </div>
                 <div class="bdh-badges">
@@ -48,6 +54,7 @@
                     </span>
                 </div>
             </div>
+            <div class="bdh-glow"></div>
         </div>
 
         <!-- ===== STATUS TIMELINE ===== -->
@@ -161,9 +168,9 @@
                             <div class="bic-label" data-t="label_mode">Mode Layanan</div>
                             <div class="bic-value">
                                 {% if booking.mode == 'studio' %}
-                                    <span class="bg-studio"><i class="bi bi-shop"></i> <span data-t="mode_studio">Datang ke Studio</span></span>
+                                    <span class="mode-badge mode-studio"><i class="bi bi-shop"></i> <span data-t="mode_studio">Datang ke Studio</span></span>
                                 {% else %}
-                                    <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="mode_mobile">Panggil ke Rumah</span></span>
+                                    <span class="mode-badge mode-mobile"><i class="bi bi-house-heart"></i> <span data-t="mode_mobile">Panggil ke Rumah</span></span>
                                 {% endif %}
                             </div>
                         </div>

@@ -9,52 +9,72 @@
     {% csrf_token %}
 
     <div class="row g-4">
-        <div class="col-lg-4">
+        <div class="col-lg-5">
             <div class="ap-card">
                 <div class="ap-card-head">
                     <h5 class="mb-0"><i class="bi bi-camera"></i> Foto Profil</h5>
                 </div>
-                <div class="ap-card-body text-center">
-                    <div class="ap-avatar-upload mb-3">
+                <div class="ap-card-body ap-form-card-body-compact text-center">
+                    <div class="ap-avatar-upload">
                         {% if artist.photo.name %}
                             <img src="{{ artist.photo.url }}" alt="{{ artist.nickname }}" id="previewPhoto">
                         {% else %}
                             <div class="ap-avatar-placeholder">
                                 <i class="bi bi-person-badge"></i>
                             </div>
+                            <img src="" alt="" id="previewPhoto" style="display:none">
                         {% endif %}
                         <label for="id_photo" class="ap-avatar-overlay">
-                            <i class="bi bi-camera-fill"></i> Ganti Foto
+                            <i class="bi bi-camera-fill"></i>
+                            <span>Ganti Foto</span>
                         </label>
-                        <input type="file" name="photo" id="id_photo" accept="image/*" style="display:block;margin-top:8px;width:100%">
                     </div>
-                    <p class="text-muted small mb-0">Format: JPG, PNG, WEBP. Maks 10MB</p>
+                    <input type="file" name="photo" id="id_photo" accept="image/*" style="display:none">
+                    <p class="ap-photo-info mb-0">
+                        <i class="bi bi-info-circle"></i> JPG, PNG, WEBP. Maks 10MB
+                    </p>
+                    <p class="ap-photo-info mb-0" id="fileName" style="display:none"></p>
                 </div>
             </div>
 
-            <div class="ap-card mt-4">
+            <div class="ap-card mt-3">
                 <div class="ap-card-head">
                     <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Sosial Media</h5>
                 </div>
-                <div class="ap-card-body">
-                    <div class="mb-3">
-                        <label class="ap-form-label">Instagram</label>
-                        <div class="input-group">
-                            <span class="input-group-text ap-input-group">@</span>
-                            <input type="text" name="instagram" class="ap-input" value="{{ artist.instagram|default:'' }}" placeholder="username">
-                        </div>
+                <div class="ap-card-body ap-form-card-body">
+                    <label class="ap-form-label">Instagram</label>
+                    <div class="ap-input-group">
+                        <span class="ap-input-group-text">@</span>
+                        <input type="text" name="instagram" class="ap-input" value="{{ artist.instagram|default:'' }}" placeholder="username">
                     </div>
+                    <p class="ap-photo-info mt-1 mb-0">
+                        <i class="bi bi-info-circle"></i> Biarkan kosong jika tidak punya
+                    </p>
+                </div>
+            </div>
+
+            <div class="ap-card mt-3">
+                <div class="ap-card-head">
+                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Preview Publik</h5>
+                </div>
+                <div class="ap-card-body ap-form-card-body">
+                    <a href="{% url 'artist_detail' artist.id %}" class="btn btn-outline-gold btn-sm w-100">
+                        <i class="bi bi-eye"></i> Lihat Profil Publik
+                    </a>
+                    <p class="ap-photo-info mt-1 mb-0">
+                        <i class="bi bi-info-circle"></i> Profil akan ditampilkan di halaman publik
+                    </p>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <div class="ap-card">
                 <div class="ap-card-head">
                     <h5 class="mb-0"><i class="bi bi-person-gear"></i> Informasi Profil</h5>
                 </div>
-                <div class="ap-card-body">
-                    <div class="row g-3">
+                <div class="ap-card-body ap-form-card-body">
+                    <div class="row g-4">
                         <div class="col-md-6">
                             <label class="ap-form-label">Nama Panggilan (Nickname)</label>
                             <input type="text" name="nickname" class="ap-input" value="{{ artist.nickname }}" required>
@@ -77,29 +97,17 @@
                         </div>
                         <div class="col-12">
                             <label class="ap-form-label">Bio Lengkap</label>
-                            <textarea name="bio" class="ap-input ap-textarea" rows="5" placeholder="Ceritakan tentang dirimu, pengalaman, dan gaya tattoomu">{{ artist.bio }}</textarea>
+                            <textarea name="bio" class="ap-input ap-textarea" rows="6" placeholder="Ceritakan tentang dirimu, pengalaman, dan gaya tattoomu">{{ artist.bio }}</textarea>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="ap-card mt-4">
-                <div class="ap-card-head">
-                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Preview Profil Publik</h5>
-                </div>
-                <div class="ap-card-body">
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-info-circle"></i> Profile ini akan ditampilkan di halaman publik
-                        <a href="{% url 'artist_detail' artist.id %}" class="text-gold">lihat profil publik →</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-gold">
+            <div class="d-flex gap-3 mt-4">
+                <button type="submit" class="btn btn-gold px-4">
                     <i class="bi bi-check-lg"></i> Simpan Perubahan
                 </button>
-                <a href="{% url 'artist_dashboard' %}" class="btn btn-outline-gold">Batal</a>
+                <a href="{% url 'artist_dashboard' %}" class="btn btn-outline-gold px-4">Batal</a>
             </div>
         </div>
     </div>
@@ -111,18 +119,39 @@
 document.addEventListener('DOMContentLoaded', function() {
     var photoInput = document.getElementById('id_photo');
     var preview = document.getElementById('previewPhoto');
-    if (photoInput && preview) {
+    var fileName = document.getElementById('fileName');
+
+    if (photoInput) {
         photoInput.addEventListener('change', function(e) {
             var file = e.target.files[0];
             if (file) {
                 var reader = new FileReader();
                 reader.onload = function(ev) {
-                    preview.src = ev.target.result;
-                    preview.style.display = 'block';
+                    if (preview) {
+                        preview.src = ev.target.result;
+                        preview.style.display = 'block';
+                    }
                 };
                 reader.readAsDataURL(file);
+                if (fileName) {
+                    fileName.textContent = '\u2705 ' + file.name;
+                    fileName.style.display = 'block';
+                }
             }
         });
+    }
+
+    if (photoInput && !preview) {
+        var placeholder = document.querySelector('.ap-avatar-placeholder');
+        var newImg = document.createElement('img');
+        newImg.id = 'previewPhoto';
+        newImg.alt = 'Preview';
+        if (placeholder) {
+            placeholder.parentNode.insertBefore(newImg, placeholder);
+            placeholder.style.display = 'none';
+        }
+        preview = newImg;
+        photoInput.dispatchEvent(new Event('change'));
     }
 });
 </script>

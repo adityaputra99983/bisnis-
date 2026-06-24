@@ -1,7 +1,7 @@
 {% extends 'tattoo/base.html' %}
 {% load static %}
 
-{% block title %}Tattoo Artists - Bali Tattoo Studio{% endblock %}
+{% block title %}Tattoo Artists - Bali Ink Hub{% endblock %}
 
 {% block content %}
 <section class="page-header" data-aos="fade-down">
@@ -13,7 +13,6 @@
 
 <section class="py-5">
     <div class="container">
-        <!-- Explorer Bar -->
         <div class="search-filter-bar mb-5" data-aos="fade-up">
             <div class="row g-3">
                 <div class="col-md-8">
@@ -80,7 +79,7 @@
                                 {% if artist.artist_styles.all %}
                                 <div class="artist-specialties mt-1">
                                     {% for ae in artist.artist_styles.all|slice:":2" %}
-                                        <span class="specialty-chip" style="background: var(--gradient-gold); color: #000;"><i class="bi {{ ae.style.icon }}"></i> {{ ae.style.name }}</span>
+                                        <span class="specialty-chip" style="background: var(--gold-bg); color: var(--gold-dark);"><i class="bi {{ ae.style.icon }}"></i> {{ ae.style.name }}</span>
                                     {% endfor %}
                                 </div>
                                 {% endif %}
@@ -93,7 +92,7 @@
                                         <span class="bg-mobile"><i class="bi bi-house-heart"></i> <span data-t="available_mobile">Mobile</span></span>
                                     {% endif %}
                                 </div>
-                                <span class="btn btn-gold w-100 mt-3" data-t="see_profile">Lihat Profil</span>
+                                <span class="btn btn-outline-gold w-100 mt-3" data-t="see_profile">Lihat Profil</span>
                             </div>
                         </div>
                     </a>

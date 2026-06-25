@@ -200,6 +200,22 @@ class BookingViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         booking.status = 'cancelled'
+
+        # Reset seluruh data pembayaran agar customer harus transaksi ulang
+        booking.payment_status = 'failed'
+        booking.is_paid = False
+        booking.paid_at = None
+        booking.payment_confirmed_at = None
+        booking.transaction_id = None
+        booking.payment_expires_at = None
+        booking.payment_proof = None
+        booking.payment_proof_uploaded_at = None
+        if booking.payment_verification_status == 'pending':
+            booking.payment_verification_status = 'rejected'
+            booking.payment_verification_note = 'Pembayaran dibatalkan karena pesanan dibatalkan.'
+            booking.payment_verified_at = timezone.now()
+            booking.payment_verified_by = request.user
+
         booking.save()
         return Response({'detail': 'Booking dibatalkan.'}, status=status.HTTP_200_OK)
 

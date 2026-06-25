@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError
+from django.utils import timezone
 from .models import ServiceCategory, Style, Service, ServicePackage, Artist, ArtistStyle, Portfolio, Booking, Review, ArtistPaymentSettings
 from .forms import RegisterForm, BookingForm, ReviewForm
 from .payment import (
@@ -647,7 +648,7 @@ def payment_verify(request, booking_id):
     else:
         messages.warning(
             request,
-            f'Pembayaran pesanan #{booking.id} ditolak. Customer akan diminta upload ulang.'
+            f'Pembayaran pesanan #{booking.id} ditolak. Customer akan diminta upload bukti baru dan melakukan transaksi ulang.'
         )
     return redirect('artist_booking_detail', booking_id=booking.id)
 
@@ -827,6 +828,24 @@ def artist_update_status(request, booking_id):
         return redirect('artist_booking_detail', booking_id=booking.id)
 
     booking.status = new_status
+
+    # Jika artist membatalkan booking, reset seluruh data pembayaran
+    # agar customer harus transaksi ulang jika ingin pesan lagi
+    if new_status == 'cancelled':
+        booking.payment_status = 'failed'
+        booking.is_paid = False
+        booking.paid_at = None
+        booking.payment_confirmed_at = None
+        booking.transaction_id = None
+        booking.payment_expires_at = None
+        booking.payment_proof = None
+        booking.payment_proof_uploaded_at = None
+        if booking.payment_verification_status == 'pending':
+            booking.payment_verification_status = 'rejected'
+            booking.payment_verification_note = 'Pembayaran dibatalkan karena pesanan dibatalkan oleh artist.'
+            booking.payment_verified_at = timezone.now()
+            booking.payment_verified_by = request.user
+
     booking.save()
 
     status_labels = dict(Booking.STATUS_CHOICES)

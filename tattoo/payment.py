@@ -393,6 +393,17 @@ def verify_payment_proof(booking, action, note='', by=None):
         booking.payment_verification_note = note
         booking.payment_verified_at = now
         booking.payment_verified_by = by
+
+        # Reset seluruh data pembayaran agar customer harus transaksi ulang
+        booking.payment_status = 'failed'
+        booking.is_paid = False
+        booking.paid_at = None
+        booking.payment_confirmed_at = None
+        booking.transaction_id = None
+        booking.payment_expires_at = None
+        booking.payment_proof = None
+        booking.payment_proof_uploaded_at = None
+
         booking.save()
         return True, None
 

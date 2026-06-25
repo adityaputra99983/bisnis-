@@ -10,7 +10,7 @@ Alur SOP-compliant:
    - Customer cukup klik "Saya sudah bayar" → langsung confirmed
 5. Artist/admin verifikasi bukti bayar:
    - Approve → payment_status='paid' + booking.status='confirmed'
-   - Reject  → payment_verification_status='rejected', customer bisa upload ulang
+   - Reject  → payment_verification_status='not_required', customer bisa upload ulang
 6. Jika expires_at terlewat → booking.payment_status='failed' (auto-expire)
 
 Fungsi-fungsi di sini:
@@ -389,10 +389,6 @@ def verify_payment_proof(booking, action, note='', by=None):
     if action == 'reject':
         if not note:
             return False, 'Wajib berikan alasan penolakan untuk customer.'
-        booking.payment_verification_status = 'rejected'
-        booking.payment_verification_note = note
-        booking.payment_verified_at = now
-        booking.payment_verified_by = by
 
         # Reset seluruh data pembayaran agar customer harus transaksi ulang
         booking.payment_status = 'failed'
@@ -403,6 +399,12 @@ def verify_payment_proof(booking, action, note='', by=None):
         booking.payment_expires_at = None
         booking.payment_proof = None
         booking.payment_proof_uploaded_at = None
+
+        # Hilangkan seluruh data verifikasi agar customer bisa upload bukti baru
+        booking.payment_verification_status = 'not_required'
+        booking.payment_verification_note = None
+        booking.payment_verified_at = None
+        booking.payment_verified_by = None
 
         booking.save()
         return True, None

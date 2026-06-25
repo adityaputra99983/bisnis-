@@ -361,6 +361,51 @@ class BookingViewSet(viewsets.ModelViewSet):
             'requires_verification': requires_proof,
         })
 
+    @action(detail=True, methods=['post'], url_path='verify-payment')
+    def verify_payment(self, request, pk=None):
+        """POST /api/v1/bookings/<id>/verify-payment/
+
+        Artist approve / reject bukti pembayaran customer.
+
+        Body (JSON):
+        {
+            "action": "approve" | "reject",
+            "note": "alasan penolakan (wajib untuk reject)"
+        }
+        """
+        booking = self.get_object()
+
+        # Hanya artist yang memiliki booking atau staff yang bisa verifikasi
+        if not request.user.is_staff:
+            if not hasattr(request.user, 'artist') or booking.artist_id != request.user.artist.id:
+                return Response(
+                    {'detail': 'Kamu tidak memiliki akses untuk memverifikasi pesanan ini.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        if booking.payment_status == 'paid':
+            return Response(
+                {'detail': 'Pembayaran ini sudah lunas.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        action = (request.data.get('action') or '').strip().lower()
+        note = (request.data.get('note') or '').strip()
+
+        success, error = verify_payment_proof(booking, action, note, by=request.user)
+        if not success:
+            return Response(
+                {'detail': error or 'Gagal memproses verifikasi.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        booking.refresh_from_db()
+        return Response({
+            'detail': 'Pembayaran disetujui. Booking dikonfirmasi.' if action == 'approve'
+                     else 'Pembayaran ditolak. Customer akan diminta upload bukti baru dan melakukan transaksi ulang.',
+            'booking': BookingSerializer(booking, context={'request': request}).data,
+        })
+
 
 # ============================================================
 # Payment Methods (public)

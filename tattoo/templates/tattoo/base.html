@@ -46,7 +46,6 @@
         <div class="loading-content">
             <div class="loading-brand-unified">
                 <img src="{% static 'tattoo/img/bali_ink_logo.png' %}" alt="Logo" class="loading-logo-img">
-                <div class="loading-logo-text">Bali Ink Hub</div>
             </div>
             <div class="loading-bar">
                 <div class="loading-bar-fill"></div>
@@ -58,6 +57,7 @@
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'tattoo/img/bali_ink_logo.png' %}" alt="Bali Ink Hub Logo" class="brand-logo-img">
+                <span class="brand-logo-text">Bali Ink Hub</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -101,12 +101,12 @@
                             <i class="bi bi-globe-americas"></i> <span id="current-region-label">Region</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end region-dropdown">
-                            <li><button class="dropdown-item region-btn active" data-region="IDR">🇮🇩 IDR (ID)</button></li>
-                            <li><button class="dropdown-item region-btn" data-region="USD">🇺🇸 USD (EN)</button></li>
-                            <li><button class="dropdown-item region-btn" data-region="EUR">🇪🇺 EUR (FR)</button></li>
-                            <li><button class="dropdown-item region-btn" data-region="AUD">🇦🇺 AUD (EN)</button></li>
-                            <li><button class="dropdown-item region-btn" data-region="SGD">🇸🇬 SGD (EN)</button></li>
-                            <li><button class="dropdown-item region-btn" data-region="RUB">🇷🇺 RUB (RU)</button></li>
+                            <li><button class="dropdown-item region-btn active" data-region="IDR">🇮🇩 Indonesia</button></li>
+                            <li><button class="dropdown-item region-btn" data-region="USD">🇺🇸 English</button></li>
+                            <li><button class="dropdown-item region-btn" data-region="EUR">🇪🇺 French</button></li>
+                            <li><button class="dropdown-item region-btn" data-region="AUD">🇦🇺 English</button></li>
+                            <li><button class="dropdown-item region-btn" data-region="SGD">🇸🇬 English</button></li>
+                            <li><button class="dropdown-item region-btn" data-region="RUB">🇷🇺 Russian</button></li>
                         </ul>
                     </li>
 
@@ -195,7 +195,7 @@
                     {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                            <i class="bi bi-person-circle"></i> <span class="nav-username">{{ user.username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             {% if nav_artist_obj %}

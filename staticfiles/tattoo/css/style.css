@@ -100,7 +100,7 @@ footer {
     animation: goldPulse 2s ease-in-out infinite;
 }
 .loading-logo-img {
-    height: 140px;
+    height: 180px;
     width: auto;
     object-fit: contain;
     mix-blend-mode: screen;
@@ -151,7 +151,7 @@ footer {
     color: var(--gold) !important;
 }
 .brand-logo-img {
-    height: 2.8em;
+    height: 7em;
     width: auto;
     object-fit: contain;
     mix-blend-mode: normal;

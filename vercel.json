@@ -11,6 +11,12 @@
       }
     }
   ],
+  "build": {
+    "env": {
+      "PYTHONUNBUFFERED": "1",
+      "DJANGO_SETTINGS_MODULE": "bisnis.settings"
+    }
+  },
   "routes": [
     {
       "src": "/(.*)",

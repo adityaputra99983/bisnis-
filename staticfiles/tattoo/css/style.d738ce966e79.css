@@ -129,21 +129,21 @@ footer {
 .navbar {
     background: rgba(5,5,5,0.82);
     border-bottom: 1px solid rgba(212,175,55,0.06);
-    padding: 14px 0;
+    padding: 6px 0;
     transition: var(--transition);
     backdrop-filter: blur(24px) saturate(1.5);
     -webkit-backdrop-filter: blur(24px) saturate(1.5);
     z-index: 1030;
 }
-.navbar.navbar-shrink { padding: 8px 0; }
+.navbar.navbar-shrink { padding: 4px 0; }
 .navbar-brand {
     font-weight: 800;
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: var(--white) !important;
     letter-spacing: -0.5px;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     text-decoration: none;
     transition: var(--transition);
 }
@@ -151,7 +151,7 @@ footer {
     color: var(--gold) !important;
 }
 .brand-logo-img {
-    height: 7em;
+    height: 2.2em;
     width: auto;
     object-fit: contain;
     mix-blend-mode: normal;
@@ -163,15 +163,15 @@ footer {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
 }
 .navbar .nav-link {
     color: var(--text-secondary) !important;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 4px 10px;
     border-radius: 100px;
     transition: var(--transition);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     position: relative;
 }
 .navbar .nav-link::after {
@@ -189,20 +189,20 @@ footer {
     backdrop-filter: blur(24px);
     border: 1px solid rgba(212,175,55,0.1);
     border-radius: var(--radius-md);
-    padding: 8px;
+    padding: 6px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    min-width: 220px;
-    margin-top: 12px;
+    min-width: 200px;
+    margin-top: 8px;
 }
 .navbar .dropdown-item {
     color: var(--text-secondary);
     border-radius: var(--radius-sm);
-    padding: 10px 14px;
+    padding: 6px 10px;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
+    gap: 6px;
+    font-size: 0.8rem;
 }
 .navbar .dropdown-item i { width: 18px; text-align: center; color: var(--gold); flex-shrink: 0; font-size: 1rem; }
 .navbar .dropdown-item:hover { background: var(--gold-bg); color: var(--gold); transform: translateX(2px); }
@@ -214,11 +214,12 @@ footer {
     font-weight: 700 !important;
     border: none !important;
     border-radius: 100px !important;
-    padding: 10px 24px !important;
+    padding: 5px 14px !important;
     transition: var(--transition) !important;
     box-shadow: 0 2px 12px var(--gold-glow);
     white-space: nowrap !important;
-    gap: 8px !important;
+    gap: 4px !important;
+    font-size: 0.8rem !important;
 }
 .navbar .btn-nav-cta i,
 .navbar .btn-nav-cta .nav-cta-label {
@@ -246,7 +247,7 @@ footer {
     border-radius: 50%;
     border: 2px solid var(--black);
 }
-.nav-orders-label { font-size: 0.85rem; margin-left: 4px; }
+.nav-orders-label { font-size: 0.75rem; margin-left: 4px; }
 .has-activity .nav-orders-bell { animation: bellRing 1s ease infinite; }
 @keyframes bellRing { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
 .nav-orders-panel { width: 360px; max-width: 90vw; padding: 0 !important; background: var(--black-glass); backdrop-filter: blur(24px); border: 1px solid rgba(212,175,55,0.1); }

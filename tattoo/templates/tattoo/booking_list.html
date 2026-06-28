@@ -109,7 +109,7 @@
                                 <div class="bcv-foot">
                                     <div class="bcv-price">
                                         <small class="text-muted d-block">Total</small>
-                                        <span class="bcv-price-amount">Rp {{ booking.total_price|floatformat:0 }}</span>
+                                        <span class="bcv-price-amount" data-region-price="{{ booking.total_price }}">Rp {{ booking.total_price|floatformat:0 }}</span>
                                         <div class="booking-price-currencies">{{ booking.total_price|multi_currency }}</div>
                                     </div>
                                     <div class="bcv-payment">

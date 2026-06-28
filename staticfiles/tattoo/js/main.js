@@ -1,6 +1,5 @@
 const GLOBAL_CONFIG = {
     currentRegion: localStorage.getItem('bt_region') || 'IDR',
-    // Kurs: 1 unit matauang asing = X IDR
     exchangeRates: {
         'IDR': 1,
         'USD': 16500,
@@ -17,6 +16,7 @@ const GLOBAL_CONFIG = {
         'AUD': 'A$',
         'RUB': '₽'
     },
+    ratesSource: 'cache',
     htmlLangMap: {
         'IDR': 'id',
         'USD': 'en',
@@ -766,6 +766,100 @@ function updateUIPersona(region) {
     }, 350);
 }
 
+/* =====================================================================
+   Live exchange rates — fetch from API and update config
+   ===================================================================== */
+function fetchLiveRates() {
+    fetch('/api/v1/rates/')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data && data.rates) {
+                GLOBAL_CONFIG.exchangeRates = data.rates;
+                GLOBAL_CONFIG.ratesSource = 'live';
+                updateRegionPrices(GLOBAL_CONFIG.currentRegion);
+                updatePriceTooltips();
+            }
+        })
+        .catch(function () {
+            GLOBAL_CONFIG.ratesSource = 'fallback';
+        });
+}
+
+/* =====================================================================
+   Price tooltip — hover over any IDR price to see converted value
+   ===================================================================== */
+var priceTooltipEl = null;
+
+function getPriceTooltip() {
+    if (!priceTooltipEl) {
+        priceTooltipEl = document.createElement('div');
+        priceTooltipEl.className = 'currency-tooltip';
+        priceTooltipEl.setAttribute('role', 'tooltip');
+        document.body.appendChild(priceTooltipEl);
+    }
+    return priceTooltipEl;
+}
+
+function updatePriceTooltips() {
+    var region = GLOBAL_CONFIG.currentRegion;
+    var tip = getPriceTooltip();
+    if (!tip) return;
+    var prices = document.querySelectorAll('[data-region-price]');
+    var len = prices.length;
+    for (var i = 0; i < len; i++) {
+        var el = prices[i];
+        var raw = el.getAttribute('data-region-price');
+        var val = parseFloat(raw);
+        if (isNaN(val)) continue;
+        el.setAttribute('data-tooltip-converted', formatPrice(val, region));
+    }
+    var activeTip = document.querySelector('.currency-tooltip.is-visible');
+    if (activeTip) {
+        var target = document.querySelector('[data-tooltip-hovered]');
+        if (target) {
+            var text = target.getAttribute('data-tooltip-converted');
+            if (text) {
+                activeTip.textContent = text + ' ' + region;
+            }
+        }
+    }
+}
+
+function showPriceTooltip(e, el) {
+    var tip = getPriceTooltip();
+    if (!tip) return;
+    var text = el.getAttribute('data-tooltip-converted');
+    if (!text) {
+        var raw = el.getAttribute('data-region-price');
+        var val = parseFloat(raw);
+        if (!isNaN(val)) {
+            text = formatPrice(val, GLOBAL_CONFIG.currentRegion);
+        }
+    }
+    tip.textContent = (text || '') + ' ' + GLOBAL_CONFIG.currentRegion;
+    tip.classList.add('is-visible');
+    var rect = el.getBoundingClientRect();
+    var top = rect.top + window.scrollY - tip.offsetHeight - 8;
+    var left = rect.left + window.scrollX + (rect.width / 2) - (tip.offsetWidth / 2);
+    if (left < 8) left = 8;
+    if (left + tip.offsetWidth > window.innerWidth - 8) {
+        left = window.innerWidth - tip.offsetWidth - 8;
+    }
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+    el.setAttribute('data-tooltip-hovered', '1');
+}
+
+function hidePriceTooltip(el) {
+    var tip = getPriceTooltip();
+    if (tip) {
+        tip.classList.remove('is-visible');
+    }
+    if (el) {
+        el.removeAttribute('data-tooltip-hovered');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('loading-screen');
     if (loader) {
@@ -787,6 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     AOS.init({ duration: 800, once: true, offset: 100 });
     updateUIPersona(GLOBAL_CONFIG.currentRegion);
+    fetchLiveRates();
 
     window.addEventListener('scroll', () => {
         const navbar = document.querySelector('.navbar');
@@ -855,6 +950,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 host.classList.remove('chip-elevated');
             }
         });
+    });
+
+    /* ===== Price tooltip mouse events ===== */
+    document.addEventListener('mouseover', function (e) {
+        var priceEl = e.target.closest('[data-region-price]');
+        if (!priceEl) return;
+        if (priceEl.closest('.region-price-chip')) return;
+        showPriceTooltip(e, priceEl);
+    });
+
+    document.addEventListener('mouseout', function (e) {
+        var priceEl = e.target.closest('[data-region-price]');
+        if (!priceEl) return;
+        if (priceEl.closest('.region-price-chip')) return;
+        var related = e.relatedTarget;
+        if (related && (related === priceEl || priceEl.contains(related))) return;
+        hidePriceTooltip(priceEl);
     });
 
     // Handle dynamic form elements if any

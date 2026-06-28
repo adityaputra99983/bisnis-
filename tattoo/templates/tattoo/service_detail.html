@@ -44,7 +44,7 @@
                     <div class="detail-pricing-section mt-5">
                         <div class="dp-header">
                             <span class="dp-label" data-t="starts_from">{{ service.price_label|default:"HARGA MULAI DARI" }}</span>
-                            <div class="dp-main-price">Rp {{ service.price|floatformat:0 }}</div>
+                            <div class="dp-main-price" data-region-price="{{ service.price }}">Rp {{ service.price|floatformat:0 }}</div>
                         </div>
                         
                         <div class="dp-international">
@@ -85,7 +85,7 @@
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div>
                                     <div class="package-currencies">
-                                        <div class="package-price">Rp {{ package.price|floatformat:0 }}</div>
+                                        <div class="package-price" data-region-price="{{ package.price }}">Rp {{ package.price|floatformat:0 }}</div>
                                         {{ package.price|multi_currency_detail }}
                                     </div>
                                     </div>

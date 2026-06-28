@@ -91,17 +91,17 @@
                 <div class="ap-price-box ap-price-box-luxury mt-4">
                     <div class="ap-price-row ap-price-row-luxury">
                         <span class="ap-price-label">Harga Layanan</span>
-                        <span class="ap-price-value">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
+                        <span class="ap-price-value" data-region-price="{{ booking.total_price }}">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
                     </div>
                     {% if booking.travel_fee %}
                     <div class="ap-price-row ap-price-row-luxury">
                         <span class="ap-price-label">Biaya Travel</span>
-                        <span class="ap-price-value">Rp {{ booking.travel_fee|floatformat:0|intcomma }}</span>
+                        <span class="ap-price-value" data-region-price="{{ booking.travel_fee }}">Rp {{ booking.travel_fee|floatformat:0|intcomma }}</span>
                     </div>
                     {% endif %}
                     <div class="ap-price-row ap-price-total ap-price-total-luxury">
                         <span class="ap-price-label">Total</span>
-                        <span class="ap-price-total-amount">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
+                        <span class="ap-price-total-amount" data-region-price="{{ booking.total_price }}">Rp {{ booking.total_price|floatformat:0|intcomma }}</span>
                     </div>
                 </div>
             </div>

@@ -153,6 +153,7 @@
         function setPrice(key, value) {
             formEl.querySelectorAll(`[data-summary="${key}"]`).forEach((el) => {
                 el.textContent = fmtIDR(value);
+                el.setAttribute('data-region-price', value || 0);
                 el.classList.remove('is-empty');
             });
         }

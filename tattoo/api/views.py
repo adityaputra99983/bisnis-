@@ -14,6 +14,7 @@ from ..models import (
     ServiceCategory, Service, ServicePackage, Artist, Portfolio,
     Booking, Review,
 )
+from ..rates import get_exchange_rates, CURRENCY_SYMBOLS, CURRENCY_FLAGS, CURRENCY_DESCS
 from ..payment import (
     generate_payment_session, get_payment_instructions, mark_booking_as_paid,
     verify_payment_proof, METHOD_LABELS, METHOD_LOGO, method_requires_proof,
@@ -512,6 +513,7 @@ def api_root(request):
             'payment_methods': f'{base}payment-methods/',
             'health':         f'{base}health/',
             'diagnose':       f'{base}diagnose/',
+            'rates':          f'{base}rates/',
         },
         'auth': {
             'session': 'Login di /login/ lalu gunakan cookie session untuk request berikutnya.',
@@ -529,6 +531,20 @@ def health_check(request):
         'status': 'ok',
         'timestamp': timezone.now().isoformat(),
         'service': 'bali-tattoo-api',
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def exchange_rates(request):
+    """GET /api/v1/rates/ - live exchange rates (IDR base)."""
+    rates = get_exchange_rates()
+    return Response({
+        'base': 'IDR',
+        'rates': rates,
+        'symbols': {k: CURRENCY_SYMBOLS.get(k, k) for k in rates},
+        'flags': {k: CURRENCY_FLAGS.get(k, '') for k in rates},
+        'descriptions': {k: CURRENCY_DESCS.get(k, '') for k in rates},
     })
 
 

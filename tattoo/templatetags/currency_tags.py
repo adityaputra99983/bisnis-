@@ -1,43 +1,8 @@
 from django import template
 from django.utils.safestring import mark_safe
+from ..rates import get_exchange_rates, CURRENCY_SYMBOLS, CURRENCY_FLAGS, CURRENCY_DESCS
 
 register = template.Library()
-
-EXCHANGE_RATES = {
-    'IDR': 1,
-    'USD': 16500,
-    'EUR': 17900,
-    'SGD': 12200,
-    'AUD': 10700,
-    'RUB': 180,
-}
-
-CURRENCY_SYMBOLS = {
-    'IDR': 'Rp',
-    'USD': '&#36;',
-    'EUR': '&euro;',
-    'SGD': 'S&#36;',
-    'AUD': 'A&#36;',
-    'RUB': '&#8381;',
-}
-
-CURRENCY_FLAGS = {
-    'IDR': '\U0001f1ee\U0001f1e9',
-    'USD': '\U0001f1fa\U0001f1f8',
-    'EUR': '\U0001f1ea\U0001f1fa',
-    'SGD': '\U0001f1f8\U0001f1ec',
-    'AUD': '\U0001f1e6\U0001f1fa',
-    'RUB': '\U0001f1f7\U0001f1fa',
-}
-
-CURRENCY_DESCS = {
-    'IDR': 'Harga Lokal Terbaik',
-    'USD': 'Estimated in US Dollars',
-    'EUR': 'Prix estimé en Euros',
-    'SGD': 'Anggaran Dolar Singapura',
-    'AUD': 'Estimated in AU Dollars',
-    'RUB': 'Цена в рублях (RU)',
-}
 
 
 @register.filter
@@ -47,7 +12,6 @@ def get_item(d, key):
 
 @register.filter
 def mul(value, arg):
-    """Multiplies the value by the argument."""
     try:
         return float(value) * float(arg)
     except (ValueError, TypeError):
@@ -58,9 +22,14 @@ def mul(value, arg):
 def multi_currency(value):
     if value is None:
         return ''
+    try:
+        value = float(value)
+    except (ValueError, TypeError):
+        return ''
+    rates = get_exchange_rates()
     parts = []
     for code in ['USD', 'EUR', 'SGD', 'AUD', 'RUB']:
-        rate = EXCHANGE_RATES.get(code)
+        rate = rates.get(code)
         if not rate:
             continue
         converted = value / rate
@@ -79,20 +48,23 @@ def multi_currency(value):
 
 @register.filter(is_safe=True)
 def multi_currency_detail(value):
-    """Smart region-aware chip with a richer responsive conversion panel."""
     if value is None:
         return ''
+    try:
+        value = float(value)
+    except (ValueError, TypeError):
+        return ''
+    rates = get_exchange_rates()
 
     currencies = [
-        ('IDR', EXCHANGE_RATES['IDR']),
-        ('USD', EXCHANGE_RATES['USD']),
-        ('EUR', EXCHANGE_RATES['EUR']),
-        ('SGD', EXCHANGE_RATES['SGD']),
-        ('AUD', EXCHANGE_RATES['AUD']),
-        ('RUB', EXCHANGE_RATES['RUB']),
+        ('IDR', rates['IDR']),
+        ('USD', rates['USD']),
+        ('EUR', rates['EUR']),
+        ('SGD', rates['SGD']),
+        ('AUD', rates['AUD']),
+        ('RUB', rates['RUB']),
     ]
 
-    # Pre-build all conversions for the hover panel, including local IDR
     intl_rows = []
     for code, rate in currencies:
         converted = value / rate

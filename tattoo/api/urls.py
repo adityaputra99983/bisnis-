@@ -26,6 +26,9 @@ urlpatterns = [
     # Payment methods (custom view, bukan ViewSet)
     path('payment-methods/', views.PaymentMethodsView.as_view(), name='api-payment-methods'),
 
+    # Live exchange rates
+    path('rates/', views.exchange_rates, name='api-rates'),
+
     # Router URLs (categories, services, artists, bookings, reviews)
     path('', include(router.urls)),
 ]

@@ -330,7 +330,7 @@
                 </div>
                 {% if s.short_desc %}<p class="ap-desc">{{ s.short_desc }}</p>{% endif %}
                 <div class="ap-tags">
-                  <span class="ap-tag ap-tag-price">Rp {{ s.price|floatformat:0|intcomma }}</span>
+                  <span class="ap-tag ap-tag-price" data-region-price="{{ s.price }}">Rp {{ s.price|floatformat:0|intcomma }}</span>
                   <span class="ap-tag"><i class="bi bi-clock"></i> {{ s.duration }}</span>
                   {% for style in s.styles.all %}
                   <span class="ap-tag">{{ style.name }}</span>

@@ -4480,6 +4480,31 @@ section { position: relative; }
     transform: translateY(0);
 }
 
+/* ===== Currency Tooltip ===== */
+.currency-tooltip {
+    position: fixed;
+    z-index: 99999;
+    background: var(--black-elevated);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    border: 1px solid var(--gold-dark);
+    white-space: nowrap;
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,175,55,0.15);
+}
+.currency-tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* --- RESPONSIVE --- */
 @media (max-width: 991px) {
     .ap-bank-row { flex-direction: column; align-items: stretch; }

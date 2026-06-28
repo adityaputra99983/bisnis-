@@ -38,7 +38,7 @@
         <span><i class="bi bi-geo-alt text-gold"></i> {% if b.mode == 'studio' %}Di Studio{% else %}{{ b.location_address }}{% endif %}</span>
     </div>
     <div class="ap-bc-footer">
-        <span class="fw-bold text-gold">Rp {{ b.total_price|floatformat:0|intcomma }}</span>
+        <span class="fw-bold text-gold" data-region-price="{{ b.total_price }}">Rp {{ b.total_price|floatformat:0|intcomma }}</span>
         <span class="text-muted small">{{ b.created_at|date:"d M Y H:i" }}</span>
     </div>
 </a>

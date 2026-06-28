@@ -151,7 +151,7 @@ footer {
     color: var(--gold) !important;
 }
 .brand-logo-img {
-    height: 1.6em;
+    height: 1.2em;
     width: auto;
     object-fit: contain;
     mix-blend-mode: normal;
@@ -1656,7 +1656,7 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     .dashboard-stats { grid-template-columns: 1fr 1fr; }
     .navbar { padding: 3px 0; }
     .navbar-brand { font-size: 0.8rem; gap: 4px; }
-    .brand-logo-img { height: 1.4em; }
+    .brand-logo-img { height: 1.1em; }
     .navbar .nav-link { padding: 2px 6px; font-size: 0.7rem; }
     .navbar .btn-nav-cta { padding: 3px 10px !important; font-size: 0.65rem !important; }
     .nav-orders-label { font-size: 0.65rem; }

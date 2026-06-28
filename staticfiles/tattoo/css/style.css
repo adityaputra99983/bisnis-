@@ -50,7 +50,7 @@ body {
     font-family: var(--font-body);
     background: var(--bg);
     color: var(--text-primary);
-    padding-top: 80px;
+    padding-top: 85px;
     overflow-x: hidden;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -129,21 +129,21 @@ footer {
 .navbar {
     background: #0a0a0a;
     border-bottom: 1px solid rgba(212,175,55,0.08);
-    padding: 4px 0;
+    padding: 6px 0;
     transition: var(--transition);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     z-index: 1030;
 }
-.navbar.navbar-shrink { padding: 2px 0; }
+.navbar.navbar-shrink { padding: 3px 0; }
 .navbar-brand {
     font-weight: 800;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--white) !important;
     letter-spacing: -0.3px;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     text-decoration: none;
     transition: var(--transition);
 }
@@ -151,7 +151,7 @@ footer {
     color: var(--gold) !important;
 }
 .brand-logo-img {
-    height: 1.2em;
+    height: 28px;
     width: auto;
     object-fit: contain;
     mix-blend-mode: normal;
@@ -163,15 +163,15 @@ footer {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 .navbar .nav-link {
     color: var(--text-secondary) !important;
     font-weight: 500;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 100px;
     transition: var(--transition);
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     position: relative;
 }
 .navbar .nav-link::after {
@@ -188,24 +188,24 @@ footer {
     background: #0a0a0a;
     border: 1px solid rgba(212,175,55,0.12);
     border-radius: var(--radius-sm);
-    padding: 4px;
+    padding: 5px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    min-width: 180px;
-    margin-top: 6px;
+    min-width: 190px;
+    margin-top: 7px;
 }
 .navbar .dropdown-item {
     color: var(--text-secondary);
-    border-radius: 4px;
-    padding: 5px 8px;
+    border-radius: 5px;
+    padding: 6px 10px;
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.75rem;
+    gap: 6px;
+    font-size: 0.78rem;
 }
 .navbar .dropdown-item i { width: 18px; text-align: center; color: var(--gold); flex-shrink: 0; font-size: 1rem; }
 .navbar .dropdown-item:hover { background: var(--gold-bg); color: var(--gold); transform: translateX(2px); }
-.navbar .dropdown-divider { border-color: rgba(255,255,255,0.06); margin: 4px 0; }
+.navbar .dropdown-divider { border-color: rgba(255,255,255,0.06); margin: 5px 0; }
 
 .navbar .btn-nav-cta {
     background: var(--gold-gradient) !important;
@@ -213,12 +213,12 @@ footer {
     font-weight: 700 !important;
     border: none !important;
     border-radius: 100px !important;
-    padding: 4px 12px !important;
+    padding: 5px 14px !important;
     transition: var(--transition) !important;
     box-shadow: 0 1px 8px var(--gold-glow);
     white-space: nowrap !important;
-    gap: 3px !important;
-    font-size: 0.7rem !important;
+    gap: 4px !important;
+    font-size: 0.75rem !important;
 }
 .navbar .btn-nav-cta i,
 .navbar .btn-nav-cta .nav-cta-label {
@@ -246,7 +246,7 @@ footer {
     border-radius: 50%;
     border: 2px solid var(--black);
 }
-.nav-orders-label { font-size: 0.7rem; margin-left: 3px; }
+.nav-orders-label { font-size: 0.75rem; margin-left: 4px; }
 .has-activity .nav-orders-bell { animation: bellRing 1s ease infinite; }
 @keyframes bellRing { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
 .nav-orders-panel { width: 360px; max-width: 90vw; padding: 0 !important; background: var(--black-glass); backdrop-filter: blur(24px); border: 1px solid rgba(212,175,55,0.1); }
@@ -1654,13 +1654,13 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     .mode-selector { grid-template-columns: 1fr; }
     .ap-content { padding: 16px; }
     .dashboard-stats { grid-template-columns: 1fr 1fr; }
-    .navbar { padding: 3px 0; }
-    .navbar-brand { font-size: 0.8rem; gap: 4px; }
-    .brand-logo-img { height: 1.1em; }
-    .navbar .nav-link { padding: 2px 6px; font-size: 0.7rem; }
-    .navbar .btn-nav-cta { padding: 3px 10px !important; font-size: 0.65rem !important; }
-    .nav-orders-label { font-size: 0.65rem; }
-    .region-selector-trigger { font-size: 0.7rem; }
+    .navbar { padding: 4px 0; }
+    .navbar-brand { font-size: 0.85rem; gap: 5px; }
+    .brand-logo-img { height: 24px; }
+    .navbar .nav-link { padding: 3px 8px; font-size: 0.72rem; }
+    .navbar .btn-nav-cta { padding: 4px 11px !important; font-size: 0.7rem !important; }
+    .nav-orders-label { font-size: 0.7rem; }
+    .region-selector-trigger { font-size: 0.75rem; }
 }
 
 /* ===== ARTIST DASHBOARD COMPONENTS ===== */

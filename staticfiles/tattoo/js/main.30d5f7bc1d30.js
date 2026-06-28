@@ -752,8 +752,8 @@ function updateUIPersona(region) {
         });
 
         const regionNames = {
-            'IDR': '🇮🇩 IDR', 'USD': '🇺🇸 USD', 'EUR': '🇪🇺 EUR',
-            'AUD': '🇦🇺 AUD', 'SGD': '🇸🇬 SGD', 'RUB': '🇷🇺 RUB'
+            'IDR': '🇮🇩 Indonesia', 'USD': '🇺🇸 English', 'EUR': '🇪🇺 French',
+            'AUD': '🇦🇺 English', 'SGD': '🇸🇬 Singapore', 'RUB': '🇷🇺 Russian'
         };
         const label = document.getElementById('current-region-label');
         if (label) label.innerText = regionNames[region];

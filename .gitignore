@@ -22,7 +22,9 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-/static/
+# static/ sekarang di-track karena Vercel collectstatic butuh source terbaru
+# Hapus komentar di bawah kalau ingin ignore lagi
+# /static/
 
 # Migrations (opsional - uncomment jika tidak ingin track migrations)
 # */migrations/__pycache__/

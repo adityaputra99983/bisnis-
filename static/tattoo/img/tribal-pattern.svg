@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <style>
+      .tribal-line { stroke: #d4af37; stroke-width: 1; fill: none; opacity: 0.06; }
+      .tribal-dot { fill: #d4af37; opacity: 0.05; }
+    </style>
+  </defs>
+  <!-- Spiral motif -->
+  <path class="tribal-line" d="M200,200 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/>
+  <path class="tribal-line" d="M200,200 m-60,0 a60,60 0 1,1 120,0 a60,60 0 1,1 -120,0"/>
+  <path class="tribal-line" d="M200,200 m-40,0 a40,40 0 1,1 80,0 a40,40 0 1,1 -80,0"/>
+  <path class="tribal-line" d="M200,200 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0"/>
+  <!-- Tribal spearheads -->
+  <path class="tribal-line" d="M200,120 L190,80 L200,60 L210,80 Z"/>
+  <path class="tribal-line" d="M200,280 L190,320 L200,340 L210,320 Z"/>
+  <path class="tribal-line" d="M120,200 L80,190 L60,200 L80,210 Z"/>
+  <path class="tribal-line" d="M280,200 L320,190 L340,200 L320,210 Z"/>
+  <!-- Diagonal connectors -->
+  <path class="tribal-line" d="M130,130 Q165,165 200,200 Q235,235 270,270"/>
+  <path class="tribal-line" d="M270,130 Q235,165 200,200 Q165,235 130,270"/>
+  <!-- Dots -->
+  <circle cx="200" cy="200" r="3" class="tribal-dot"/>
+  <circle cx="200" cy="140" r="2" class="tribal-dot"/>
+  <circle cx="200" cy="260" r="2" class="tribal-dot"/>
+  <circle cx="140" cy="200" r="2" class="tribal-dot"/>
+  <circle cx="260" cy="200" r="2" class="tribal-dot"/>
+  <circle cx="155" cy="155" r="1.5" class="tribal-dot"/>
+  <circle cx="245" cy="155" r="1.5" class="tribal-dot"/>
+  <circle cx="155" cy="245" r="1.5" class="tribal-dot"/>
+  <circle cx="245" cy="245" r="1.5" class="tribal-dot"/>
+</svg>

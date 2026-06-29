@@ -11,12 +11,12 @@
       }
     }
   ],
+  "buildCommand": "python manage.py collectstatic --noinput",
   "build": {
     "env": {
       "PYTHONUNBUFFERED": "1",
       "DJANGO_SETTINGS_MODULE": "bisnis.settings"
-    },
-    "command": "python manage.py collectstatic --noinput"
+    }
   },
   "routes": [
     {

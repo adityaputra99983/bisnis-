@@ -50,7 +50,7 @@ body {
     font-family: var(--font-body);
     background: var(--bg);
     color: var(--text-primary);
-    padding-top: 50px;
+    padding-top: 70px;
     overflow-x: hidden;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -129,21 +129,21 @@ footer {
 .navbar {
     background: #0a0a0a;
     border-bottom: 1px solid rgba(212,175,55,0.08);
-    padding: 2px 0;
+    padding: 10px 0;
     transition: var(--transition);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     z-index: 1030;
 }
-.navbar.navbar-shrink { padding: 1px 0; }
+.navbar.navbar-shrink { padding: 6px 0; }
 .navbar-brand {
     font-weight: 800;
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--white) !important;
     letter-spacing: -0.3px;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     text-decoration: none;
     transition: var(--transition);
 }
@@ -151,7 +151,7 @@ footer {
     color: var(--gold) !important;
 }
 .brand-logo-img {
-    height: 18px;
+    height: 26px;
     width: auto;
     object-fit: contain;
     mix-blend-mode: normal;
@@ -163,15 +163,15 @@ footer {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
 }
 .navbar .nav-link {
     color: var(--text-secondary) !important;
     font-weight: 500;
-    padding: 2px 6px;
+    padding: 6px 12px;
     border-radius: 100px;
     transition: var(--transition);
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     position: relative;
 }
 .navbar .nav-link::after {
@@ -213,17 +213,17 @@ footer {
     font-weight: 700 !important;
     border: none !important;
     border-radius: 100px !important;
-    padding: 3px 10px !important;
+    padding: 6px 16px !important;
     transition: var(--transition) !important;
     box-shadow: 0 1px 8px var(--gold-glow);
     white-space: nowrap !important;
-    gap: 3px !important;
-    font-size: 0.6rem !important;
+    gap: 4px !important;
+    font-size: 0.75rem !important;
 }
 .navbar .btn-nav-cta i,
 .navbar .btn-nav-cta .nav-cta-label {
     color: #000000 !important;
-    font-size: 0.7rem !important;
+    font-size: 0.85rem !important;
 }
 .navbar .btn-nav-cta:hover {
     transform: translateY(-2px) !important;
@@ -250,17 +250,17 @@ footer {
 .nav-orders-label { font-size: 0.6rem; margin-left: 3px; }
 .has-activity .nav-orders-bell { animation: bellRing 1s ease infinite; }
 
-/* Navbar icon size reductions */
+/* Navbar icon sizes */
 .navbar .nav-link i,
 .navbar .dropdown-toggle i,
 .navbar .btn-nav-cta i,
 .nav-orders-trigger i,
 .region-selector-trigger i,
 .nav-orders-bell {
-    font-size: 0.7rem !important;
+    font-size: 0.9rem !important;
 }
 .nav-orders-icon-wrap {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
 }
 .nav-orders-badge {
     top: -3px;
@@ -1676,23 +1676,23 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     .mode-selector { grid-template-columns: 1fr; }
     .ap-content { padding: 16px; }
     .dashboard-stats { grid-template-columns: 1fr 1fr; }
-    .navbar { padding: 2px 0; }
-    .navbar-brand { font-size: 0.7rem; gap: 3px; }
-    .brand-logo-img { height: 16px; }
-    .navbar .nav-link { padding: 1px 5px; font-size: 0.6rem; }
-    .navbar .btn-nav-cta { padding: 2px 8px !important; font-size: 0.55rem !important; }
-    .nav-orders-label { font-size: 0.55rem; }
-    .region-selector-trigger { font-size: 0.6rem; }
+    .navbar { padding: 6px 0; }
+    .navbar-brand { font-size: 0.85rem; gap: 4px; }
+    .brand-logo-img { height: 20px; }
+    .navbar .nav-link { padding: 4px 8px; font-size: 0.7rem; }
+    .navbar .btn-nav-cta { padding: 4px 12px !important; font-size: 0.65rem !important; }
+    .nav-orders-label { font-size: 0.65rem; }
+    .region-selector-trigger { font-size: 0.7rem; }
     .navbar .nav-link i,
     .navbar .dropdown-toggle i,
     .navbar .btn-nav-cta i,
     .nav-orders-trigger i,
     .region-selector-trigger i,
     .nav-orders-bell {
-        font-size: 0.6rem !important;
+        font-size: 0.75rem !important;
     }
     .nav-orders-icon-wrap {
-        font-size: 0.6rem;
+        font-size: 0.75rem;
     }
     .nav-orders-badge {
         top: -2px;

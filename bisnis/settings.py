@@ -159,7 +159,11 @@ if _DATABASE_URL:
     )}
     DATABASES['default']['OPTIONS'] = {
         **DATABASES['default'].get('OPTIONS', {}),
-        'connect_timeout': 30,
+        'connect_timeout': 60,
+        'keepalives': 1,
+        'keepalives_idle': 30,
+        'keepalives_interval': 10,
+        'keepalives_count': 5,
     }
     # Direct connection (session pooler) untuk migrations
     if _DIRECT_URL:
@@ -168,6 +172,16 @@ if _DATABASE_URL:
             conn_max_age=0,
             conn_health_checks=True,
         )
+        DATABASES['direct']['OPTIONS'] = {
+            **DATABASES['direct'].get('OPTIONS', {}),
+            'connect_timeout': 60,
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 5,
+        }
+
+
 elif _IS_VERCEL:
     # Vercel tanpa DATABASE_URL: pakai in-memory SQLite agar Django tetap start.
     # Semua query akan gagal (table tidak ada) — tapi error handling di views

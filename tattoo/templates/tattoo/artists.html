@@ -14,22 +14,22 @@
 <section class="py-5">
     <div class="container">
         <div class="search-filter-bar mb-5" data-aos="fade-up">
-            <div class="row g-3">
-                <div class="col-md-8">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
                     <div class="search-box">
                         <i class="bi bi-person-search"></i>
                         <input type="text" id="artistSearch" class="form-control" placeholder="Cari artist favoritmu..." data-t="artist_find">
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-gold w-50" data-t="available_studio">Studio</button>
-                        <button class="btn btn-outline-gold w-50" data-t="available_mobile">Mobile</button>
+                        <button class="btn btn-outline-gold flex-fill" data-t="available_studio"><i class="bi bi-shop"></i> Studio</button>
+                        <button class="btn btn-outline-gold flex-fill" data-t="available_mobile"><i class="bi bi-house-heart"></i> Mobile</button>
                     </div>
                 </div>
-                <div class="col-md-1">
-                    <select id="styleFilter" class="form-select" style="font-size:0.85rem;">
-                        <option value="all">Style</option>
+                <div class="col-md-3">
+                    <select id="styleFilter" class="form-select">
+                        <option value="all">Semua Style</option>
                         {% for style in all_styles %}
                             <option value="style-{{ style.id }}">{{ style.name }}</option>
                         {% endfor %}

@@ -30,18 +30,24 @@
             & mobile artists, compare real-time availability & prices, and book home service or studio session instantly.
         </p>
 
-        <div class="hero-search">
-            <select class="search-select">
-                <option>Seminyak</option>
-                <option>Canggu</option>
-                <option>Ubud</option>
-                <option>Kuta</option>
-            </select>
-            <div class="search-input-wrap">
-                <i class="bi bi-search"></i>
-                <input type="text" placeholder="Search..." id="heroSearch">
+        <div class="hero-search-wrapper">
+            <div class="hero-search">
+                <select class="search-select">
+                    <option>Seminyak</option>
+                    <option>Canggu</option>
+                    <option>Ubud</option>
+                    <option>Kuta</option>
+                </select>
+                <div class="hero-search-divider"></div>
+                <div class="search-input-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Search artists, styles, services..." id="heroSearch">
+                </div>
+                <div class="hero-search-divider"></div>
+                <a href="{% url 'artist_list' %}" class="hero-search-btn">
+                    <i class="bi bi-arrow-right"></i> SEARCH
+                </a>
             </div>
-            <a href="{% url 'artist_list' %}" class="btn-gold">SEARCH</a>
         </div>
 
         <div class="hero-cta">

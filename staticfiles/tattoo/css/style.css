@@ -699,7 +699,7 @@ footer {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    overflow: visible;
     border: 1px solid var(--card-border);
     transition: var(--transition);
     height: 100%;
@@ -911,27 +911,32 @@ footer {
     color: var(--gold);
 }
 
-/* Hover reveal panel — position: fixed so it escapes parent overflow:hidden */
+/* Hover reveal panel — inline expandable within card */
 .pc-hover-reveal {
-    position: fixed;
-    width: 300px;
+    position: absolute;
+    bottom: auto;
+    top: calc(100% + 12px);
+    left: -8px;
+    right: -8px;
+    width: auto;
     background: linear-gradient(180deg, rgba(26,26,30,0.98) 0%, rgba(17,17,19,0.98) 100%);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(212,175,55,0.2);
-    border-radius: var(--radius-lg);
-    padding: 18px;
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: var(--radius-md);
+    padding: 20px;
     opacity: 0;
-    transform: translateY(8px) scale(0.97);
+    transform: translateY(8px);
     pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 99999;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.15), 0 0 60px rgba(212,175,55,0.06);
-    /* top/left set by JS */
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.15), 0 0 40px rgba(212,175,55,0.08);
 }
-.pc-hover-reveal.is-visible {
+.price-chip:hover .pc-hover-reveal,
+.price-chip:focus-within .pc-hover-reveal,
+.region-price-chip.is-expanded .pc-hover-reveal {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     pointer-events: auto;
 }
 .pc-hover-head {

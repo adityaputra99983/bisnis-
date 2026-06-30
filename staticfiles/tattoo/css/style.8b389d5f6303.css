@@ -911,31 +911,27 @@ footer {
     color: var(--gold);
 }
 
-/* Hover reveal panel */
+/* Hover reveal panel — position: fixed so it escapes parent overflow:hidden */
 .pc-hover-reveal {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    top: auto;
-    left: 50%;
-    width: 280px;
+    position: fixed;
+    width: 300px;
     background: linear-gradient(180deg, rgba(26,26,30,0.98) 0%, rgba(17,17,19,0.98) 100%);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(212,175,55,0.2);
     border-radius: var(--radius-lg);
-    padding: 16px;
+    padding: 18px;
     opacity: 0;
-    transform: translateX(-50%) translateY(6px) scale(0.97);
+    transform: translateY(8px) scale(0.97);
     pointer-events: none;
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    z-index: 100;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.08), 0 0 40px rgba(212,175,55,0.04);
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 99999;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.15), 0 0 60px rgba(212,175,55,0.06);
+    /* top/left set by JS */
 }
-.price-chip:hover .pc-hover-reveal,
-.price-chip:focus-within .pc-hover-reveal,
-.region-price-chip.is-expanded .pc-hover-reveal {
+.pc-hover-reveal.is-visible {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
     pointer-events: auto;
 }
 .pc-hover-head {

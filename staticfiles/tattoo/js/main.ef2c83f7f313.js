@@ -934,6 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const chip = e.target.closest('.region-price-chip');
         if (!chip) return;
         if (window.matchMedia('(max-width: 768px)').matches) return;
+        positionHoverPanel(chip);
         chip.closest('.luxury-service-card')?.classList.add('chip-elevated');
         chip.closest('.lc-pricing-panel')?.classList.add('chip-elevated');
         chip.closest('.service-item')?.classList.add('chip-elevated');
@@ -944,6 +945,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const chip = e.target.closest('.region-price-chip');
         if (!chip) return;
         if (chip.classList.contains('is-expanded')) return;
+        const panel = chip.querySelector('.pc-hover-reveal');
+        if (panel) panel.classList.remove('is-visible');
         ['.luxury-service-card', '.lc-pricing-panel', '.service-item', '.dp-international'].forEach((sel) => {
             const host = chip.closest(sel);
             if (host && !host.querySelector('.region-price-chip.is-expanded')) {
@@ -951,6 +954,58 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Keep panel visible when hovering the panel itself
+    document.addEventListener('mouseover', (e) => {
+        const panel = e.target.closest('.pc-hover-reveal');
+        if (!panel) return;
+        panel.classList.add('is-visible');
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const panel = e.target.closest('.pc-hover-reveal');
+        if (!panel) return;
+        const related = e.relatedTarget;
+        if (related && panel.contains(related)) return;
+        const chip = related?.closest('.region-price-chip');
+        if (chip && chip.querySelector('.pc-hover-reveal') === panel) return;
+        panel.classList.remove('is-visible');
+    });
+
+    function positionHoverPanel(chip) {
+        const panel = chip.querySelector('.pc-hover-reveal');
+        if (!panel) return;
+
+        // Move panel to document.body so it escapes all parent overflow/stacking contexts
+        if (panel.parentElement !== document.body) {
+            document.body.appendChild(panel);
+        }
+
+        const rect = chip.getBoundingClientRect();
+        const panelWidth = 300;
+        const gap = 50; // larger gap so panel is clearly separated from chip/card
+        const estimatedHeight = 340;
+        const viewportW = window.innerWidth;
+        const viewportH = window.innerHeight;
+
+        let left = rect.left + rect.width / 2 - panelWidth / 2;
+        left = Math.max(8, Math.min(left, viewportW - panelWidth - 8));
+
+        let top;
+        const spaceAbove = rect.top;
+        const spaceBelow = viewportH - rect.bottom;
+        if (spaceAbove >= estimatedHeight + gap) {
+            top = rect.top - estimatedHeight - gap;
+        } else if (spaceBelow >= estimatedHeight + gap) {
+            top = rect.bottom + gap;
+        } else {
+            top = Math.max(8, rect.top - estimatedHeight - gap);
+        }
+
+        panel.style.top = top + 'px';
+        panel.style.left = left + 'px';
+        panel.style.bottom = 'auto';
+    }
 
     /* ===== Price tooltip mouse events ===== */
     document.addEventListener('mouseover', function (e) {

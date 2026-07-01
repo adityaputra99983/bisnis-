@@ -52,6 +52,7 @@ def custom_500(request, exception=None):
 
 def home(request):
     from django.db import DatabaseError as _DBErr
+    from django.core.cache import cache
     try:
         categories = ServiceCategory.objects.filter(is_active=True).prefetch_related(
             Prefetch('services', queryset=Service.objects.filter(is_active=True, is_popular=True))
@@ -62,12 +63,6 @@ def home(request):
         services_popular = Service.objects.filter(is_active=True, is_popular=True).prefetch_related('styles')[:6]
     except _DBErr:
         services_popular = []
-    try:
-        services_all = Service.objects.filter(is_active=True).select_related(
-            'category'
-        ).prefetch_related('styles')[:9]
-    except _DBErr:
-        services_all = []
     try:
         artists = Artist.objects.filter(is_active=True).prefetch_related(
             'portfolios', 'specialties', 'artist_styles__style'
@@ -82,19 +77,21 @@ def home(request):
             'artist': artist,
             'avg_rating': round(artist.avg_rating, 1) if artist.avg_rating else None,
         })
-    try:
-        stats = {
-            'artists_count': Artist.objects.filter(is_active=True).count(),
-            'services_count': Service.objects.filter(is_active=True).count(),
-            'completed_orders': Booking.objects.filter(status='completed').count(),
-            'categories_count': ServiceCategory.objects.filter(is_active=True).count(),
-        }
-    except _DBErr:
-        stats = {}
+    stats = cache.get('home_stats')
+    if stats is None:
+        try:
+            stats = {
+                'artists_count': Artist.objects.filter(is_active=True).count(),
+                'services_count': Service.objects.filter(is_active=True).count(),
+                'completed_orders': Booking.objects.filter(status='completed').count(),
+                'categories_count': ServiceCategory.objects.filter(is_active=True).count(),
+            }
+            cache.set('home_stats', stats, 600)
+        except _DBErr:
+            stats = {}
     return render(request, 'tattoo/index.html', {
         'categories': categories,
         'services_popular': services_popular,
-        'services_all': services_all,
         'artists_with_rating': artists_with_rating,
         'stats': stats,
     })
@@ -306,8 +303,19 @@ def logout_view(request):
 
 @login_required
 def booking_create(request):
+    services_qs = Service.objects.filter(is_active=True).select_related('category').order_by('name')
+    artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
+    packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
+
+    # Evaluasi queryset sekali agar _result_cache terisi, lalu share ke form & template
+    services = list(services_qs)
+    artists = list(artists_qs)
+    packages = list(packages_qs)
+
+    prefetched = {'services_qs': services_qs, 'artists_qs': artists_qs, 'packages_qs': packages_qs}
+
     if request.method == 'POST':
-        form = BookingForm(request.POST, request.FILES)
+        form = BookingForm(request.POST, request.FILES, _prefetched=prefetched)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.user = request.user
@@ -333,11 +341,7 @@ def booking_create(request):
         mode = request.GET.get('mode')
         if mode in ('studio', 'mobile'):
             initial['mode'] = mode
-        form = BookingForm(initial=initial)
-
-    services = Service.objects.filter(is_active=True).select_related('category').order_by('name')
-    artists = Artist.objects.filter(is_active=True).order_by('nickname')
-    packages = ServicePackage.objects.filter(is_active=True).select_related('service')
+        form = BookingForm(initial=initial, _prefetched=prefetched)
 
     return render(request, 'tattoo/booking_create.html', {
         'form': form,

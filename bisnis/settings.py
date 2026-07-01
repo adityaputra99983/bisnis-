@@ -148,7 +148,6 @@ if not DEBUG:
 # Jadi kalau detect environment Vercel tapi DATABASE_URL kosong → fail fast
 # dengan error message jelas, bukan diam-diam fallback ke SQLite yang akan crash.
 _DATABASE_URL = os.environ.get('DATABASE_URL') or config('DATABASE_URL', default='')
-_DIRECT_URL = os.environ.get('DIRECT_URL') or config('DIRECT_URL', default='')
 _IS_VERCEL = bool(os.environ.get('VERCEL')) or bool(config('VERCEL', default=False, cast=bool))
 
 if _DATABASE_URL:
@@ -159,28 +158,12 @@ if _DATABASE_URL:
     )}
     DATABASES['default']['OPTIONS'] = {
         **DATABASES['default'].get('OPTIONS', {}),
-        'connect_timeout': 60,
+        'connect_timeout': 5,
         'keepalives': 1,
-        'keepalives_idle': 30,
-        'keepalives_interval': 10,
-        'keepalives_count': 5,
+        'keepalives_idle': 60,
+        'keepalives_interval': 30,
+        'keepalives_count': 3,
     }
-    # Direct connection (session pooler) untuk migrations
-    if _DIRECT_URL:
-        DATABASES['direct'] = dj_database_url.config(
-            default=_DIRECT_URL,
-            conn_max_age=0,
-            conn_health_checks=True,
-        )
-        DATABASES['direct']['OPTIONS'] = {
-            **DATABASES['direct'].get('OPTIONS', {}),
-            'connect_timeout': 60,
-            'keepalives': 1,
-            'keepalives_idle': 30,
-            'keepalives_interval': 10,
-            'keepalives_count': 5,
-        }
-
 
 elif _IS_VERCEL:
     # Vercel tanpa DATABASE_URL: pakai in-memory SQLite agar Django tetap start.
@@ -205,6 +188,18 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Cache framework — in-memory cache untuk kurangi query database
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'bali-ink-hub',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        },
+    }
+}
 
 # Session backend: signed cookies agar session TIDAK butuh database.
 # Ini penting untuk Vercel (in-memory SQLite tanpa tabel session) dan

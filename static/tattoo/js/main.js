@@ -863,20 +863,15 @@ function hidePriceTooltip(el) {
 document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('loading-screen');
     if (loader) {
+        // Sembunyikan loading screen secepat mungkin
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        // Tetap pakai window.load untuk transisi mulus jika semua resource cepat
         window.addEventListener('load', () => {
             setTimeout(() => {
-                loader.style.opacity = '0';
-                loader.style.transform = 'scale(1.05)';
-                setTimeout(() => loader.style.display = 'none', 500);
+                loader.style.display = 'none';
             }, 600);
         });
-        setTimeout(() => {
-            if (loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                loader.style.transform = 'scale(1.05)';
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-        }, 3000);
     }
 
     AOS.init({ duration: 800, once: true, offset: 100 });

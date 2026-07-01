@@ -198,11 +198,23 @@ class BookingForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        prefetched = kwargs.pop('_prefetched', None)
         super().__init__(*args, **kwargs)
 
-        services_qs = Service.objects.filter(is_active=True).order_by('name')
-        packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
-        artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
+        if prefetched:
+            services_qs = prefetched['services_qs']
+            packages_qs = prefetched['packages_qs']
+            artists_qs = prefetched['artists_qs']
+            svc_lookup = {str(s.id): s for s in services_qs}
+            pkg_lookup = {str(p.id): p for p in packages_qs}
+            art_lookup = {str(a.id): a for a in artists_qs}
+        else:
+            services_qs = Service.objects.filter(is_active=True).order_by('name')
+            packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
+            artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
+            svc_lookup = {str(s.id): s for s in services_qs}
+            pkg_lookup = {str(p.id): p for p in packages_qs}
+            art_lookup = {str(a.id): a for a in artists_qs}
 
         self.fields['service'].queryset = services_qs
         self.fields['package'].queryset = packages_qs
@@ -212,10 +224,6 @@ class BookingForm(forms.ModelForm):
         self.fields['package'].empty_label = "-- Tanpa Paket --"
         self.fields['artist'].empty_label = "-- Pilih Artist --"
         self.fields['package'].required = False
-
-        svc_lookup = {str(s.id): s for s in services_qs}
-        pkg_lookup = {str(p.id): p for p in packages_qs}
-        art_lookup = {str(a.id): a for a in artists_qs}
 
         self.fields['service'].widget = ServiceSelectWidget(
             attrs={'class': 'form-select', 'data-booking-field': 'service'}

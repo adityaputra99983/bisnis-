@@ -288,6 +288,13 @@ if USE_SUPABASE_STORAGE:
         AWS_S3_FILE_OVERWRITE = False
         AWS_QUERYSTRING_EXPIRE = 86400
 
+        # Bucket storage kedua (opsional) — tanpa mengubah default
+        bucket2 = config('SUPABASE_STORAGE_BUCKET_2', default='')
+        if bucket2:
+            STORAGES['bucket2'] = {
+                'BACKEND': 'bisnis.storage_backends.SupabaseStorageBucket2',
+            }
+
 
 # ============================================================
 # LOGIN

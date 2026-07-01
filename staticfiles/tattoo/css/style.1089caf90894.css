@@ -352,7 +352,7 @@ footer {
     background:
         radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212,175,55,0.15) 0%, transparent 60%),
         linear-gradient(180deg, rgba(5,5,5,0.75) 0%, rgba(5,5,5,0.85) 60%, var(--bg) 100%),
-        url('../img/luxury_tattoo_bg.png') center/cover no-repeat fixed;
+        url("../img/luxury_tattoo_bg.4602296e9e97.png") center/cover no-repeat fixed;
     position: relative;
     overflow: hidden;
     text-align: center;

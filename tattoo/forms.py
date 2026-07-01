@@ -142,14 +142,12 @@ class PackageSelectWidget(forms.Select):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index,
                                        subindex=subindex, attrs=attrs)
-        if value:
-            try:
-                pkg = ServicePackage.objects.select_related('service').get(pk=value)
+        if value and hasattr(self, '_lookup'):
+            pkg = self._lookup.get(str(value))
+            if pkg:
                 option['attrs']['data-service'] = pkg.service_id
                 option['attrs']['data-price'] = int(pkg.price)
                 option['attrs']['data-duration'] = pkg.duration
-            except (ServicePackage.DoesNotExist, ValueError, TypeError):
-                pass
         return option
 
 
@@ -159,13 +157,11 @@ class ServiceSelectWidget(forms.Select):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index,
                                        subindex=subindex, attrs=attrs)
-        if value:
-            try:
-                svc = Service.objects.get(pk=value)
+        if value and hasattr(self, '_lookup'):
+            svc = self._lookup.get(str(value))
+            if svc:
                 option['attrs']['data-price'] = int(svc.price)
                 option['attrs']['data-duration'] = svc.duration
-            except (Service.DoesNotExist, ValueError, TypeError):
-                pass
         return option
 
 
@@ -175,14 +171,12 @@ class ArtistSelectWidget(forms.Select):
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index,
                                        subindex=subindex, attrs=attrs)
-        if value:
-            try:
-                artist = Artist.objects.get(pk=value)
+        if value and hasattr(self, '_lookup'):
+            artist = self._lookup.get(str(value))
+            if artist:
                 option['attrs']['data-studio'] = '1' if artist.is_available_studio else '0'
                 option['attrs']['data-mobile'] = '1' if artist.is_available_mobile else '0'
                 option['attrs']['data-mobile-fee'] = int(artist.mobile_fee)
-            except (Artist.DoesNotExist, ValueError, TypeError):
-                pass
         return option
 
 
@@ -206,24 +200,35 @@ class BookingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['service'].queryset = Service.objects.filter(is_active=True).order_by('name')
-        self.fields['package'].queryset = ServicePackage.objects.filter(is_active=True).select_related('service')
-        self.fields['artist'].queryset = Artist.objects.filter(is_active=True).order_by('nickname')
+        services_qs = Service.objects.filter(is_active=True).order_by('name')
+        packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
+        artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
+
+        self.fields['service'].queryset = services_qs
+        self.fields['package'].queryset = packages_qs
+        self.fields['artist'].queryset = artists_qs
 
         self.fields['service'].empty_label = "-- Pilih Layanan --"
         self.fields['package'].empty_label = "-- Tanpa Paket --"
         self.fields['artist'].empty_label = "-- Pilih Artist --"
         self.fields['package'].required = False
 
+        svc_lookup = {str(s.id): s for s in services_qs}
+        pkg_lookup = {str(p.id): p for p in packages_qs}
+        art_lookup = {str(a.id): a for a in artists_qs}
+
         self.fields['service'].widget = ServiceSelectWidget(
             attrs={'class': 'form-select', 'data-booking-field': 'service'}
         )
+        self.fields['service'].widget._lookup = svc_lookup
         self.fields['package'].widget = PackageSelectWidget(
             attrs={'class': 'form-select', 'data-booking-field': 'package'}
         )
+        self.fields['package'].widget._lookup = pkg_lookup
         self.fields['artist'].widget = ArtistSelectWidget(
             attrs={'class': 'form-select', 'data-booking-field': 'artist'}
         )
+        self.fields['artist'].widget._lookup = art_lookup
         self.fields['mode'].widget = forms.RadioSelect(
             attrs={'class': 'booking-mode-radio', 'data-booking-field': 'mode'}
         )

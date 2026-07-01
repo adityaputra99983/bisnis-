@@ -55,7 +55,7 @@ def _fetch_from_api():
         'Accept': 'application/json',
     }
     req = Request('https://open.er-api.com/v6/latest/IDR', headers=headers)
-    with urlopen(req, timeout=15) as resp:
+    with urlopen(req, timeout=5) as resp:
         data = json.loads(resp.read().decode())
     if data.get('result') != 'success':
         raise ValueError('API returned non-success result')

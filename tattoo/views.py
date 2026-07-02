@@ -303,35 +303,75 @@ def logout_view(request):
 
 @login_required
 def booking_create(request):
-    services_qs = Service.objects.filter(is_active=True).select_related('category').order_by('name')
-    artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
-    packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
+    from django.core.cache import cache as _cache
 
-    # Evaluasi queryset sekali agar _result_cache terisi, lalu share ke form & template
-    services = list(services_qs)
-    artists = list(artists_qs)
-    packages = list(packages_qs)
+    services = _cache.get('bc_services')
+    artists = _cache.get('bc_artists')
+    packages = _cache.get('bc_packages')
 
-    prefetched = {'services_qs': services_qs, 'artists_qs': artists_qs, 'packages_qs': packages_qs}
+    if services is None:
+        try:
+            services_qs = Service.objects.filter(is_active=True).only(
+                'id', 'name', 'price', 'duration', 'category_id'
+            ).select_related('category').order_by('name')
+            artists_qs = Artist.objects.filter(is_active=True).only(
+                'id', 'nickname', 'name', 'is_available_studio', 'is_available_mobile', 'mobile_fee'
+            ).order_by('nickname')
+            packages_qs = ServicePackage.objects.filter(is_active=True).only(
+                'id', 'service_id', 'name', 'price', 'duration'
+            ).select_related('service').order_by('price')
+        except Exception:
+            messages.error(request, 'Maaf, terjadi gangguan. Silakan coba beberapa saat lagi.')
+            return redirect('home')
+
+        services = list(services_qs)
+        artists = list(artists_qs)
+        packages = list(packages_qs)
+        _cache.set('bc_services', services, 300)
+        _cache.set('bc_artists', artists, 300)
+        _cache.set('bc_packages', packages, 300)
+
+        # Reuse the same evaluated querysets for the form (0 extra queries)
+        prefetched = {
+            'services_qs': services_qs,
+            'artists_qs': artists_qs,
+            'packages_qs': packages_qs,
+        }
+    else:
+        # Cache hit: minimal PK lookups from cached IDs
+        svc_ids = [s.id for s in services]
+        art_ids = [a.id for a in artists]
+        pkg_ids = [p.id for p in packages]
+        prefetched = {
+            'services_qs': Service.objects.filter(id__in=svc_ids).only('id','name','price','duration','category_id') if svc_ids else Service.objects.none(),
+            'artists_qs': Artist.objects.filter(id__in=art_ids).only('id','nickname','name','is_available_studio','is_available_mobile','mobile_fee') if art_ids else Artist.objects.none(),
+            'packages_qs': ServicePackage.objects.filter(id__in=pkg_ids).only('id','service_id','name','price','duration') if pkg_ids else ServicePackage.objects.none(),
+        }
 
     if request.method == 'POST':
         form = BookingForm(request.POST, request.FILES, _prefetched=prefetched)
         if form.is_valid():
-            booking = form.save(commit=False)
-            booking.user = request.user
-            service = form.cleaned_data['service']
-            package = form.cleaned_data.get('package')
-            if package:
-                booking.total_price = package.price
-            else:
-                booking.total_price = service.price
-            if form.cleaned_data['mode'] == 'mobile':
-                travel_fee = form.cleaned_data['artist'].mobile_fee
-                booking.travel_fee = travel_fee
-                booking.total_price += travel_fee
-            booking.save()
-            messages.success(request, 'Pesanan berhasil dibuat! Silakan tunggu konfirmasi dari artist.')
-            return redirect('booking_detail', booking_id=booking.id)
+            try:
+                booking = form.save(commit=False)
+                booking.user = request.user
+                service = form.cleaned_data['service']
+                package = form.cleaned_data.get('package')
+                if package:
+                    booking.total_price = package.price
+                else:
+                    booking.total_price = service.price
+                if form.cleaned_data['mode'] == 'mobile':
+                    travel_fee = form.cleaned_data['artist'].mobile_fee
+                    booking.travel_fee = travel_fee
+                    booking.total_price += travel_fee
+                booking.save()
+                messages.success(request, 'Pesanan berhasil dibuat! Silakan tunggu konfirmasi dari artist.')
+                return redirect('booking_detail', booking_id=booking.id)
+            except Exception:
+                messages.error(request, 'Maaf, terjadi gangguan saat menyimpan. Silakan coba lagi.')
+                return render(request, 'tattoo/booking_create.html', {
+                    'form': form, 'services': services, 'artists': artists, 'packages': packages,
+                })
     else:
         initial = {}
         for key in ('service', 'package', 'artist'):
@@ -343,11 +383,18 @@ def booking_create(request):
             initial['mode'] = mode
         form = BookingForm(initial=initial, _prefetched=prefetched)
 
+    booking_json = json.dumps({
+        'services': [{'id': s.id, 'name': s.name, 'price': int(s.price), 'duration': s.duration} for s in services],
+        'packages': [{'id': p.id, 'service_id': p.service_id, 'name': p.name, 'price': int(p.price), 'duration': p.duration} for p in packages],
+        'artists': [{'id': a.id, 'nickname': a.nickname, 'name': a.name, 'studio': a.is_available_studio, 'mobile': a.is_available_mobile, 'mobile_fee': int(a.mobile_fee)} for a in artists],
+    })
+
     return render(request, 'tattoo/booking_create.html', {
         'form': form,
         'services': services,
         'artists': artists,
         'packages': packages,
+        'booking_json': booking_json,
     })
 
 

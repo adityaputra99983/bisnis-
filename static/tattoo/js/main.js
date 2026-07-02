@@ -770,7 +770,10 @@ function updateUIPersona(region) {
    Live exchange rates — fetch from API and update config
    ===================================================================== */
 function fetchLiveRates() {
-    fetch('/api/v1/rates/')
+    var controller = new AbortController();
+    var timeout = setTimeout(function () { controller.abort(); }, 5000);
+
+    fetch('/api/v1/rates/', { signal: controller.signal })
         .then(function (r) { return r.json(); })
         .then(function (data) {
             if (data && data.rates) {
@@ -782,7 +785,8 @@ function fetchLiveRates() {
         })
         .catch(function () {
             GLOBAL_CONFIG.ratesSource = 'fallback';
-        });
+        })
+        .finally(function () { clearTimeout(timeout); });
 }
 
 /* =====================================================================
@@ -863,15 +867,9 @@ function hidePriceTooltip(el) {
 document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('loading-screen');
     if (loader) {
-        // Sembunyikan loading screen secepat mungkin
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
-        // Tetap pakai window.load untuk transisi mulus jika semua resource cepat
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 600);
-        });
+        loader.style.display = 'none';
     }
 
     AOS.init({ duration: 800, once: true, offset: 100 });

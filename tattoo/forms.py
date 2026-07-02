@@ -209,9 +209,15 @@ class BookingForm(forms.ModelForm):
             pkg_lookup = {str(p.id): p for p in packages_qs}
             art_lookup = {str(a.id): a for a in artists_qs}
         else:
-            services_qs = Service.objects.filter(is_active=True).order_by('name')
-            packages_qs = ServicePackage.objects.filter(is_active=True).select_related('service')
-            artists_qs = Artist.objects.filter(is_active=True).order_by('nickname')
+            services_qs = Service.objects.filter(is_active=True).only(
+                'id', 'name', 'price', 'duration', 'category_id'
+            ).order_by('name')
+            packages_qs = ServicePackage.objects.filter(is_active=True).only(
+                'id', 'service_id', 'name', 'price', 'duration'
+            ).select_related('service')
+            artists_qs = Artist.objects.filter(is_active=True).only(
+                'id', 'nickname', 'name', 'is_available_studio', 'is_available_mobile', 'mobile_fee'
+            ).order_by('nickname')
             svc_lookup = {str(s.id): s for s in services_qs}
             pkg_lookup = {str(p.id): p for p in packages_qs}
             art_lookup = {str(a.id): a for a in artists_qs}

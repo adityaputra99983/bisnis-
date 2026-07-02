@@ -13,7 +13,7 @@
 {% block title %}Booking Tattoo - Bali Ink Hub{% endblock %}
 
 {% block content %}
-<section class="page-header booking-page-header" data-aos="fade-down">
+<section class="page-header booking-page-header">
     <div class="container">
         <div class="booking-hero-panel">
             <div class="booking-hero-copy">
@@ -59,7 +59,7 @@
 <section class="py-5 booking-create-page">
     <div class="container">
 
-        <div class="booking-shell-top" data-aos="fade-up">
+        <div class="booking-shell-top">
             <div>
                 <span class="booking-shell-kicker">Booking Experience</span>
                 <h2 class="booking-shell-title">Isi detail pesanan dengan tampilan yang lebih rapi</h2>
@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <div class="booking-flow-progress" data-aos="fade-up">
+        <div class="booking-flow-progress">
             <div class="bfp-step" data-step-indicator="1">
                 <div class="bfp-num">1</div>
                 <div class="bfp-text">Layanan</div>
@@ -106,14 +106,14 @@
                 <div class="col-lg-8">
 
                     {% if form.non_field_errors %}
-                        <div class="alert alert-danger" data-aos="fade-up">
+                        <div class="alert alert-danger">
                             <i class="bi bi-exclamation-triangle-fill"></i>
                             {{ form.non_field_errors.0 }}
                         </div>
                     {% endif %}
 
                     <!-- ===== STEP 1: LAYANAN ===== -->
-                    <div class="booking-step-card" data-step="1" data-aos="fade-up">
+                    <div class="booking-step-card" data-step="1">
                         <div class="bsc-head">
                             <div class="bsc-badge-wrap">
                                 <div class="bsc-badge">1</div>
@@ -154,7 +154,7 @@
                     </div>
 
                     <!-- ===== STEP 2: ARTIST ===== -->
-                    <div class="booking-step-card" data-step="2" data-aos="fade-up">
+                    <div class="booking-step-card" data-step="2">
                         <div class="bsc-head">
                             <div class="bsc-badge-wrap">
                                 <div class="bsc-badge">2</div>
@@ -199,7 +199,7 @@
                     </div>
 
                     <!-- ===== STEP 3: MODE LAYANAN ===== -->
-                    <div class="booking-step-card" data-step="3" data-aos="fade-up">
+                    <div class="booking-step-card" data-step="3">
                         <div class="bsc-head">
                             <div class="bsc-badge-wrap">
                                 <div class="bsc-badge">3</div>
@@ -237,7 +237,7 @@
                     </div>
 
                     <!-- ===== STEP 4: JADWAL ===== -->
-                    <div class="booking-step-card" data-step="4" data-aos="fade-up">
+                    <div class="booking-step-card" data-step="4">
                         <div class="bsc-head">
                             <div class="bsc-badge-wrap">
                                 <div class="bsc-badge">4</div>
@@ -278,7 +278,7 @@
                     </div>
 
                     <!-- ===== STEP 5: DETAIL TAMBAHAN ===== -->
-                    <div class="booking-step-card" data-step="5" data-aos="fade-up">
+                    <div class="booking-step-card" data-step="5">
                         <div class="bsc-head">
                             <div class="bsc-badge-wrap">
                                 <div class="bsc-badge">5</div>
@@ -333,7 +333,7 @@
 
                 <!-- ===== SIDEBAR: RINGKASAN BOOKING ===== -->
                 <div class="col-lg-4">
-                    <aside class="booking-summary-sidebar" data-aos="fade-left">
+                    <aside class="booking-summary-sidebar">
                         <div class="booking-summary-card">
                             <div class="bsum-topbar">
                                 <span class="bsum-pill">Live Summary</span>
@@ -444,25 +444,9 @@
     </div>
 </section>
 
-<script id="booking-form-data" type="application/json">
-{
-    "services": [
-        {% for s in services %}
-        {"id": {{ s.id }}, "name": "{{ s.name|escapejs }}", "price": {{ s.price|floatformat:0 }}, "duration": "{{ s.duration|escapejs }}"}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ],
-    "packages": [
-        {% for p in packages %}
-        {"id": {{ p.id }}, "service_id": {{ p.service_id }}, "name": "{{ p.name|escapejs }}", "price": {{ p.price|floatformat:0 }}, "duration": "{{ p.duration|escapejs }}"}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ],
-    "artists": [
-        {% for a in artists %}
-        {"id": {{ a.id }}, "nickname": "{{ a.nickname|escapejs }}", "name": "{{ a.name|escapejs }}", "studio": {{ a.is_available_studio|yesno:"true,false" }}, "mobile": {{ a.is_available_mobile|yesno:"true,false" }}, "mobile_fee": {{ a.mobile_fee|floatformat:0 }}}{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ]
-}
+<script id="booking-form-data" type="application/json">{{ booking_json|safe }}</script>
+<script>
+(function(){var l=document.getElementById('loading-screen');if(l){l.style.opacity='0';l.style.visibility='hidden';l.style.display='none';}})();
 </script>
-
-<script src="{% static 'tattoo/js/booking.js' %}?v=1.0"></script>
+<script defer src="{% static 'tattoo/js/booking.js' %}?v=2.0"></script>
 {% endblock %}

@@ -3,11 +3,17 @@ from django.core.cache import cache
 from .models import ServiceCategory, Booking, Artist
 
 
+_SKIP_PATHS = frozenset(['/booking/new/', '/login/', '/register/', '/booking/new'])
+
+
 def navbar_data(request):
+    path = request.path.rstrip('/') or '/'
+    skip_all = path in _SKIP_PATHS
+
     categories = cache.get('nav_categories')
-    if categories is None:
+    if categories is None and not skip_all:
         try:
-            categories = list(ServiceCategory.objects.filter(is_active=True)[:6])
+            categories = list(ServiceCategory.objects.filter(is_active=True).only('id', 'name', 'slug')[:6])
             cache.set('nav_categories', categories, 300)
         except Exception:
             categories = []
@@ -21,7 +27,7 @@ def navbar_data(request):
     artist_obj = None
     nav_artist_pending_count = 0
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not skip_all:
         user_id = request.user.id
         cache_key = f'nav_booking_{user_id}'
         cached = cache.get(cache_key)
@@ -56,7 +62,7 @@ def navbar_data(request):
                 artist_obj = request.user.artist
                 nav_artist_pending_count = Booking.objects.filter(
                     artist=artist_obj, status='pending'
-                ).count()
+                ).only('id').count()
             except Exception:
                 pass
 

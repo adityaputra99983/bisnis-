@@ -1,20 +1,11 @@
-/* =====================================================================
-   booking.js — Interaktivitas form booking
-   - Filter paket berdasarkan layanan yang dipilih
-   - Toggle field alamat berdasarkan mode (studio / mobile)
-   - Ringkasan harga & detail booking real-time di sidebar
-   - Progress indicator step yang sudah terisi
-   - Highlight step cards yang punya field error
-   - Inisialisasi summary dari form value (untuk re-render setelah submit)
-   ===================================================================== */
 (function () {
     'use strict';
 
-    const dataEl = document.getElementById('booking-form-data');
-    const formEl = document.getElementById('booking-form');
+    var dataEl = document.getElementById('booking-form-data');
+    var formEl = document.getElementById('booking-form');
     if (!dataEl || !formEl) return;
 
-    let DATA;
+    var DATA;
     try {
         DATA = JSON.parse(dataEl.textContent || '{}');
     } catch (e) {
@@ -22,286 +13,277 @@
         return;
     }
 
-    const services = DATA.services || [];
-    const packages = DATA.packages || [];
-    const artists = DATA.artists || [];
+    var services = DATA.services || [];
+    var packages = DATA.packages || [];
+    var artists = DATA.artists || [];
 
-    const $service = formEl.querySelector('[data-booking-field="service"]');
-    const $package = formEl.querySelector('[data-booking-field="package"]');
-    const $artist = formEl.querySelector('[data-booking-field="artist"]');
-    const $date = formEl.querySelector('[data-booking-field="date"]');
-    const $time = formEl.querySelector('[data-booking-field="time"]');
-    const $modeRadios = formEl.querySelectorAll('input[name="mode"]');
-    const $locationField = document.getElementById('location-field');
+    var $service = formEl.querySelector('[data-booking-field="service"]');
+    var $package = formEl.querySelector('[data-booking-field="package"]');
+    var $artist = formEl.querySelector('[data-booking-field="artist"]');
+    var $date = formEl.querySelector('[data-booking-field="date"]');
+    var $time = formEl.querySelector('[data-booking-field="time"]');
+    var $modeRadios = formEl.querySelectorAll('input[name="mode"]');
+    var $locationField = document.getElementById('location-field');
 
-    /* ---------- Helpers ---------- */
+    var $packageOptions = $package ? Array.from($package.options) : [];
+    var $summaryService = formEl.querySelector('[data-summary="service"]');
+    var $summaryPackage = formEl.querySelector('[data-summary="package"]');
+    var $summaryArtist = formEl.querySelector('[data-summary="artist"]');
+    var $summaryMode = formEl.querySelector('[data-summary="mode"]');
+    var $summaryDuration = formEl.querySelector('[data-summary="duration"]');
+    var $summaryDate = formEl.querySelector('[data-summary="date"]');
+    var $summaryTime = formEl.querySelector('[data-summary="time"]');
+    var $summaryBasePrice = formEl.querySelector('[data-summary="base-price"]');
+    var $summaryTravelFee = formEl.querySelector('[data-summary="travel-fee"]');
+    var $summaryTotal = formEl.querySelector('[data-summary="total"]');
+    var $travelBlock = formEl.querySelector('[data-summary-block="travel"]');
+    var $artistInfo = document.getElementById('artist-info');
+    var $aqiStudio = document.getElementById('aqi-studio');
+    var $aqiMobile = document.getElementById('aqi-mobile');
+    var $aqiFee = document.getElementById('aqi-fee');
+    var $packageHint = document.getElementById('package-hint');
+    var $stepIndicators = document.querySelectorAll('[data-step-indicator]');
+    var $stepCards = document.querySelectorAll('.booking-step-card');
+    var $bfpLines = document.querySelectorAll('.bfp-line');
+
+    var pendingRefresh = null;
+
     function fmtIDR(num) {
         if (num === null || num === undefined || isNaN(num)) return 'Rp 0';
         return 'Rp ' + Math.round(num).toLocaleString('id-ID');
     }
 
     function selectedMode() {
-        const checked = formEl.querySelector('input[name="mode"]:checked');
+        var checked = formEl.querySelector('input[name="mode"]:checked');
         return checked ? checked.value : null;
     }
 
     function findService(id) {
         if (!id) return null;
-        return services.find((s) => String(s.id) === String(id)) || null;
+        return services.find(function (s) { return String(s.id) === String(id); }) || null;
     }
 
     function findPackage(id) {
         if (!id) return null;
-        return packages.find((p) => String(p.id) === String(id)) || null;
+        return packages.find(function (p) { return String(p.id) === String(id); }) || null;
     }
 
     function findArtist(id) {
         if (!id) return null;
-        return artists.find((a) => String(a.id) === String(id)) || null;
+        return artists.find(function (a) { return String(a.id) === String(id); }) || null;
     }
 
-    /* ---------- Filter paket berdasarkan layanan ---------- */
     function filterPackagesByService() {
-        if (!$service || !$package) return;
-        const serviceId = $service.value;
-        const currentPkg = $package.value;
-        let firstMatch = '';
-        let matchCount = 0;
+        if (!$service || !$package || !$packageOptions.length) return;
+        var serviceId = $service.value;
+        var currentPkg = $package.value;
+        var firstMatch = '';
+        var matchCount = 0;
+        var i, opt, optService, matches;
 
-        Array.from($package.options).forEach((opt) => {
+        for (i = 0; i < $packageOptions.length; i++) {
+            opt = $packageOptions[i];
             if (!opt.value) {
                 opt.hidden = false;
                 opt.disabled = false;
-                return;
+                continue;
             }
-            const optService = opt.getAttribute('data-service');
-            const matches = !serviceId || String(optService) === String(serviceId);
+            optService = opt.getAttribute('data-service');
+            matches = !serviceId || String(optService) === String(serviceId);
             opt.hidden = !matches;
             opt.disabled = !matches;
             if (matches) {
-                matchCount += 1;
+                matchCount++;
                 if (!firstMatch) firstMatch = opt.value;
             }
-        });
-
-        // Reset jika paket sebelumnya tidak cocok lagi
-        const stillValid = Array.from($package.options).some(
-            (o) => o.value === currentPkg && !o.hidden
-        );
-        if (!stillValid) {
-            $package.value = '';
         }
 
-        // Hint paket
-        const hint = document.getElementById('package-hint');
-        if (hint) {
+        if (currentPkg) {
+            var stillValid = false;
+            for (i = 0; i < $packageOptions.length; i++) {
+                if ($packageOptions[i].value === currentPkg && !$packageOptions[i].hidden) {
+                    stillValid = true;
+                    break;
+                }
+            }
+            if (!stillValid) $package.value = '';
+        }
+
+        if ($packageHint) {
             if (!serviceId) {
-                hint.textContent = 'Paket akan muncul setelah memilih layanan.';
+                $packageHint.textContent = 'Paket akan muncul setelah memilih layanan.';
             } else if (matchCount === 0) {
-                hint.textContent = 'Belum ada paket untuk layanan ini — kamu bisa lanjut tanpa paket.';
+                $packageHint.textContent = 'Belum ada paket untuk layanan ini — kamu bisa lanjut tanpa paket.';
             } else {
-                hint.textContent = matchCount + ' paket tersedia. Pilih jika ada paket yang cocok, atau biarkan kosong.';
+                $packageHint.textContent = matchCount + ' paket tersedia. Pilih jika ada paket yang cocok, atau biarkan kosong.';
             }
         }
     }
 
-    /* ---------- Tampilkan ringkasan artist ---------- */
     function updateArtistInfo() {
-        if (!$artist) return;
-        const box = document.getElementById('artist-info');
-        if (!box) return;
-        const artist = findArtist($artist.value);
+        if (!$artist || !$artistInfo) return;
+        var artist = findArtist($artist.value);
         if (!artist) {
-            box.style.display = 'none';
+            $artistInfo.style.display = 'none';
             return;
         }
-        box.style.display = '';
-        const studioEl = document.getElementById('aqi-studio');
-        const mobileEl = document.getElementById('aqi-mobile');
-        const feeEl = document.getElementById('aqi-fee');
-        if (studioEl) studioEl.textContent = artist.studio ? 'Ya' : 'Tidak';
-        if (mobileEl) mobileEl.textContent = artist.mobile ? 'Ya' : 'Tidak';
-        if (feeEl) feeEl.textContent = artist.mobile ? fmtIDR(artist.mobile_fee) : '-';
+        $artistInfo.style.display = '';
+        if ($aqiStudio) $aqiStudio.textContent = artist.studio ? 'Ya' : 'Tidak';
+        if ($aqiMobile) $aqiMobile.textContent = artist.mobile ? 'Ya' : 'Tidak';
+        if ($aqiFee) $aqiFee.textContent = artist.mobile ? fmtIDR(artist.mobile_fee) : '-';
     }
 
-    /* ---------- Toggle field alamat berdasarkan mode ---------- */
     function toggleLocationField() {
         if (!$locationField) return;
-        const mode = selectedMode();
-        $locationField.style.display = mode === 'mobile' ? '' : 'none';
+        $locationField.style.display = selectedMode() === 'mobile' ? '' : 'none';
     }
 
-    /* ---------- Update ringkasan di sidebar ---------- */
     function updateSummary() {
-        const service = findService($service && $service.value);
-        const pkg = findPackage($package && $package.value);
-        const artist = findArtist($artist && $artist.value);
-        const mode = selectedMode();
+        var service = $service && $service.value ? findService($service.value) : null;
+        var pkg = $package && $package.value ? findPackage($package.value) : null;
+        var artist = $artist && $artist.value ? findArtist($artist.value) : null;
+        var mode = selectedMode();
 
-        function setVal(key, value) {
-            formEl.querySelectorAll(`[data-summary="${key}"]`).forEach((el) => {
-                if (!value) {
-                    el.textContent = '—';
-                    el.classList.add('is-empty');
-                } else {
-                    el.textContent = value;
-                    el.classList.remove('is-empty');
-                }
-            });
+        if ($summaryService) $summaryService.textContent = service ? service.name : '—';
+        if ($summaryPackage) $summaryPackage.textContent = pkg ? pkg.name : '—';
+        if ($summaryArtist) $summaryArtist.textContent = artist ? artist.nickname : '—';
+
+        if ($summaryMode) {
+            $summaryMode.textContent = mode === 'studio' ? 'Datang ke Studio' : mode === 'mobile' ? 'Panggil ke Rumah' : '—';
         }
 
-        function setPrice(key, value) {
-            formEl.querySelectorAll(`[data-summary="${key}"]`).forEach((el) => {
-                el.textContent = fmtIDR(value);
-                el.setAttribute('data-region-price', value || 0);
-                el.classList.remove('is-empty');
-            });
+        if ($summaryDuration) {
+            $summaryDuration.textContent = pkg ? pkg.duration : service ? service.duration : '—';
         }
 
-        setVal('service', service ? service.name : null);
-        setVal('package', pkg ? pkg.name : null);
-        setVal('artist', artist ? artist.nickname : null);
-        setVal(
-            'mode',
-            mode === 'studio'
-                ? 'Datang ke Studio'
-                : mode === 'mobile'
-                ? 'Panggil ke Rumah'
-                : null
-        );
-        setVal('duration', pkg ? pkg.duration : service ? service.duration : null);
-
-        let dateText = null;
-        if ($date && $date.value) {
+        if ($summaryDate && $date && $date.value) {
             try {
-                const d = new Date($date.value + 'T00:00:00');
-                dateText = d.toLocaleDateString('id-ID', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
+                var d = new Date($date.value + 'T00:00:00');
+                $summaryDate.textContent = d.toLocaleDateString('id-ID', {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
                 });
             } catch (e) {
-                dateText = $date.value;
+                $summaryDate.textContent = $date.value;
             }
+        } else if ($summaryDate) {
+            $summaryDate.textContent = '—';
         }
-        setVal('date', dateText);
-        setVal('time', $time && $time.value ? $time.value + ' WITA' : null);
 
-        // Harga: paket (jika ada) > layanan
-        let basePrice = 0;
+        if ($summaryTime) {
+            $summaryTime.textContent = $time && $time.value ? $time.value + ' WITA' : '—';
+        }
+
+        var basePrice = 0;
         if (pkg) basePrice = Number(pkg.price) || 0;
         else if (service) basePrice = Number(service.price) || 0;
 
-        // Travel fee
-        let travelFee = 0;
-        if (mode === 'mobile' && artist) {
-            travelFee = Number(artist.mobile_fee) || 0;
+        var travelFee = 0;
+        if (mode === 'mobile' && artist) travelFee = Number(artist.mobile_fee) || 0;
+
+        var total = basePrice + travelFee;
+
+        if ($summaryBasePrice) {
+            $summaryBasePrice.textContent = fmtIDR(basePrice);
+            $summaryBasePrice.setAttribute('data-region-price', basePrice || 0);
         }
-
-        const total = basePrice + travelFee;
-
-        const travelBlock = formEl.querySelector('[data-summary-block="travel"]');
-
-        setPrice('base-price', basePrice);
-        setPrice('travel-fee', travelFee);
-        if (travelBlock) travelBlock.style.display = travelFee > 0 ? '' : 'none';
-        setPrice('total', total);
+        if ($summaryTravelFee) {
+            $summaryTravelFee.textContent = fmtIDR(travelFee);
+            $summaryTravelFee.setAttribute('data-region-price', travelFee || 0);
+        }
+        if ($travelBlock) $travelBlock.style.display = travelFee > 0 ? '' : 'none';
+        if ($summaryTotal) {
+            $summaryTotal.textContent = fmtIDR(total);
+            $summaryTotal.setAttribute('data-region-price', total || 0);
+        }
     }
 
-    /* ---------- Progress indicator step ---------- */
     function updateStepProgress() {
-        const completed = {
-            1: Boolean($service && $service.value),
-            2: Boolean($artist && $artist.value),
-            3: Boolean(selectedMode()),
-            4: Boolean($date && $date.value && $time && $time.value),
-            5: true, // step 5 selalu opsional
-        };
+        var completed = {};
+        completed[1] = Boolean($service && $service.value);
+        completed[2] = Boolean($artist && $artist.value);
+        completed[3] = Boolean(selectedMode());
+        completed[4] = Boolean($date && $date.value && $time && $time.value);
+        completed[5] = true;
 
-        // Cari step aktif berikutnya (yang belum lengkap)
-        let activeStep = 5;
-        for (let i = 1; i <= 5; i += 1) {
-            if (!completed[i]) {
-                activeStep = i;
-                break;
-            }
+        var activeStep = 5;
+        for (var i = 1; i <= 5; i++) {
+            if (!completed[i]) { activeStep = i; break; }
         }
 
-        // Update progress bar di atas
-        document.querySelectorAll('[data-step-indicator]').forEach((el) => {
-            const n = Number(el.getAttribute('data-step-indicator'));
+        $stepIndicators.forEach(function (el) {
+            var n = Number(el.getAttribute('data-step-indicator'));
             el.classList.toggle('is-done', n < activeStep && completed[n]);
             el.classList.toggle('is-active', n === activeStep);
         });
 
-        // Update step cards
-        document.querySelectorAll('.booking-step-card').forEach((card) => {
-            const n = Number(card.getAttribute('data-step'));
+        $stepCards.forEach(function (card) {
+            var n = Number(card.getAttribute('data-step'));
             card.classList.toggle('is-active', n === activeStep);
             card.classList.toggle('is-completed', n < activeStep && completed[n]);
         });
 
-        // Tandai garis di progress
-        document.querySelectorAll('.bfp-line').forEach((line, i) => {
-            const stepBefore = i + 1;
+        $bfpLines.forEach(function (line, idx) {
+            var stepBefore = idx + 1;
             line.classList.toggle('is-done', completed[stepBefore] && stepBefore < activeStep);
         });
     }
 
-    /* ---------- Tandai step card yang punya field error ---------- */
     function markErrorSteps() {
-        document.querySelectorAll('.booking-step-card').forEach((card) => {
-            const hasError = card.querySelector('.field-error');
+        $stepCards.forEach(function (card) {
+            var hasError = card.querySelector('.field-error');
             card.classList.toggle('has-error', Boolean(hasError));
             if (hasError) {
-                const field = card.querySelector('.form-control, .form-select');
+                var field = card.querySelector('.form-control, .form-select');
                 if (field) field.classList.add('is-invalid');
             }
         });
     }
 
-    /* ---------- Cegah submit jika mode mobile tapi alamat kosong ---------- */
     function attachClientValidation() {
-        formEl.addEventListener('submit', (e) => {
-            const mode = selectedMode();
-            const addr = formEl.querySelector('[name="location_address"]');
+        formEl.addEventListener('submit', function (e) {
+            var mode = selectedMode();
+            var addr = formEl.querySelector('[name="location_address"]');
             if (mode === 'mobile' && addr && !addr.value.trim()) {
                 e.preventDefault();
                 addr.focus();
                 addr.classList.add('is-invalid');
                 addr.style.borderColor = '#dc3545';
-                if ($locationField) {
-                    $locationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                if ($locationField) $locationField.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
     }
 
-    /* ---------- Bind events ---------- */
-    function refresh() {
+    var _refreshTimer = null;
+    function debouncedRefresh() {
+        if (_refreshTimer) clearTimeout(_refreshTimer);
+        _refreshTimer = setTimeout(function () {
+            _refreshTimer = null;
+            filterPackagesByService();
+            updateArtistInfo();
+            toggleLocationField();
+            updateSummary();
+            updateStepProgress();
+        }, 30);
+    }
+
+    if ($service) $service.addEventListener('change', debouncedRefresh);
+    if ($package) $package.addEventListener('change', debouncedRefresh);
+    if ($artist) $artist.addEventListener('change', debouncedRefresh);
+    if ($date) $date.addEventListener('change', debouncedRefresh);
+    if ($time) $time.addEventListener('change', debouncedRefresh);
+    $modeRadios.forEach(function (r) { r.addEventListener('change', debouncedRefresh); });
+
+    attachClientValidation();
+
+    function boot() {
         filterPackagesByService();
         updateArtistInfo();
         toggleLocationField();
         updateSummary();
         updateStepProgress();
-    }
-
-    if ($service) $service.addEventListener('change', refresh);
-    if ($package) $package.addEventListener('change', refresh);
-    if ($artist) $artist.addEventListener('change', refresh);
-    if ($date) $date.addEventListener('change', refresh);
-    if ($time) $time.addEventListener('change', refresh);
-    $modeRadios.forEach((r) => r.addEventListener('change', refresh));
-
-    attachClientValidation();
-
-    // PENTING: inisialisasi ulang saat halaman sudah siap
-    // (untuk menangkap data dari form yang di-render ulang setelah submit)
-    function boot() {
-        refresh();
         markErrorSteps();
     }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', boot);
     } else {

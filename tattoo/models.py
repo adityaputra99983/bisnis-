@@ -80,10 +80,13 @@ class ServicePackage(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=0)
     duration = models.CharField(max_length=100)
     is_recommended = models.BooleanField(default=False, help_text="Rekomendasikan paket ini")
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         ordering = ['price']
+        indexes = [
+            models.Index(fields=['service', 'is_active'], name='pkg_svc_active_idx'),
+        ]
 
     def __str__(self):
         return f"{self.service.name} - {self.name}"
@@ -276,6 +279,11 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ['-booking_date', '-booking_time']
+        indexes = [
+            models.Index(fields=['user', 'status'], name='booking_user_status_idx'),
+            models.Index(fields=['artist', 'status'], name='booking_artist_status_idx'),
+            models.Index(fields=['payment_status'], name='booking_pay_status_idx'),
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.artist.nickname} - {self.booking_date}"

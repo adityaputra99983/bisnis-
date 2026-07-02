@@ -32,6 +32,9 @@
                             <div>
                                 <strong class="ap-field-strong">{{ booking.user.username }}</strong>
                                 <span class="ap-field-email">{{ booking.user.email }}</span>
+                                <a href="{% url 'artist_booking_chat' booking.id %}" class="ap-link-luxury d-inline-flex align-items-center gap-1 mt-1" style="font-size:0.85rem;">
+                                    <i class="bi bi-chat-dots-fill text-gold"></i> Chat Customer
+                                </a>
                             </div>
                         </div>
                     </div>

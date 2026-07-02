@@ -17,10 +17,12 @@ urlpatterns = [
     path('payment/<int:booking_id>/', views.payment_initiate, name='payment_initiate'),
     path('payment/<int:booking_id>/confirm/', views.payment_confirm, name='payment_confirm'),
     path('payment/<int:booking_id>/verify/', views.payment_verify, name='payment_verify'),
+    path('bookings/<int:booking_id>/chat/', views.booking_chat, name='booking_chat'),
     # Artist dashboard / bisnis
     path('artist/dashboard/', views.artist_dashboard, name='artist_dashboard'),
     path('artist/bookings/', views.artist_booking_list, name='artist_booking_list'),
     path('artist/bookings/<int:booking_id>/', views.artist_booking_detail, name='artist_booking_detail'),
+    path('artist/bookings/<int:booking_id>/chat/', views.artist_booking_chat, name='artist_booking_chat'),
     path('artist/bookings/<int:booking_id>/status/', views.artist_update_status, name='artist_update_status'),
     path('artist/profile/edit/', views.artist_profile_edit, name='artist_profile_edit'),
     path('artist/portfolio/', views.artist_portfolio, name='artist_portfolio'),

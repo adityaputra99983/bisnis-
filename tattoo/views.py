@@ -12,7 +12,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError
 from django.utils import timezone
-from .models import ServiceCategory, Style, Service, ServicePackage, Artist, ArtistStyle, Portfolio, Booking, Review, ArtistPaymentSettings
+from .models import ServiceCategory, Style, Service, ServicePackage, Artist, ArtistStyle, Portfolio, Booking, Review, ArtistPaymentSettings, ChatMessage
 from .forms import RegisterForm, BookingForm, ReviewForm
 from .payment import (
     generate_payment_session, get_payment_instructions, mark_booking_as_paid,
@@ -469,6 +469,67 @@ def booking_detail(request, booking_id):
         'booking': booking,
         'review': review,
         'review_form': review_form,
+    })
+
+
+@login_required
+def booking_chat(request, booking_id):
+    booking = get_object_or_404(
+        Booking.objects.select_related('artist', 'user'),
+        id=booking_id, user=request.user
+    )
+    other_user = booking.artist.user if booking.artist.user else request.user
+    other_name = booking.artist.nickname
+
+    if request.method == 'POST':
+        msg_text = request.POST.get('message', '').strip()
+        if msg_text:
+            ChatMessage.objects.create(
+                booking=booking,
+                sender=request.user,
+                message=msg_text,
+            )
+            return redirect('booking_chat', booking_id=booking.id)
+
+    messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
+    messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+
+    return render(request, 'tattoo/booking_chat.html', {
+        'booking': booking,
+        'other_user': other_user,
+        'other_name': other_name,
+        'messages': messages_qs,
+        'is_artist_view': False,
+    })
+
+
+@login_required
+def artist_booking_chat(request, booking_id):
+    artist = _get_artist_or_404(request.user)
+    booking = get_object_or_404(
+        Booking.objects.select_related('user', 'artist'),
+        id=booking_id, artist=artist
+    )
+    other_name = booking.user.username
+
+    if request.method == 'POST':
+        msg_text = request.POST.get('message', '').strip()
+        if msg_text:
+            ChatMessage.objects.create(
+                booking=booking,
+                sender=request.user,
+                message=msg_text,
+            )
+            return redirect('artist_booking_chat', booking_id=booking.id)
+
+    messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
+    messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+
+    return render(request, 'tattoo/booking_chat.html', {
+        'booking': booking,
+        'other_name': other_name,
+        'messages': messages_qs,
+        'is_artist_view': True,
     })
 
 

@@ -561,3 +561,21 @@ class ArtistPaymentSettings(models.Model):
         if self.enable_credit_card:
             methods += ["credit_card"]
         return methods
+
+
+class ChatMessage(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['booking', 'created_at'], name='chat_booking_created_idx'),
+            models.Index(fields=['sender', 'is_read'], name='chat_sender_read_idx'),
+        ]
+
+    def __str__(self):
+        return f"[{self.booking.id}] {self.sender.username}: {self.message[:50]}"

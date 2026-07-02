@@ -301,52 +301,62 @@ def logout_view(request):
     return redirect('home')
 
 
+from django.core.cache import cache as _djcache
+
+_CACHE_TTL = 600  # 10 menit
+
 @login_required
 def booking_create(request):
-    from django.core.cache import cache as _cache
+    prefetched = _djcache.get('bc_prefetched')
+    booking_json = _djcache.get('booking_form_data')
 
-    services = _cache.get('bc_services')
-    artists = _cache.get('bc_artists')
-    packages = _cache.get('bc_packages')
-
-    if services is None:
+    if prefetched is None or booking_json is None:
         try:
-            services_qs = Service.objects.filter(is_active=True).only(
-                'id', 'name', 'price', 'duration', 'category_id'
-            ).select_related('category').order_by('name')
-            artists_qs = Artist.objects.filter(is_active=True).only(
+            svc_qs = Service.objects.filter(is_active=True).only(
+                'id', 'name', 'price', 'duration'
+            ).order_by('name')
+            art_qs = Artist.objects.filter(is_active=True).only(
                 'id', 'nickname', 'name', 'is_available_studio', 'is_available_mobile', 'mobile_fee'
             ).order_by('nickname')
-            packages_qs = ServicePackage.objects.filter(is_active=True).only(
+            pkg_qs = ServicePackage.objects.filter(is_active=True).only(
                 'id', 'service_id', 'name', 'price', 'duration'
-            ).select_related('service').order_by('price')
+            ).order_by('price')
+
+            services = list(svc_qs)
+            artists = list(art_qs)
+            packages = list(pkg_qs)
+
+            booking_json = json.dumps({
+                'services': [
+                    {'id': s.id, 'n': s.name, 'p': int(s.price), 'd': s.duration}
+                    for s in services
+                ],
+                'packages': [
+                    {'id': p.id, 'si': p.service_id, 'n': p.name, 'p': int(p.price), 'd': p.duration}
+                    for p in packages
+                ],
+                'artists': [
+                    {'id': a.id, 'nn': a.nickname, 'n': a.name, 's': a.is_available_studio, 'm': a.is_available_mobile, 'mf': int(a.mobile_fee)}
+                    for a in artists
+                ],
+            })
+
+            prefetched = {
+                'services': services,
+                'artists': artists,
+                'packages': packages,
+                'svc_qs': svc_qs,
+                'art_qs': art_qs,
+                'pkg_qs': pkg_qs,
+            }
+
+            _djcache.set_many({
+                'booking_form_data': booking_json,
+                'bc_prefetched': prefetched,
+            }, _CACHE_TTL)
         except Exception:
             messages.error(request, 'Maaf, terjadi gangguan. Silakan coba beberapa saat lagi.')
             return redirect('home')
-
-        services = list(services_qs)
-        artists = list(artists_qs)
-        packages = list(packages_qs)
-        _cache.set('bc_services', services, 300)
-        _cache.set('bc_artists', artists, 300)
-        _cache.set('bc_packages', packages, 300)
-
-        # Reuse the same evaluated querysets for the form (0 extra queries)
-        prefetched = {
-            'services_qs': services_qs,
-            'artists_qs': artists_qs,
-            'packages_qs': packages_qs,
-        }
-    else:
-        # Cache hit: minimal PK lookups from cached IDs
-        svc_ids = [s.id for s in services]
-        art_ids = [a.id for a in artists]
-        pkg_ids = [p.id for p in packages]
-        prefetched = {
-            'services_qs': Service.objects.filter(id__in=svc_ids).only('id','name','price','duration','category_id') if svc_ids else Service.objects.none(),
-            'artists_qs': Artist.objects.filter(id__in=art_ids).only('id','nickname','name','is_available_studio','is_available_mobile','mobile_fee') if art_ids else Artist.objects.none(),
-            'packages_qs': ServicePackage.objects.filter(id__in=pkg_ids).only('id','service_id','name','price','duration') if pkg_ids else ServicePackage.objects.none(),
-        }
 
     if request.method == 'POST':
         form = BookingForm(request.POST, request.FILES, _prefetched=prefetched)
@@ -370,7 +380,8 @@ def booking_create(request):
             except Exception:
                 messages.error(request, 'Maaf, terjadi gangguan saat menyimpan. Silakan coba lagi.')
                 return render(request, 'tattoo/booking_create.html', {
-                    'form': form, 'services': services, 'artists': artists, 'packages': packages,
+                    'form': form,
+                    'booking_json': booking_json,
                 })
     else:
         initial = {}
@@ -383,17 +394,8 @@ def booking_create(request):
             initial['mode'] = mode
         form = BookingForm(initial=initial, _prefetched=prefetched)
 
-    booking_json = json.dumps({
-        'services': [{'id': s.id, 'name': s.name, 'price': int(s.price), 'duration': s.duration} for s in services],
-        'packages': [{'id': p.id, 'service_id': p.service_id, 'name': p.name, 'price': int(p.price), 'duration': p.duration} for p in packages],
-        'artists': [{'id': a.id, 'nickname': a.nickname, 'name': a.name, 'studio': a.is_available_studio, 'mobile': a.is_available_mobile, 'mobile_fee': int(a.mobile_fee)} for a in artists],
-    })
-
     return render(request, 'tattoo/booking_create.html', {
         'form': form,
-        'services': services,
-        'artists': artists,
-        'packages': packages,
         'booking_json': booking_json,
     })
 
@@ -473,7 +475,7 @@ def booking_detail(request, booking_id):
 @login_required
 def payment_initiate(request, booking_id):
     booking = get_object_or_404(
-        Booking,
+        Booking.objects.select_related('artist__payment_settings'),
         Q(id=booking_id) & (Q(user=request.user) | Q(artist__user=request.user))
     )
 
@@ -493,10 +495,10 @@ def payment_initiate(request, booking_id):
         )
         return redirect('booking_detail', booking_id=booking.id)
 
-    # Cek apakah artist menerima pembayaran online
+    # Ambil payment settings artist (1 query dengan select_related)
     try:
-        pay_settings = booking.artist.payment_settings
-        if not pay_settings.accept_online_payment:
+        ps = booking.artist.payment_settings
+        if not ps.accept_online_payment:
             messages.warning(
                 request,
                 f'Artist {booking.artist.nickname} sedang tidak menerima pembayaran online. '
@@ -504,7 +506,7 @@ def payment_initiate(request, booking_id):
             )
             return redirect('booking_detail', booking_id=booking.id)
     except ArtistPaymentSettings.DoesNotExist:
-        pass  # Default: pembayaran online aktif
+        ps = None
 
     # Generate payment session (transaction_id + expires_at) — idempotent
     generate_payment_session(booking)
@@ -520,15 +522,7 @@ def payment_initiate(request, booking_id):
     accounts = dict(settings.PLATFORM_PAYMENT_ACCOUNTS)
 
     # Override dengan akun artist jika ada
-    try:
-        ps = booking.artist.payment_settings
-        artist_accounts_loaded = True
-    except ArtistPaymentSettings.DoesNotExist:
-        ps = None
-        artist_accounts_loaded = False
-
-    if artist_accounts_loaded and ps:
-        # Override bank VA accounts dengan rekening artist
+    if ps:
         bank_map = {
             'bca_va': ('bca', 'bank_bca_number', 'bank_bca_name', 'BCA'),
             'mandiri_va': ('mandiri', 'bank_mandiri_number', 'bank_mandiri_name', 'Mandiri'),
@@ -547,7 +541,6 @@ def payment_initiate(request, booking_id):
                     'account_name': acct_name,
                 }
 
-        # Override e-wallet accounts dengan nomor artist
         ewallet_map = {
             'gopay': ('ewallet_gopay', 'GoPay'),
             'shopeepay': ('ewallet_shopeepay', 'ShopeePay'),
@@ -565,7 +558,6 @@ def payment_initiate(request, booking_id):
                 }
 
     if selected_method and selected_method in METHOD_LABELS:
-        # Override khusus credit_card dan qris (sudah ada sebelumnya)
         if selected_method == 'credit_card':
             accounts['credit_card'] = {
                 'processing_method': (ps.card_processing_method if ps else 'manual') or 'manual',
@@ -575,7 +567,7 @@ def payment_initiate(request, booking_id):
             }
         elif selected_method == 'qris':
             accounts['qris'] = {
-                'merchant_name': (ps.qris_merchant_name if ps else None) or (booking.artist.nickname if hasattr(booking.artist, 'nickname') else 'Merchant'),
+                'merchant_name': (ps.qris_merchant_name if ps else None) or booking.artist.nickname,
                 'image_url': (ps.qris_image.url if ps and ps.qris_image else ''),
                 'fee_percent': float(ps.qris_fee_percent or 0) if ps else 0.7,
                 'note': (ps.qris_note if ps else '') or '',

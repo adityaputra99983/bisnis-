@@ -86,9 +86,16 @@ footer {
     background: var(--black);
     display: flex; align-items: center; justify-content: center;
     z-index: 99999;
-    transition: opacity 0.6s, visibility 0.6s;
+    opacity: 1;
+    visibility: visible;
+    /* Never block clicks — purely decorative */
+    pointer-events: none;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
 }
-.loading-screen.hidden { opacity: 0; visibility: hidden; }
+/* .is-hidden class is for JS use — makes it invisible */
+.loading-screen.is-hidden { opacity: 0; visibility: hidden; }
+/* .is-removed fully removes it from layout */
+.loading-screen.is-removed { display: none; }
 .loading-content { text-align: center; }
 
 .loading-brand-unified {
@@ -100,13 +107,13 @@ footer {
     animation: goldPulse 2s ease-in-out infinite;
 }
 .loading-logo-img {
-    height: 180px;
+    height: 120px;
     width: auto;
     object-fit: contain;
     mix-blend-mode: screen;
 }
 .loading-logo-text {
-    font-size: 1.8rem; font-weight: 800;
+    font-size: 1.5rem; font-weight: 800;
     background: var(--gold-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -126,7 +133,7 @@ footer {
 }
 
 .loading-bar { width: 200px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin: 0 auto; }
-.loading-bar-fill { width: 0%; height: 100%; background: var(--gold-gradient); border-radius: 3px; animation: loadBar 1.2s ease-in-out forwards; box-shadow: 0 0 20px var(--gold-glow); }
+.loading-bar-fill { width: 0%; height: 100%; background: var(--gold-gradient); border-radius: 3px; animation: loadBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; box-shadow: 0 0 20px var(--gold-glow); }
 @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
 
 /* ===== NAVBAR ===== */

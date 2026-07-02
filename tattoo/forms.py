@@ -202,33 +202,51 @@ class BookingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if prefetched:
-            services_qs = prefetched['services_qs']
-            packages_qs = prefetched['packages_qs']
-            artists_qs = prefetched['artists_qs']
-            svc_lookup = {str(s.id): s for s in services_qs}
-            pkg_lookup = {str(p.id): p for p in packages_qs}
-            art_lookup = {str(a.id): a for a in artists_qs}
+            services = prefetched['services']
+            artists = prefetched['artists']
+            packages = prefetched['packages']
+            svc_qs = prefetched['svc_qs']
+            art_qs = prefetched['art_qs']
+            pkg_qs = prefetched['pkg_qs']
+
+            svc_lookup = {str(s.id): s for s in services}
+            pkg_lookup = {str(p.id): p for p in packages}
+            art_lookup = {str(a.id): a for a in artists}
+
+            svc_choices = [('', '-- Pilih Layanan --')] + [(s.id, s.name) for s in services]
+            pkg_choices = [('', '-- Tanpa Paket --')] + [(p.id, p.name) for p in packages]
+            art_choices = [('', '-- Pilih Artist --')] + [(a.id, a.nickname) for a in artists]
         else:
             services_qs = Service.objects.filter(is_active=True).only(
-                'id', 'name', 'price', 'duration', 'category_id'
+                'id', 'name', 'price', 'duration'
             ).order_by('name')
             packages_qs = ServicePackage.objects.filter(is_active=True).only(
                 'id', 'service_id', 'name', 'price', 'duration'
-            ).select_related('service')
+            ).order_by('price')
             artists_qs = Artist.objects.filter(is_active=True).only(
                 'id', 'nickname', 'name', 'is_available_studio', 'is_available_mobile', 'mobile_fee'
             ).order_by('nickname')
-            svc_lookup = {str(s.id): s for s in services_qs}
-            pkg_lookup = {str(p.id): p for p in packages_qs}
-            art_lookup = {str(a.id): a for a in artists_qs}
 
-        self.fields['service'].queryset = services_qs
-        self.fields['package'].queryset = packages_qs
-        self.fields['artist'].queryset = artists_qs
+            services = list(services_qs)
+            artists = list(artists_qs)
+            packages = list(packages_qs)
 
-        self.fields['service'].empty_label = "-- Pilih Layanan --"
-        self.fields['package'].empty_label = "-- Tanpa Paket --"
-        self.fields['artist'].empty_label = "-- Pilih Artist --"
+            svc_lookup = {str(s.id): s for s in services}
+            pkg_lookup = {str(p.id): p for p in packages}
+            art_lookup = {str(a.id): a for a in artists}
+
+            svc_choices = [('', '-- Pilih Layanan --')] + [(s.id, s.name) for s in services]
+            pkg_choices = [('', '-- Tanpa Paket --')] + [(p.id, p.name) for p in packages]
+            art_choices = [('', '-- Pilih Artist --')] + [(a.id, a.nickname) for a in artists]
+
+            svc_qs = services_qs
+            art_qs = artists_qs
+            pkg_qs = packages_qs
+
+        self.fields['service'].queryset = svc_qs
+        self.fields['package'].queryset = pkg_qs
+        self.fields['artist'].queryset = art_qs
+
         self.fields['package'].required = False
 
         self.fields['service'].widget = ServiceSelectWidget(
@@ -247,9 +265,10 @@ class BookingForm(forms.ModelForm):
             attrs={'class': 'booking-mode-radio', 'data-booking-field': 'mode'}
         )
 
-        self.fields['service'].widget.choices = self.fields['service'].choices
-        self.fields['package'].widget.choices = self.fields['package'].choices
-        self.fields['artist'].widget.choices = self.fields['artist'].choices
+        self.fields['service'].choices = svc_choices
+        self.fields['package'].choices = pkg_choices
+        self.fields['artist'].choices = art_choices
+
         self.fields['mode'].widget.choices = self.fields['mode'].choices
 
         self.fields['booking_date'].widget.attrs['min'] = date.today().isoformat()

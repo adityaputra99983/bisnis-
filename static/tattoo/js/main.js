@@ -864,17 +864,30 @@ function hidePriceTooltip(el) {
     }
 }
 
+function hideLoadingScreen() {
+    var loader = document.getElementById('loading-screen');
+    if (!loader) return;
+    if (loader.classList.contains('is-hidden')) return;
+    if (window._lsTimer) { clearTimeout(window._lsTimer); window._lsTimer = null; }
+    loader.classList.add('is-hidden');
+    setTimeout(function () {
+        loader.classList.add('is-removed');
+    }, 550);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const loader = document.getElementById('loading-screen');
-    if (loader) {
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-        loader.style.display = 'none';
+    const isBookingPage = document.body.classList.contains('booking-page-minimal-nav');
+
+    var loader = document.getElementById('loading-screen');
+    if (loader && !loader.classList.contains('is-hidden')) {
+        setTimeout(hideLoadingScreen, 800);
     }
 
-    AOS.init({ duration: 800, once: true, offset: 100 });
-    updateUIPersona(GLOBAL_CONFIG.currentRegion);
-    fetchLiveRates();
+    if (!isBookingPage) {
+        AOS.init({ duration: 800, once: true, offset: 100 });
+        updateUIPersona(GLOBAL_CONFIG.currentRegion);
+        fetchLiveRates();
+    }
 
     window.addEventListener('scroll', () => {
         const navbar = document.querySelector('.navbar');
@@ -962,10 +975,12 @@ document.addEventListener('DOMContentLoaded', () => {
         hidePriceTooltip(priceEl);
     });
 
-    // Handle dynamic form elements if any
-    const observer = new MutationObserver(() => {
-        updateUIPersona(localStorage.getItem('bt_region'));
-    });
-    const form = document.querySelector('form');
-    if (form) observer.observe(form, { childList: true, subtree: true });
+    // Handle dynamic form elements (skip on booking page — handles its own UI)
+    if (!isBookingPage) {
+        const observer = new MutationObserver(function () {
+            updateUIPersona(localStorage.getItem('bt_region'));
+        });
+        var form = document.querySelector('form');
+        if (form) observer.observe(form, { childList: true, subtree: true });
+    }
 });

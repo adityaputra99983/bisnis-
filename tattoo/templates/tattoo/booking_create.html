@@ -12,6 +12,13 @@
 
 {% block title %}Booking Tattoo - Bali Ink Hub{% endblock %}
 
+{% block head_extra %}
+<style>
+  #loading-screen{display:none!important}
+  .navbar{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="page-header booking-page-header">
     <div class="container">
@@ -407,7 +414,10 @@
                                     <i class="bi bi-info-circle"></i>
                                     <span>Klik tombol ini untuk mengirim booking kamu. Setelah itu artist akan meninjau dan mengonfirmasi pesananmu.</span>
                                 </div>
-                                <a href="{% url 'service_list' %}" class="btn btn-ghost-sm w-100 mt-2">
+                                <a href="{% url 'home' %}" class="btn btn-ghost-sm w-100 mt-2">
+                                    <i class="bi bi-house-door"></i> Kembali ke Beranda
+                                </a>
+                                <a href="{% url 'service_list' %}" class="btn btn-ghost-sm w-100 mt-1">
                                     <i class="bi bi-arrow-left"></i> Batal & lihat layanan
                                 </a>
                             </div>
@@ -445,8 +455,5 @@
 </section>
 
 <script id="booking-form-data" type="application/json">{{ booking_json|safe }}</script>
-<script>
-(function(){var l=document.getElementById('loading-screen');if(l){l.style.opacity='0';l.style.visibility='hidden';l.style.display='none';}})();
-</script>
-<script defer src="{% static 'tattoo/js/booking.js' %}?v=2.0"></script>
+<script src="{% static 'tattoo/js/booking.js' %}"></script>
 {% endblock %}

@@ -283,6 +283,10 @@ class Booking(models.Model):
             models.Index(fields=['user', 'status'], name='booking_user_status_idx'),
             models.Index(fields=['artist', 'status'], name='booking_artist_status_idx'),
             models.Index(fields=['payment_status'], name='booking_pay_status_idx'),
+            models.Index(fields=['user', '-created_at'], name='booking_user_created_idx'),
+            models.Index(fields=['artist', '-created_at'], name='booking_artist_created_idx'),
+            models.Index(fields=['status', 'payment_status'], name='booking_status_pay_idx'),
+            models.Index(fields=['-created_at'], name='booking_created_idx'),
         ]
 
     def __str__(self):

@@ -1,20 +1,28 @@
 from django.db.models import Q, Count
 from django.core.cache import cache
-from .models import ServiceCategory, Booking, Artist
+from .models import ServiceCategory, Booking
 
 
-_SKIP_PATHS = frozenset(['/booking/new/', '/login/', '/register/', '/booking/new'])
+_SKIP_PATHS = frozenset([
+    '/booking/new', '/booking/new/',
+    '/login', '/login/',
+    '/register', '/register/',
+])
+
+
+def _is_booking_page(path):
+    return path.startswith('/booking/') or path.startswith('/payment/') or path.startswith('/bookings/')
 
 
 def navbar_data(request):
     path = request.path.rstrip('/') or '/'
-    skip_all = path in _SKIP_PATHS
+    skip_all = path in _SKIP_PATHS or _is_booking_page(path)
 
     categories = cache.get('nav_categories')
     if categories is None and not skip_all:
         try:
             categories = list(ServiceCategory.objects.filter(is_active=True).only('id', 'name', 'slug')[:6])
-            cache.set('nav_categories', categories, 300)
+            cache.set('nav_categories', categories, 600)
         except Exception:
             categories = []
 
@@ -53,7 +61,7 @@ def navbar_data(request):
                 user_bookings_count = counts['total']
                 user_unpaid_count = counts['unpaid']
                 user_active_count = counts['active']
-                user_recent_bookings = list(qs.order_by('-created_at')[:4])
+                user_recent_bookings = list(qs.order_by('-created_at')[:3])
                 has_new_activity = user_unpaid_count > 0 or user_active_count > 0
             except Exception:
                 pass
@@ -74,7 +82,7 @@ def navbar_data(request):
                 'has_new': has_new_activity,
                 'artist_obj': artist_obj,
                 'artist_pending': nav_artist_pending_count,
-            }, 300)
+            }, 600)
 
     return {
         'nav_categories': categories,

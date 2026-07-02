@@ -181,7 +181,7 @@ elif _IS_VERCEL:
         }
     }
 else:
-    # Development & Hostinger shared: SQLite OK
+    # Development & Hostinger shared: SQLite OK — optimized for performance
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -190,6 +190,7 @@ else:
     }
 
 # Cache framework — in-memory cache untuk kurangi query database
+# Untuk Vercel/Production: set CACHE_URL=redis://... untuk performa maksimal
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -233,10 +234,11 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise config
+# WhiteNoise config — dioptimasi untuk performa
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_SKIP_CHARSET = True
+WHITENOISE_MAX_AGE = 31536000  # 1 tahun cache untuk static files
 
 # Auto-detect tambahan file statis di root
 WHITENOISE_ROOT = BASE_DIR

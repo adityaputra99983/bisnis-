@@ -68,7 +68,7 @@ def navbar_data(request):
                 'has_new': has_new_activity,
                 'artist_obj': artist_obj,
                 'artist_pending': nav_artist_pending_count,
-            }, 60)
+            }, 300)
 
     return {
         'nav_categories': categories,

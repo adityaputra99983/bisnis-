@@ -20,3 +20,51 @@
 [2026-07-01 11:31:55,798] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
 [2026-07-01 11:31:55,867] WARNING django.request: Not Found: /api/v1/models
 [2026-07-01 11:31:55,874] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:01,159] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:01,243] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:01,246] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:06,371] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:06,418] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:06,419] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:12,010] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:12,392] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:12,415] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:17,518] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:17,830] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:17,834] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:22,974] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:23,145] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:23,146] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:28,186] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:28,227] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:28,229] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:33,266] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:33,302] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:33,303] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:38,366] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:38,615] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:38,630] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:43,662] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:43,742] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:43,745] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:48,850] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:48,981] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:48,983] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:54,017] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:32:54,064] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:32:54,065] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:32:59,892] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:33:00,062] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:33:00,073] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:33:05,117] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:33:05,201] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:33:05,204] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:33:10,230] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:33:10,267] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:33:10,272] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:33:15,305] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:33:16,058] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:33:16,067] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678
+[2026-07-01 11:33:21,230] INFO django.server: "GET /v1/models HTTP/1.1" 301 0
+[2026-07-01 11:33:21,460] WARNING django.request: Not Found: /api/v1/models
+[2026-07-01 11:33:21,462] WARNING django.server: "GET /api/v1/models HTTP/1.1" 404 25678

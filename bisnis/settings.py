@@ -272,7 +272,7 @@ if USE_SUPABASE_STORAGE:
     AWS_ACCESS_KEY_ID = config('SUPABASE_S3_ACCESS_KEY', default='')
     AWS_SECRET_ACCESS_KEY = config('SUPABASE_S3_SECRET_KEY', default='')
     if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
-        STORAGES['default']['BACKEND'] = 'storages.backends.s3boto3.S3Boto3Storage'
+        STORAGES['default']['BACKEND'] = 'bisnis.storage_backends.SupabaseStorage'
         AWS_STORAGE_BUCKET_NAME = config('SUPABASE_STORAGE_BUCKET', default='media')
         AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_PROJECT_REF}.storage.supabase.co/storage/v1/s3'
         AWS_S3_REGION_NAME = config('SUPABASE_REGION', default='ap-southeast-2')
@@ -280,7 +280,7 @@ if USE_SUPABASE_STORAGE:
         AWS_S3_ADDRESSING_STYLE = 'path'
         AWS_DEFAULT_ACL = 'public-read'
         AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-        AWS_S3_FILE_OVERWRITE = False
+        AWS_S3_FILE_OVERWRITE = True
         AWS_QUERYSTRING_EXPIRE = 86400
 
 

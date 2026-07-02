@@ -7,7 +7,7 @@ class ServiceCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     icon = models.CharField(max_length=100, default="bi-palette",
-                            help_text="Bootstrap icon class")
+    help_text="Bootstrap icon class")
     sort_order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True, db_index=True)
 

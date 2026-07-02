@@ -1,8 +1,10 @@
 import json
+import logging
 import threading
 import time
 from urllib.request import urlopen, Request
-from urllib.error import URLError
+
+logger = logging.getLogger(__name__)
 
 FALLBACK_RATES = {
     'IDR': 1,
@@ -40,13 +42,13 @@ CURRENCY_DESCS = {
     'RUB': '\u0426\u0435\u043d\u0430 \u0432 \u0440\u0443\u0431\u043b\u044f\u0445 (RU)',
 }
 
-CACHE_DURATION = 3600
 UPDATE_INTERVAL = 3600
 
-_live_rates = None
+_live_rates = dict(FALLBACK_RATES)
 _last_fetch = 0
 _last_success = 0
 _lock = threading.Lock()
+_background_started = False
 
 
 def _fetch_from_api():
@@ -55,7 +57,7 @@ def _fetch_from_api():
         'Accept': 'application/json',
     }
     req = Request('https://open.er-api.com/v6/latest/IDR', headers=headers)
-    with urlopen(req, timeout=5) as resp:
+    with urlopen(req, timeout=10) as resp:
         data = json.loads(resp.read().decode())
     if data.get('result') != 'success':
         raise ValueError('API returned non-success result')
@@ -70,28 +72,43 @@ def _fetch_from_api():
     }
 
 
-def get_exchange_rates():
+def _update_rates():
+    """Fetch rates from API and update global cache. Safe to call from any thread."""
     global _live_rates, _last_fetch, _last_success
     now = time.time()
-    if _live_rates is not None and (now - _last_fetch) < UPDATE_INTERVAL:
-        return _live_rates
-    with _lock:
-        if _live_rates is not None and (now - _last_fetch) < UPDATE_INTERVAL:
-            return _live_rates
-        _last_fetch = now
-        try:
-            rates = _fetch_from_api()
-            validated = {}
-            for code in ['IDR', 'USD', 'EUR', 'SGD', 'AUD', 'RUB']:
-                v = rates.get(code)
-                if v and float(v) > 0:
-                    validated[code] = float(v)
-                else:
-                    validated[code] = FALLBACK_RATES[code]
-            _live_rates = validated
-            _last_success = now
-        except Exception:
-            if _live_rates is None:
-                _live_rates = dict(FALLBACK_RATES)
-            _last_fetch = _last_success or now
-        return _live_rates
+    try:
+        rates = _fetch_from_api()
+        validated = {}
+        for code in ['IDR', 'USD', 'EUR', 'SGD', 'AUD', 'RUB']:
+            v = rates.get(code)
+            if v and float(v) > 0:
+                validated[code] = float(v)
+            else:
+                validated[code] = FALLBACK_RATES[code]
+        _live_rates = validated
+        _last_success = now
+        logger.debug('Exchange rates updated from API')
+    except Exception as e:
+        logger.warning('Failed to fetch exchange rates: %s', e)
+
+
+def _background_updater():
+    """Background thread that periodically refreshes exchange rates."""
+    while True:
+        _update_rates()
+        time.sleep(UPDATE_INTERVAL)
+
+
+def get_exchange_rates():
+    """Return exchange rates immediately. Never blocks.
+
+    Uses fallback rates initially, updates via background thread.
+    """
+    global _background_started
+    if not _background_started:
+        with _lock:
+            if not _background_started:
+                _background_started = True
+                t = threading.Thread(target=_background_updater, daemon=True)
+                t.start()
+    return _live_rates

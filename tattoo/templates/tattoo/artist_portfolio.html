@@ -48,7 +48,7 @@
 
 <div class="modal fade" id="addPortfolioModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content ap-modal">
+        <div class="modal-content ap-modal ap-modal-luxury">
             <div class="modal-header ap-modal-head">
                 <h5 class="modal-title"><i class="bi bi-image text-gold"></i> Tambah Karya Baru</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -56,17 +56,17 @@
             <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
                 {% csrf_token %}
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="ap-form-label">Judul Karya</label>
-                        <input type="text" name="title" class="ap-input" required placeholder="Misal: Dragon Tattoo Full Back">
+                    <div class="mb-4">
+                        <label class="ap-label-luxury">Judul Karya</label>
+                        <input type="text" name="title" class="ap-input-luxury" required placeholder="Misal: Dragon Tattoo Full Back">
                     </div>
-                    <div class="mb-3">
-                        <label class="ap-form-label">Deskripsi (opsional)</label>
-                        <textarea name="description" class="ap-input ap-textarea" rows="3" placeholder="Cerita tentang karya ini"></textarea>
+                    <div class="mb-4">
+                        <label class="ap-label-luxury">Deskripsi Karya</label>
+                        <textarea name="description" class="ap-textarea-luxury" rows="3" placeholder="Cerita tentang karya ini"></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label class="ap-form-label">Kategori Layanan</label>
-                        <select name="service" class="ap-input">
+                    <div class="mb-4">
+                        <label class="ap-label-luxury">Kategori Layanan</label>
+                        <select name="service" class="ap-select-luxury">
                             <option value="">— Pilih Layanan —</option>
                             {% for s in all_services %}
                             <option value="{{ s.id }}">{{ s.name }}</option>
@@ -74,14 +74,18 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="ap-form-label">Gambar</label>
-                        <input type="file" name="image" class="ap-input-file" accept="image/*" required>
-                        <small class="text-muted d-block mt-1">Format: JPG, PNG. Maks 5MB</small>
+                        <label class="ap-label-luxury">Upload Gambar</label>
+                        <div class="ap-file-upload-luxury">
+                            <input type="file" name="image" accept="image/*" required>
+                            <div class="ap-file-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                            <div class="ap-file-upload-text">Klik atau seret gambar ke sini <span>Browse</span></div>
+                            <div class="ap-file-upload-hint">Format: JPG, PNG. Maks 5MB</div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer ap-modal-foot">
-                    <button type="button" class="btn btn-outline-gold" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-gold"><i class="bi bi-upload"></i> Upload</button>
+                    <button type="button" class="ap-btn-luxury-outline" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="ap-btn-luxury-gold"><i class="bi bi-upload"></i> Upload</button>
                 </div>
             </form>
         </div>

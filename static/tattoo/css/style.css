@@ -2058,6 +2058,253 @@ textarea.form-control { min-height: 100px; resize: vertical; }
 .ap-textarea { min-height: 80px; resize: vertical; }
 .ap-input-file { font-size: 0.9rem; }
 
+/* ===== PORTFOLIO MODAL — LUXURY BLACK & GOLD ===== */
+.ap-modal-luxury .modal-content {
+    background: #000000;
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.06) inset, 0 0 80px rgba(212,175,55,0.04);
+    overflow: hidden;
+}
+.ap-modal-luxury .modal-header {
+    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 50%, transparent 100%);
+    border-bottom: 1px solid rgba(212,175,55,0.15);
+    padding: 20px 24px;
+    position: relative;
+}
+.ap-modal-luxury .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+}
+.ap-modal-luxury .modal-title {
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+    font-size: 1.1rem;
+}
+.ap-modal-luxury .modal-title i {
+    color: var(--gold);
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.4));
+    margin-right: 8px;
+}
+.ap-modal-luxury .btn-close {
+    filter: invert(1);
+    opacity: 0.4;
+    transition: var(--transition);
+}
+.ap-modal-luxury .btn-close:hover { opacity: 0.8; }
+.ap-modal-luxury .modal-body {
+    padding: 24px;
+    background: radial-gradient(ellipse at top right, rgba(212,175,55,0.03) 0%, transparent 60%);
+}
+.ap-modal-luxury .modal-footer {
+    border-top: 1px solid rgba(212,175,55,0.12);
+    padding: 16px 24px;
+    background: linear-gradient(180deg, transparent 0%, rgba(212,175,55,0.02) 100%);
+}
+
+/* Luxury Form Labels */
+.ap-label-luxury {
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ap-label-luxury::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--gold);
+    border-radius: 2px;
+    box-shadow: 0 0 6px rgba(212,175,55,0.4);
+}
+
+/* Luxury Inputs */
+.ap-input-luxury {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-md);
+    background: #000000;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+.ap-input-luxury::placeholder { color: var(--text-muted); }
+.ap-input-luxury:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
+    background: #000000;
+}
+
+/* Luxury Textarea */
+.ap-textarea-luxury {
+    min-height: 100px;
+    resize: vertical;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-md);
+    background: #000000;
+    color: var(--text-primary);
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+.ap-textarea-luxury::placeholder { color: var(--text-muted); }
+.ap-textarea-luxury:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
+    background: #000000;
+}
+
+/* Luxury Select */
+.ap-select-luxury {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-md);
+    background: #000000;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d4af37' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+.ap-select-luxury:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
+    background: #000000;
+}
+.ap-select-luxury option {
+    background: var(--black-card);
+    color: var(--text-primary);
+}
+
+/* Luxury File Upload */
+.ap-file-upload-luxury {
+    position: relative;
+    border: 2px dashed rgba(212,175,55,0.25);
+    border-radius: var(--radius-md);
+    background: #000000;
+    padding: 20px;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+}
+.ap-file-upload-luxury:hover {
+    border-color: rgba(212,175,55,0.5);
+    background: rgba(212,175,55,0.03);
+    box-shadow: 0 0 20px rgba(212,175,55,0.05);
+}
+.ap-file-upload-luxury input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+.ap-file-upload-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.3));
+}
+.ap-file-upload-text {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+.ap-file-upload-text span {
+    color: var(--gold);
+    font-weight: 600;
+}
+.ap-file-upload-hint {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+/* Luxury Buttons */
+.ap-btn-luxury-gold {
+    background: var(--gold-gradient);
+    color: var(--black);
+    border: none;
+    border-radius: 100px;
+    font-weight: 700;
+    padding: 12px 28px;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(212,175,55,0.25);
+}
+.ap-btn-luxury-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+.ap-btn-luxury-gold:hover::before { left: 100%; }
+.ap-btn-luxury-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(212,175,55,0.4);
+    color: var(--black);
+}
+.ap-btn-luxury-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1.5px solid rgba(212,175,55,0.4);
+    border-radius: 100px;
+    font-weight: 600;
+    padding: 12px 28px;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.ap-btn-luxury-outline:hover {
+    background: var(--gold-gradient);
+    color: var(--black);
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212,175,55,0.25);
+}
+
+/* Form Divider */
+.ap-form-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
+    margin: 20px 0;
+    border: none;
+}
+
 /* ===== ARTIST BOOKING DETAIL ===== */
 .ap-detail-header { background: var(--card-bg); backdrop-filter: blur(16px); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--card-border); margin-bottom: 24px; }
 

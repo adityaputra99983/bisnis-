@@ -578,4 +578,4 @@ class ChatMessage(models.Model):
         ]
 
     def __str__(self):
-        return f"[{self.booking.id}] {self.sender.username}: {self.message[:50]}"
+        return f"{self.sender.username}: {self.message[:50]}"

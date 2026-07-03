@@ -1,6 +1,8 @@
 import json
 import re
 from urllib.parse import urlparse
+# pyright: reportMissingImports=false
+# pylint: disable=import-error, no-name-in-module
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -489,7 +491,7 @@ def booking_chat(request, booking_id):
                 sender=request.user,
                 message=msg_text,
             )
-            return redirect('booking_chat', booking_id=booking.id)
+        return redirect('booking_chat', booking_id=booking.id)
 
     messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
     messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
@@ -498,7 +500,7 @@ def booking_chat(request, booking_id):
         'booking': booking,
         'other_user': other_user,
         'other_name': other_name,
-        'messages': messages_qs,
+        'chat_messages': messages_qs,
         'is_artist_view': False,
     })
 
@@ -520,7 +522,7 @@ def artist_booking_chat(request, booking_id):
                 sender=request.user,
                 message=msg_text,
             )
-            return redirect('artist_booking_chat', booking_id=booking.id)
+        return redirect('artist_booking_chat', booking_id=booking.id)
 
     messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
     messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
@@ -528,7 +530,7 @@ def artist_booking_chat(request, booking_id):
     return render(request, 'tattoo/booking_chat.html', {
         'booking': booking,
         'other_name': other_name,
-        'messages': messages_qs,
+        'chat_messages': messages_qs,
         'is_artist_view': True,
     })
 

@@ -5,53 +5,245 @@
 
 {% block head_extra %}
 <style>
-.chat-page { min-height: 70vh; padding-top: 100px; padding-bottom: 40px; }
-.chat-container { max-width: 720px; margin: 0 auto; background: #111; border: 1px solid #222; border-radius: 16px; overflow: hidden; }
-.chat-header { padding: 20px 24px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 12px; }
-.chat-header h5 { margin: 0; font-weight: 600; }
-.chat-header small { color: #888; }
-.chat-back { color: var(--gold); text-decoration: none; font-size: 0.9rem; }
-.chat-back:hover { text-decoration: underline; }
-.chat-messages { padding: 16px 20px; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-.chat-msg { max-width: 80%; padding: 10px 16px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; }
-.chat-msg.sent { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 4px; }
-.chat-msg.received { align-self: flex-start; background: #1e1e1e; color: #ddd; border-bottom-left-radius: 4px; }
-.chat-msg time { display: block; font-size: 0.7rem; margin-top: 4px; opacity: 0.6; }
-.chat-empty { text-align: center; color: #666; padding: 40px 20px; }
-.chat-empty i { font-size: 2.5rem; display: block; margin-bottom: 12px; }
-.chat-form { padding: 16px 20px; border-top: 1px solid #222; display: flex; gap: 8px; }
-.chat-form textarea { flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 10px 14px; color: #fff; resize: none; font-size: 0.95rem; min-height: 44px; max-height: 120px; }
-.chat-form textarea:focus { outline: none; border-color: var(--gold); }
-.chat-form button { background: var(--gold); color: #000; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-.chat-form button:hover { opacity: 0.9; }
-.chat-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+.chat-page {
+    min-height: 100vh;
+    padding-top: 90px;
+    padding-bottom: 40px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.chat-container {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px);
+    min-height: 480px;
+}
+.chat-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #222;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.03);
+    flex-shrink: 0;
+}
+.chat-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.05rem;
+}
+.chat-header small {
+    color: #777;
+    font-size: 0.8rem;
+}
+.chat-back {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.chat-back:hover {
+    color: var(--gold-light);
+    text-decoration: none;
+}
+.chat-messages {
+    flex: 1;
+    padding: 20px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-behavior: smooth;
+}
+.chat-msg {
+    max-width: 78%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    word-wrap: break-word;
+    position: relative;
+    animation: msgIn 0.25s ease-out;
+}
+@keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.chat-msg.sent {
+    align-self: flex-end;
+    background: var(--gold);
+    color: #000;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 12px rgba(212,175,55,0.2);
+}
+.chat-msg.received {
+    align-self: flex-start;
+    background: #1a1a1a;
+    color: #ddd;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #2a2a2a;
+}
+.chat-msg .msg-sender {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    opacity: 0.75;
+}
+.chat-msg.sent .msg-sender { color: #000; }
+.chat-msg.received .msg-sender { color: var(--gold); }
+.chat-msg time {
+    display: block;
+    font-size: 0.65rem;
+    margin-top: 6px;
+    opacity: 0.45;
+    text-align: right;
+    letter-spacing: 0.3px;
+}
+.chat-msg.sent time { color: #000; }
+.chat-msg.received time { color: #999; }
+.chat-empty {
+    text-align: center;
+    color: #555;
+    padding: 60px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.chat-empty i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    color: var(--gold);
+    opacity: 0.4;
+}
+.chat-empty p {
+    font-size: 0.95rem;
+    max-width: 280px;
+}
+.chat-form {
+    padding: 16px 20px;
+    border-top: 1px solid #222;
+    display: flex;
+    gap: 10px;
+    background: rgba(255,255,255,0.02);
+    flex-shrink: 0;
+}
+.chat-form textarea {
+    flex: 1;
+    background: #181818;
+    border: 1px solid #333;
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: #fff;
+    resize: none;
+    font-size: 0.95rem;
+    min-height: 48px;
+    max-height: 120px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+}
+.chat-form textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.15);
+}
+.chat-form textarea::placeholder { color: #555; }
+.chat-form button {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 22px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(212,175,55,0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+.chat-form button:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(212,175,55,0.3);
+}
+.chat-form button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+/* scrollbar styling */
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+.chat-messages::-webkit-scrollbar-thumb:hover { background: #555; }
+/* mobile */
+@media (max-width: 576px) {
+    .chat-page { padding-top: 75px; padding-bottom: 20px; }
+    .chat-container { height: calc(100vh - 120px); min-height: 400px; border-radius: 12px; }
+    .chat-header { padding: 16px 18px; }
+    .chat-messages { padding: 16px 18px; gap: 12px; }
+    .chat-msg { max-width: 88%; padding: 10px 14px; font-size: 0.9rem; }
+    .chat-form { padding: 12px 16px; }
+    .chat-form textarea { padding: 10px 14px; font-size: 0.9rem; }
+    .chat-form button { padding: 10px 18px; font-size: 0.85rem; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="chat-page">
-    <div class="container">
-        <a href="{% if is_artist_view %}{% url 'artist_booking_detail' booking.id %}{% else %}{% url 'booking_detail' booking.id %}{% endif %}" class="chat-back mb-3 d-inline-block">
+    <div class="container" style="width:100%;">
+        <a href="{% if is_artist_view %}{% url 'artist_booking_detail' booking.id %}{% else %}{% url 'booking_detail' booking.id %}{% endif %}" class="chat-back mb-3">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
 
         <div class="chat-container">
             <div class="chat-header">
-                <div>
-                    <h5><i class="bi bi-chat-dots-fill text-gold"></i> {{ other_name }}</h5>
-                    <small>Pesanan: {{ booking.service.name }} &middot; {{ booking.booking_date|date:"d M Y" }}</small>
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width:42px;height:42px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;font-weight:700;font-size:1.1rem;">
+                        {{ other_name|first|upper }}
+                    </div>
+                    <div>
+                        <h5>{{ other_name }}</h5>
+                        <small><i class="bi bi-bag-check" style="margin-right:4px;"></i>{{ booking.service.name }} &middot; {{ booking.booking_date|date:"d M Y" }}</small>
+                    </div>
                 </div>
             </div>
 
             <div class="chat-messages" id="chatMessages">
-                {% for msg in messages %}
+                {% for msg in chat_messages %}
                 <div class="chat-msg {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
-                    {{ msg.message }}
+                    {% if msg.sender != request.user %}
+                    <div class="msg-sender">{{ msg.sender.username }}</div>
+                    {% endif %}
+                    <div>{{ msg.message|linebreaksbr }}</div>
                     <time>{{ msg.created_at|date:"H:i" }}</time>
                 </div>
                 {% empty %}
                 <div class="chat-empty">
-                    <i class="bi bi-chat-dots text-gold"></i>
+                    <i class="bi bi-chat-dots"></i>
                     <p>Belum ada pesan. Kirim pesan pertama kamu!</p>
                 </div>
                 {% endfor %}
@@ -59,7 +251,7 @@
 
             <form method="POST" class="chat-form" onsubmit="return validateChatForm(this)">
                 {% csrf_token %}
-                <textarea name="message" placeholder="Ketik pesan..." required minlength="1" maxlength="2000" id="chatInput"></textarea>
+                <textarea name="message" placeholder="Ketik pesan..." required minlength="1" maxlength="2000" id="chatInput" rows="1"></textarea>
                 <button type="submit"><i class="bi bi-send-fill"></i> Kirim</button>
             </form>
         </div>
@@ -72,7 +264,6 @@
 function validateChatForm(form) {
     var input = form.querySelector('textarea');
     if (!input.value.trim()) return false;
-    form.querySelector('button').disabled = true;
     return true;
 }
 document.addEventListener('DOMContentLoaded', function() {

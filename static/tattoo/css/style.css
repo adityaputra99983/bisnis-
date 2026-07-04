@@ -5024,3 +5024,670 @@ section { position: relative; }
     .ap-save-bar .d-flex button { width: 100%; }
     .ap-method-tile-body { padding: 18px 16px; }
 }
+
+/* ===== RESPONSIVE IMAGE HELPERS ===== */
+.service-detail-img {
+    height: 400px;
+    object-fit: cover;
+}
+.service-detail-placeholder {
+    height: 400px;
+    background: var(--bg-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.service-detail-placeholder::before {
+    content: '\F4CB';
+    font-family: 'bootstrap-icons';
+    font-size: 5rem;
+    color: var(--gold);
+}
+.artist-profile-img {
+    object-fit: cover;
+    min-height: 400px;
+}
+.artist-profile-placeholder {
+    height: 400px;
+    background: var(--bg-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.artist-profile-placeholder::before {
+    content: '\F4E2';
+    font-family: 'bootstrap-icons';
+    font-size: 5rem;
+    color: var(--gold);
+}
+@media (max-width: 575px) {
+    .service-detail-img,
+    .service-detail-placeholder { height: 220px; }
+    .artist-profile-img { min-height: 220px; }
+    .artist-profile-placeholder { height: 220px; }
+    .service-detail-placeholder::before,
+    .artist-profile-placeholder::before { font-size: 3rem; }
+}
+
+/* ==========================================================================
+   COMPREHENSIVE RESPONSIVE IMPROVEMENTS
+   ========================================================================== */
+
+/* --- Hide heavy decorative backgrounds on mobile (performance) --- */
+@media (max-width: 767px) {
+    .bg-ambient-orb { display: none !important; }
+    .bg-tattoo-flash { display: none !important; }
+    .bg-tattoo-ornament { display: none !important; }
+    .bg-tribal { display: none !important; }
+    .bg-layer .bg-ambient-orb { display: none !important; }
+}
+
+/* --- Fix background-attachment:fixed for iOS Safari --- */
+@media (max-width: 991px) {
+    .hero-section {
+        background-attachment: scroll !important;
+        background-position: center top !important;
+        background-size: cover !important;
+    }
+    .hero-section::before,
+    .hero-section::after {
+        display: none;
+    }
+}
+
+/* ===== EXTRA SMALL (max-width: 575px) ===== */
+@media (max-width: 575px) {
+    /* Body / Base */
+    body { padding-top: 60px; }
+    .section-padding { padding: 40px 0; }
+
+    /* Loading screen */
+    .loading-logo-img { height: 80px; }
+    .loading-logo-text { font-size: 1.1rem; }
+    .loading-bar { width: 140px; }
+
+    /* ===== NAVBAR ===== */
+    .navbar { padding: 6px 0; }
+    .navbar-brand { font-size: 0.75rem; gap: 6px; }
+    .brand-logo-img { height: 28px; }
+    .navbar .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+    .navbar .navbar-toggler { padding: 4px 8px; border: none; }
+    .navbar .navbar-toggler:focus { box-shadow: none; }
+    .navbar .navbar-collapse {
+        background: rgba(10,10,10,0.98);
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        padding: 8px;
+        margin-top: 8px;
+        border: 1px solid rgba(212,175,55,0.08);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .navbar .navbar-nav .nav-item { width: 100%; }
+    .navbar .navbar-nav .nav-link::after { display: none; }
+    .navbar .dropdown-menu {
+        background: rgba(0,0,0,0.9);
+        border: 1px solid rgba(212,175,55,0.1);
+        margin-top: 0;
+        box-shadow: none;
+    }
+    .navbar .dropdown-item { padding: 8px 12px; font-size: 0.85rem; }
+    .navbar .btn-nav-cta {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 10px 16px !important;
+        font-size: 0.85rem !important;
+        margin: 4px 0;
+    }
+    .navbar .btn-nav-cta i,
+    .navbar .btn-nav-cta .nav-cta-label {
+        font-size: 0.85rem !important;
+    }
+    .navbar .nav-new-booking-item { order: -1; }
+    .nav-orders-label { display: none; }
+    .nav-orders-panel {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 56px !important;
+        border-radius: 0 !important;
+        max-height: calc(100vh - 56px);
+        overflow-y: auto;
+    }
+    .nav-orders-head { padding: 12px 14px; }
+    .nav-orders-stats { display: flex; }
+    .nav-orders-stat { padding: 8px 4px; }
+    .nor-pills { flex-direction: row; gap: 4px; }
+    .nav-orders-foot { flex-direction: column; }
+    .nav-orders-foot a { width: 100%; justify-content: center; }
+
+    .region-selector-trigger { font-size: 0.7rem; }
+    .navbar .nav-link i,
+    .navbar .dropdown-toggle i,
+    .navbar .btn-nav-cta i,
+    .nav-orders-trigger i,
+    .region-selector-trigger i,
+    .nav-orders-bell {
+        font-size: 1rem !important;
+    }
+    .nav-orders-icon-wrap { font-size: 1rem; }
+    .nav-orders-badge {
+        top: -4px; right: -5px;
+        font-size: 0.55rem;
+        width: 16px; height: 16px;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero-section {
+        padding: 60px 0 80px;
+        min-height: auto;
+        background-attachment: scroll !important;
+    }
+    .hero-badge { font-size: 0.7rem; padding: 4px 12px; margin-bottom: 16px; }
+    .hero-title {
+        font-size: 1.8rem;
+        letter-spacing: -0.5px;
+        margin-bottom: 12px;
+    }
+    .hero-title .text-gold { display: inline; }
+    .hero-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+    .hero-cta {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 32px;
+    }
+    .hero-cta .btn-gold,
+    .hero-cta .btn-outline-light {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+        font-size: 0.85rem;
+    }
+    .hero-stats { gap: 20px; }
+    .hero-stat-number { font-size: 1.5rem; }
+    .hero-stat-label { font-size: 0.75rem; }
+
+    /* ===== HERO SEARCH ===== */
+    .hero-search {
+        flex-direction: column;
+        padding: 10px;
+        border-radius: var(--radius-lg);
+    }
+    .hero-search .search-select {
+        width: 100%;
+        min-width: 100%;
+        border-radius: var(--radius-md);
+        padding: 12px 36px 12px 16px;
+        font-size: 0.85rem;
+    }
+    .hero-search .search-input-wrap {
+        border-left: none;
+        border-top: 1px solid rgba(212,175,55,0.08);
+        padding: 8px 0 0;
+        width: 100%;
+    }
+    .hero-search .search-input-wrap i { font-size: 0.9rem; }
+    .hero-search input { padding: 10px 4px; font-size: 0.85rem; }
+    .hero-search .hero-search-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 24px;
+        font-size: 0.8rem;
+    }
+    .hero-search-divider { display: none; }
+    .hero-search-wrapper::before { display: none; }
+    .hero-search-wrapper::after { display: none; }
+    .hero-search-wrapper { margin-bottom: 28px; }
+
+    /* ===== TYPOGRAPHY ===== */
+    .section-title { font-size: 1.5rem; }
+    .section-subtitle { font-size: 0.85rem; }
+    .section-divider { width: 40px; height: 2px; }
+
+    /* ===== STEP CARDS ===== */
+    .step-card { padding: 24px 16px; }
+    .step-card h5 { font-size: 0.9rem; }
+    .step-card p { font-size: 0.8rem; }
+
+    /* ===== CATEGORY CARDS ===== */
+    .category-card { padding: 20px 12px; }
+    .category-card .category-icon { font-size: 1.8rem; }
+    .category-card h5 { font-size: 0.85rem; }
+
+    /* ===== SERVICE CARDS ===== */
+    .lc-img-wrap { height: 180px; }
+    .lc-content { padding: 14px; }
+    .lc-title { font-size: 0.95rem; }
+    .lc-desc { font-size: 0.75rem; }
+    .lc-pricing-panel { padding: 10px; margin: 10px 0; }
+    .lc-pricing-header { font-size: 0.65rem; }
+    .lc-grid { font-size: 0.75rem; }
+    .lc-actions { flex-direction: column; gap: 6px; }
+    .lc-actions .btn-detail-outline,
+    .lc-actions .btn-gold-booking { width: 100%; }
+    .lc-badge { font-size: 0.55rem; padding: 3px 8px; top: 8px; left: 8px; }
+    .lc-tags { bottom: 8px; left: 8px; }
+    .tag { font-size: 0.55rem; padding: 3px 8px; }
+    .price-chip { min-width: 100px; }
+    .price-chip .pc-inner { padding: 5px 8px; gap: 6px; }
+    .pc-code { font-size: 0.55rem; }
+    .pc-value { font-size: 0.65rem; }
+    .pc-flag-short { width: 22px; height: 22px; font-size: 0.5rem; }
+    .pc-hover-reveal {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        transform: none;
+        width: 100%;
+        max-width: 100%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        padding: 16px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .price-chip:hover .pc-hover-reveal,
+    .price-chip:focus-within .pc-hover-reveal,
+    .region-price-chip.is-expanded .pc-hover-reveal {
+        transform: none;
+    }
+
+    /* ===== ARTIST CARDS ===== */
+    .artist-card-img-wrap { height: 160px; }
+    .artist-card-body { padding: 14px; }
+    .artist-name { font-size: 0.95rem; }
+    .artist-realname { font-size: 0.75rem; }
+    .specialty-chip { font-size: 0.65rem; padding: 2px 8px; }
+
+    /* ===== MODE CARDS ===== */
+    .mode-card { padding: 24px 16px; }
+    .mode-icon { font-size: 2rem; }
+    .mode-card h3 { font-size: 1.1rem; }
+    .mode-card p { font-size: 0.85rem; }
+    .mode-features li { font-size: 0.8rem; padding: 4px 0; }
+
+    /* ===== STATS SECTION ===== */
+    .stats-section { padding: 60px 0; }
+    .stat-item i { font-size: 1.8rem; }
+    .stat-number { font-size: 2rem; }
+    .stat-label { font-size: 0.85rem; }
+
+    /* ===== CTA SECTION ===== */
+    .cta-section { padding: 60px 0; }
+    .cta-section h2 { font-size: 1.6rem; }
+    .cta-section .btn-gold { width: 100%; justify-content: center; }
+
+    /* ===== FOOTER ===== */
+    .footer-section { padding: 40px 0 20px; }
+    .footer-section h5 { font-size: 1rem; }
+    .footer-section h6 { font-size: 0.75rem; }
+    .footer-section ul li { font-size: 0.8rem; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header { padding: 40px 0 24px; }
+    .page-header h1 { font-size: 1.6rem; }
+
+    /* ===== AUTH PAGES ===== */
+    .auth-wrapper { padding: 40px 16px; }
+    .auth-card { padding: 28px 20px; }
+
+    /* ===== SEARCH FILTER BAR ===== */
+    .search-filter-bar { padding: 16px; }
+    .search-box { padding: 8px 14px; }
+    .search-box input { font-size: 0.8rem; padding: 6px 0; }
+    .form-select { font-size: 0.8rem; padding: 10px 14px; }
+
+    /* ===== SERVICE DETAIL ===== */
+    .service-detail-card { border-radius: var(--radius-md); }
+    .detail-pricing-section { padding: 16px; }
+    .dp-main-price { font-size: 1.8rem; }
+    .dp-international { padding: 12px; }
+
+    /* ===== BOOKING PAGE ===== */
+    .booking-page-header { padding: 16px 0 0; }
+    .booking-hero-panel { flex-direction: column; padding: 16px 0; gap: 16px; }
+    .booking-hero-copy h1 { font-size: 1.5rem; }
+    .booking-hero-copy p { font-size: 0.85rem; }
+    .booking-hero-points { gap: 8px; }
+    .booking-hero-point { font-size: 0.75rem; }
+    .booking-hero-glance { display: none; }
+    .booking-shell-top { flex-direction: column; gap: 16px; }
+    .booking-shell-title { font-size: 1.2rem; }
+    .booking-shell-note { max-width: 100%; }
+    .booking-flow-progress {
+        overflow-x: auto;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+    }
+    .bfp-step { min-width: 60px; }
+    .bfp-num { width: 30px; height: 30px; font-size: 0.75rem; }
+    .bfp-text { font-size: 0.6rem; }
+    .bfp-line { width: 24px; }
+    .booking-step-card { padding: 20px 16px; }
+    .bsc-title { font-size: 1rem; }
+    .mode-selector { grid-template-columns: 1fr; }
+    .mode-label { padding: 16px; }
+    .mode-label i { font-size: 1.5rem; }
+    .mode-title { font-size: 0.85rem; }
+    .mode-desc { font-size: 0.75rem; }
+    .artist-quick-info { flex-direction: column; gap: 8px; }
+    .aqi-item { width: 100%; justify-content: center; }
+
+    /* ===== BOOKING SIDEBAR ===== */
+    .booking-summary-sidebar { position: static; }
+    .bsum-highlight strong { font-size: 1.4rem; }
+    .bsum-price-total { font-size: 1rem; }
+
+    /* ===== BOOKING LIST ===== */
+    .booking-stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bsg-card { padding: 12px; gap: 10px; }
+    .bsg-icon { font-size: 1.4rem; }
+    .bsg-num { font-size: 1.1rem; }
+    .bsg-label { font-size: 0.7rem; }
+    .booking-card-v2 { padding: 14px; }
+    .bcv-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .bcv-badges { flex-wrap: wrap; }
+    .bcv-title { font-size: 0.95rem; }
+    .bcv-meta { gap: 8px; font-size: 0.75rem; flex-direction: column; }
+    .bcv-foot { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .booking-filter-tabs { gap: 4px; }
+    .bft-tab { padding: 6px 12px; font-size: 0.75rem; }
+    .booking-list-tabs { gap: 4px; }
+    .booking-list-tabs .btn-outline-gold { font-size: 0.75rem; padding: 4px 12px; }
+
+    /* ===== BOOKING DETAIL ===== */
+    .booking-detail-header { padding: 20px; }
+    .bdh-main { flex-direction: column; gap: 12px; }
+    .bdh-title { font-size: 1.2rem; }
+    .bdh-meta { gap: 10px; font-size: 0.75rem; }
+    .bdh-badges { gap: 6px; }
+    .booking-status, .payment-status { padding: 5px 10px; font-size: 0.7rem; }
+    .booking-timeline {
+        padding: 16px;
+        gap: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .bt-step { min-width: 120px; gap: 8px; }
+    .bt-icon { width: 34px; height: 34px; font-size: 0.85rem; }
+    .bt-title { font-size: 0.75rem; }
+    .bt-sub { font-size: 0.65rem; }
+    .bt-line { width: 24px; margin-top: 17px; }
+    .booking-next-action { flex-direction: column; padding: 14px 16px; gap: 8px; }
+    .bna-icon { font-size: 1.2rem; }
+    .bna-text { font-size: 0.8rem; }
+
+    /* ===== PAYMENT PAGE ===== */
+    .pay-hero { padding: 20px; }
+    .pay-hero-title { font-size: 1.2rem; }
+    .pay-amount-card { flex-direction: column; gap: 8px; padding: 16px; }
+    .pay-amount-value { font-size: 1.5rem; }
+    .pay-body { flex-direction: column; gap: 16px; }
+    .pay-sidebar { width: 100%; }
+    .pay-grid { grid-template-columns: 1fr; }
+    .pay-card { padding: 10px 12px; }
+    .pay-instr-shell { padding: 0; }
+    .pay-countdown { padding: 16px; gap: 12px; }
+    .pay-countdown-time { font-size: 1.2rem; }
+    .pay-instr-card { padding: 16px; }
+    .pay-instr-field-value { font-size: 0.85rem; }
+    .pay-instr-field-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .pay-instr-qris-wrap { flex-direction: column; }
+    .pay-instr-qris-image-wrap { width: 100%; max-width: 200px; }
+    .pay-instr-card-hero { flex-direction: column; gap: 12px; }
+    .pay-steps-card { padding: 16px; }
+    .pay-help-footer { flex-direction: column; padding: 16px; text-align: center; }
+    .pay-help-icon { width: 44px; height: 44px; font-size: 1.3rem; }
+    .pay-help-btn { width: 100%; justify-content: center; }
+    .pay-trust-card { padding: 20px; }
+    .pay-trust-card h4 { font-size: 1rem; }
+
+    /* ===== ARTIST PANEL ===== */
+    .ap-topbar { padding: 12px 16px; flex-direction: column; gap: 8px; }
+    .ap-topbar-left h5 { font-size: 0.95rem; }
+    .ap-topbar-user .ap-tbu-info strong { font-size: 0.8rem; }
+    .ap-tbu-info small { font-size: 0.7rem; }
+    .ap-content { padding: 12px !important; }
+    .ap-card-head-gold { padding: 14px 16px; flex-direction: column; gap: 8px; }
+    .ap-card-head-gold h5 { font-size: 0.9rem; }
+    .ap-card-body-luxury { padding: 16px; }
+    .ap-nav-tabs {
+        border-radius: var(--radius-lg);
+        padding: 4px;
+        gap: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .ap-nav-tab { padding: 10px 12px; font-size: 0.75rem; }
+    .ap-nav-tab span { display: none; }
+    .ap-nav-tab i { font-size: 1rem; }
+    .ap-fee-card { padding: 14px; }
+    .ap-toggle-row { flex-direction: column; gap: 8px; padding: 12px; }
+    .ap-bank-row-logo { width: 100%; height: 36px; }
+    .ap-method-tile-body { padding: 16px; }
+    .ap-qris-preview-body { min-height: 140px; padding: 16px; }
+    .ap-qris-image { max-width: 120px; max-height: 120px; }
+
+    /* ===== DASHBOARD ===== */
+    .dashboard-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dashboard-stat-card { padding: 16px; }
+    .dashboard-stat-num { font-size: 1.4rem; }
+    .dashboard-stat-label { font-size: 0.7rem; }
+    .ap-welcome { padding: 16px; flex-direction: column; gap: 12px; }
+    .ap-welcome-text h2 { font-size: 1.1rem; }
+    .ap-welcome-text p { font-size: 0.8rem; }
+    .ap-stat { padding: 14px; gap: 10px; }
+    .ap-stat-num { font-size: 1.3rem; }
+    .ap-stat-label { font-size: 0.7rem; }
+
+    /* ===== PORTFOLIO ===== */
+    .ap-portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .ap-por-body { padding: 8px; }
+    .ap-por-body h6 { font-size: 0.8rem; }
+
+    /* ===== BOOKING DETAIL ARTIST ===== */
+    .ap-detail-header { padding: 16px; }
+    .ap-price-box-luxury { padding: 14px; }
+    .ap-price-row-luxury { font-size: 0.8rem; }
+    .ap-card-luxury { border-radius: var(--radius-lg); }
+    .ap-card-head-luxury { padding: 14px 16px; }
+    .ap-card-title { font-size: 0.95rem; }
+
+    /* ===== REGISTER ===== */
+    .role-picker { grid-template-columns: 1fr; gap: 16px; }
+    .role-pick-card { padding: 20px 16px; }
+    .step-title { font-size: 1.3rem; }
+
+    /* ===== TOAST / NOTIFICATIONS ===== */
+    .toast { max-width: 90vw; margin: 0 auto; }
+
+    /* ===== MODALS ===== */
+    .modal-dialog { margin: 8px; }
+    .ap-modal-luxury .modal-header { padding: 14px 16px; }
+    .ap-modal-luxury .modal-body { padding: 16px; }
+    .ap-modal-luxury .modal-footer { padding: 12px 16px; flex-direction: column; gap: 8px; }
+    .ap-modal-luxury .modal-footer button { width: 100%; }
+
+    /* ===== SAVE BAR ===== */
+    .ap-save-bar { padding: 12px 14px; flex-direction: column; gap: 8px; }
+    .ap-save-bar .d-flex { flex-direction: column; width: 100%; }
+    .ap-save-bar .d-flex button { width: 100%; }
+    .ap-save-bar .ap-save-status { font-size: 0.75rem; }
+
+    /* ===== MISC ===== */
+    .btn-gold, .btn-outline-light, .btn-outline-gold {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+    .btn-lg { padding: 12px 24px; font-size: 0.9rem; }
+    .btn-gold-booking-large {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 0.9rem;
+    }
+    .booking-submit-label { font-size: 0.9rem; }
+    .booking-submit-note { flex-direction: column; }
+    .form-control { font-size: 16px !important; /* Prevent zoom on iOS */ }
+    select.form-control, select.form-select { font-size: 16px !important; }
+
+    /* Booking form */
+    .booking-summary-card .bsum-body { padding: 12px; }
+    .bsum-row { font-size: 0.8rem; padding: 6px 0; }
+    .bsum-label i { display: none; }
+    .bsum-prices { padding: 12px; }
+    .bsum-price-row { font-size: 0.8rem; }
+    .bsum-topbar { padding: 10px 14px; }
+
+    /* Payment grid */
+    .payment-grid { grid-template-columns: 1fr; gap: 8px; }
+    .payment-method-card { padding: 14px; }
+
+    /* Tabs */
+    .ap-filter-tabs { gap: 4px; }
+    .ap-filter-link { padding: 6px 12px; font-size: 0.75rem; }
+    .ap-booking-card { padding: 12px 14px; }
+    .ap-bc-top { flex-direction: column; gap: 6px; }
+    .ap-bc-detail { font-size: 0.75rem; gap: 8px; flex-direction: column; }
+    .ap-bc-footer { flex-direction: column; gap: 6px; }
+
+    /* Artist detail */
+    .artist-profile-header { border-radius: var(--radius-md); }
+    .history-stat { padding: 8px 16px; }
+    .history-stat-num { font-size: 1.1rem; }
+
+    /* Artist services */
+    .specialty-grid { grid-template-columns: repeat(2, 1fr); }
+
+    /* Service detail */
+    .dp-international.chip-elevated {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    /* Portfolio grid */
+    .portfolio-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+}
+
+/* ===== SM (576px - 767px) ===== */
+@media (min-width: 576px) and (max-width: 767px) {
+    .hero-title { font-size: 2.4rem; }
+    .hero-section { padding: 80px 0 100px; }
+    .section-padding { padding: 60px 0; }
+    .cta-section h2 { font-size: 2rem; }
+    .section-title { font-size: 1.8rem; }
+    .booking-hero-panel { flex-direction: column; }
+    .booking-hero-glance { display: none; }
+    .booking-shell-top { flex-direction: column; }
+    .booking-shell-note { max-width: 100%; }
+    .mode-selector { grid-template-columns: 1fr; }
+    .booking-step-card { padding: 24px; }
+    .pay-body { flex-direction: column; }
+    .pay-sidebar { width: 100%; }
+    .role-picker { grid-template-columns: 1fr; }
+    .ap-content { padding: 20px !important; }
+}
+
+/* ===== MD (768px - 991px) ===== */
+@media (min-width: 768px) and (max-width: 991px) {
+    .hero-title { font-size: 2.8rem; }
+    .hero-section { padding: 90px 0 120px; }
+    .section-padding { padding: 60px 0; }
+    .cta-section h2 { font-size: 2.2rem; }
+    .hero-search { border-radius: var(--radius-lg); }
+    .booking-hero-panel { flex-direction: column; }
+    .booking-hero-glance { display: none; }
+    .booking-shell-top { flex-direction: column; }
+    .booking-shell-note { max-width: 100%; }
+    .pay-body { flex-direction: column; }
+    .pay-sidebar { width: 100%; }
+    .ap-content { padding: 24px !important; }
+}
+
+/* ===== LG (992px - 1199px) ===== */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .hero-title { font-size: 3.2rem; }
+    .booking-hero-glance { display: none; }
+    .ap-content { padding: 28px !important; }
+    .booking-step-card { padding: 28px; }
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .navbar .nav-link { padding: 10px 14px; }
+    .navbar .dropdown-item { padding: 10px 14px; }
+    .btn-gold, .btn-outline-light, .btn-outline-gold { padding: 12px 24px; }
+    .form-control, .form-select, .search-box input { font-size: 16px !important; }
+    select, input, textarea, button { font-size: 16px !important; }
+
+    /* Remove hover-only effects on touch */
+    .lc-hover-reveal { display: none; }
+    .price-chip .pc-hover-reveal { display: none; }
+    .portfolio-item .portfolio-overlay { opacity: 1; bottom: 0; }
+    .ap-avatar-overlay { transform: translateY(0); }
+
+    /* Disable hover transforms that cause sticky-hover on mobile */
+    .step-card:hover { transform: none; }
+    .category-card:hover { transform: none; }
+    .mode-card:hover { transform: none; }
+    .luxury-service-card:hover { transform: none; }
+    .artist-card:hover { transform: none; }
+    .package-card:hover { transform: none; }
+    .booking-card-v2:hover { transform: none; }
+    .ap-stat:hover { transform: none; }
+    .ap-booking-card:hover { transform: none; }
+    .ap-fee-card:hover { transform: none; }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .bg-layer, .bg-tattoo-flash, .bg-tattoo-ornament, .bg-tribal,
+    .loading-screen, .navbar, .footer-section, .ap-sidebar,
+    .ap-sidebar-toggle, .booking-sidebar, .bsum-cta,
+    .lc-actions, .hero-cta, .booking-next-action,
+    .btn, .btn-gold, .btn-outline-gold {
+        display: none !important;
+    }
+    body {
+        padding-top: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+    }
+    .container { max-width: 100% !important; }
+    .hero-section {
+        background: #fff !important;
+        padding: 20px 0 !important;
+        min-height: auto !important;
+    }
+    .hero-title { color: #000 !important; font-size: 2rem !important; }
+    .text-gold { color: #b8962f !important; }
+    .ap-main { margin-left: 0 !important; }
+    .card, .auth-card, .booking-detail-header {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        background: #fff !important;
+    }
+    .text-muted { color: #666 !important; }
+    .text-secondary { color: #555 !important; }
+    a { color: #b8962f !important; text-decoration: underline !important; }
+    img { max-width: 100% !important; page-break-inside: avoid; }
+    h1, h2, h3, h4 { page-break-after: avoid; }
+}

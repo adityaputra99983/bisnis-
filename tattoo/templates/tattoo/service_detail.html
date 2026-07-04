@@ -11,9 +11,9 @@
             <div class="col-md-6" data-aos="fade-right">
                 <div class="service-detail-card">
                     {% if service.image.name %}
-                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-100" style="height: 400px; object-fit: cover;">
+                        <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-100 service-detail-img">
                     {% else %}
-                        <div style="height: 400px; background: var(--bg-alt); display: flex; align-items: center; justify-content: center;">
+                        <div class="service-detail-placeholder">
                             <i class="bi bi-palette" style="font-size: 5rem; color: var(--gold);"></i>
                         </div>
                     {% endif %}

@@ -10,9 +10,9 @@
             <div class="row g-0">
                 <div class="col-md-4" data-aos="fade-right">
                     {% if artist.photo.name %}
-                        <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 400px;">
+                        <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" class="w-100 h-100 artist-profile-img">
                     {% else %}
-                        <div style="height: 400px; background: var(--bg-alt); display: flex; align-items: center; justify-content: center;">
+                        <div class="artist-profile-placeholder">
                             <i class="bi bi-person-badge" style="font-size: 5rem; color: var(--gold);"></i>
                         </div>
                     {% endif %}

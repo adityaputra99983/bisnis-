@@ -228,7 +228,7 @@ class Booking(models.Model):
         ('refunded', 'Dikembalikan'),
     ]
     payment_status = models.CharField(
-        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid', db_index=True
+        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid'
     )
     transaction_id = models.CharField(max_length=200, blank=True, null=True,
                                        help_text="ID transaksi dari payment gateway")

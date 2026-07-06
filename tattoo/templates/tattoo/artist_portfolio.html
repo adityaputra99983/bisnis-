@@ -48,46 +48,87 @@
 
 <div class="modal fade" id="addPortfolioModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content ap-modal ap-modal-luxury">
-            <div class="modal-header ap-modal-head">
-                <h5 class="modal-title"><i class="bi bi-image text-gold"></i> Tambah Karya Baru</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-4">
-                        <label class="ap-label-luxury">Judul Karya</label>
-                        <input type="text" name="title" class="ap-input-luxury" required placeholder="Misal: Dragon Tattoo Full Back">
-                    </div>
-                    <div class="mb-4">
-                        <label class="ap-label-luxury">Deskripsi Karya</label>
-                        <textarea name="description" class="ap-textarea-luxury" rows="3" placeholder="Cerita tentang karya ini"></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <label class="ap-label-luxury">Kategori Layanan</label>
-                        <select name="service" class="ap-select-luxury">
-                            <option value="">— Pilih Layanan —</option>
-                            {% for s in all_services %}
-                            <option value="{{ s.id }}">{{ s.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="ap-label-luxury">Upload Gambar</label>
-                        <div class="ap-file-upload-luxury" id="portfolioFileUpload">
-                            <input type="file" name="image" accept="image/*" required id="portfolioImageInput">
-                            <div class="ap-file-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-                            <div class="ap-file-upload-text" id="portfolioFileText">Klik atau seret gambar ke sini <span>Browse</span></div>
-                            <div class="ap-file-upload-hint">Format: JPG, PNG, WEBP. Maks 10MB</div>
+        <div class="ap-modal-luxury">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="ap-modal-title-wrap">
+                        <div class="ap-modal-title-icon"><i class="bi bi-gem"></i></div>
+                        <div>
+                            <h5 class="modal-title">Tambah Karya Baru</h5>
+                            <p class="ap-modal-subtitle">Showcase karya terbaik kamu</p>
                         </div>
                     </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <div class="modal-footer ap-modal-foot">
-                    <button type="button" class="ap-btn-luxury-outline" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="ap-btn-luxury-gold"><i class="bi bi-upload"></i> Upload</button>
-                </div>
-            </form>
+                <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <!-- Image Upload Area — Top Priority -->
+                        <div class="ap-upload-zone" id="portfolioDropZone">
+                            <input type="file" name="image" accept="image/*" required id="portfolioImageInput" class="ap-upload-input">
+                            <div class="ap-upload-preview" id="portfolioPreview" style="display:none;">
+                                <img id="portfolioPreviewImg" src="" alt="Preview">
+                                <div class="ap-upload-preview-overlay">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                    <span>Ganti Gambar</span>
+                                </div>
+                            </div>
+                            <div class="ap-upload-placeholder" id="portfolioPlaceholder">
+                                <div class="ap-upload-icon-ring">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                </div>
+                                <div class="ap-upload-label">Seret gambar ke sini</div>
+                                <div class="ap-upload-or">atau</div>
+                                <div class="ap-upload-browse-btn">Pilih File</div>
+                                <div class="ap-upload-hint">JPG, PNG, WEBP • Maks 10MB</div>
+                            </div>
+                        </div>
+                        <div class="ap-upload-file-info" id="portfolioFileInfo" style="display:none;">
+                            <i class="bi bi-file-earmark-image"></i>
+                            <span id="portfolioFileName"></span>
+                            <small id="portfolioFileSize"></small>
+                        </div>
+
+                        <div class="ap-form-divider"></div>
+
+                        <!-- Title -->
+                        <div class="ap-field-group">
+                            <label class="ap-label-luxury">Judul Karya</label>
+                            <div class="ap-input-wrap">
+                                <i class="bi bi-fonts ap-input-icon"></i>
+                                <input type="text" name="title" class="ap-input-luxury ap-input-with-icon" required placeholder="Dragon Tattoo Full Back" maxlength="120">
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="ap-field-group">
+                            <label class="ap-label-luxury">Deskripsi Karya</label>
+                            <textarea name="description" class="ap-textarea-luxury" rows="3" placeholder="Ceritakan inspirasi, teknik, dan detail karya ini…"></textarea>
+                        </div>
+
+                        <!-- Service Category -->
+                        <div class="ap-field-group" style="margin-bottom:0;">
+                            <label class="ap-label-luxury">Kategori Layanan</label>
+                            <div class="ap-select-wrap">
+                                <select name="service" class="ap-select-luxury">
+                                    <option value="">— Pilih Layanan —</option>
+                                    {% for s in all_services %}
+                                    <option value="{{ s.id }}">{{ s.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="ap-btn-luxury-outline" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg"></i> Batal
+                        </button>
+                        <button type="submit" class="ap-btn-luxury-gold" id="portfolioSubmitBtn">
+                            <i class="bi bi-upload"></i> Upload Karya
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -97,15 +138,59 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var fileInput = document.getElementById('portfolioImageInput');
-    var fileText = document.getElementById('portfolioFileText');
-    if (fileInput && fileText) {
+    var preview = document.getElementById('portfolioPreview');
+    var previewImg = document.getElementById('portfolioPreviewImg');
+    var placeholder = document.getElementById('portfolioPlaceholder');
+    var fileInfo = document.getElementById('portfolioFileInfo');
+    var fileName = document.getElementById('portfolioFileName');
+    var fileSize = document.getElementById('portfolioFileSize');
+    var dropZone = document.getElementById('portfolioDropZone');
+
+    function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+        fileName.textContent = file.name;
+        fileSize.textContent = '(' + (file.size / (1024 * 1024)).toFixed(1) + ' MB)';
+        fileInfo.style.display = 'flex';
+    }
+
+    if (fileInput) {
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                var name = this.files[0].name;
-                var size = (this.files[0].size / (1024 * 1024)).toFixed(1);
-                fileText.innerHTML = '<span style="color:var(--gold);font-weight:600;">' + name + '</span> <small style="color:var(--text-muted);">(' + size + ' MB)</small>';
+                handleFile(this.files[0]);
             } else {
-                fileText.innerHTML = 'Klik atau seret gambar ke sini <span>Browse</span>';
+                preview.style.display = 'none';
+                placeholder.style.display = 'flex';
+                fileInfo.style.display = 'none';
+            }
+        });
+    }
+
+    if (dropZone) {
+        ['dragenter', 'dragover'].forEach(function(evt) {
+            dropZone.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('ap-upload-dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(function(evt) {
+            dropZone.addEventListener(evt, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('ap-upload-dragover');
+            });
+        });
+        dropZone.addEventListener('drop', function(e) {
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                handleFile(e.dataTransfer.files[0]);
             }
         });
     }

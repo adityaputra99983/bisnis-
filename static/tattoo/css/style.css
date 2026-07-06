@@ -2059,34 +2059,74 @@ textarea.form-control { min-height: 100px; resize: vertical; }
 .ap-input-file { font-size: 0.9rem; }
 
 /* ===== PORTFOLIO MODAL — LUXURY BLACK & GOLD ===== */
-.ap-modal-luxury .modal-content {
-    background: #000000;
-    border: 1px solid rgba(212,175,55,0.2);
+.ap-modal-luxury {
+    /* wrapper — not .modal-content itself */
+}
+.ap-modal-luxury > .modal-content {
+    background: #030303;
+    border: 1.5px solid rgba(212,175,55,0.18);
     border-radius: var(--radius-xl);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.06) inset, 0 0 80px rgba(212,175,55,0.04);
+    box-shadow:
+        0 24px 80px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(212,175,55,0.06) inset,
+        0 0 120px rgba(212,175,55,0.04);
     overflow: hidden;
+    animation: luxuryModalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes luxuryModalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 .ap-modal-luxury .modal-header {
-    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 50%, transparent 100%);
+    background: linear-gradient(135deg, rgba(212,175,55,0.10) 0%, rgba(212,175,55,0.03) 50%, transparent 100%);
     border-bottom: 1px solid rgba(212,175,55,0.15);
-    padding: 20px 24px;
+    padding: 22px 28px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .ap-modal-luxury .modal-header::after {
     content: '';
     position: absolute;
     bottom: -1px;
-    left: 24px;
-    right: 24px;
+    left: 28px;
+    right: 28px;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    opacity: 0.4;
+    opacity: 0.5;
+}
+.ap-modal-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.ap-modal-title-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+    border: 1px solid rgba(212,175,55,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--gold);
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.3));
+    flex-shrink: 0;
 }
 .ap-modal-luxury .modal-title {
     font-weight: 700;
     color: var(--white);
     letter-spacing: -0.3px;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    margin-bottom: 2px;
+}
+.ap-modal-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0;
+    letter-spacing: 0.3px;
 }
 .ap-modal-luxury .modal-title i {
     color: var(--gold);
@@ -2095,18 +2135,213 @@ textarea.form-control { min-height: 100px; resize: vertical; }
 }
 .ap-modal-luxury .btn-close {
     filter: invert(1);
-    opacity: 0.4;
+    opacity: 0.35;
     transition: var(--transition);
+    margin: 0;
 }
-.ap-modal-luxury .btn-close:hover { opacity: 0.8; }
+.ap-modal-luxury .btn-close:hover { opacity: 0.85; }
 .ap-modal-luxury .modal-body {
-    padding: 24px;
-    background: radial-gradient(ellipse at top right, rgba(212,175,55,0.03) 0%, transparent 60%);
+    padding: 28px;
+    background: radial-gradient(ellipse at top right, rgba(212,175,55,0.04) 0%, transparent 60%);
 }
 .ap-modal-luxury .modal-footer {
     border-top: 1px solid rgba(212,175,55,0.12);
-    padding: 16px 24px;
-    background: linear-gradient(180deg, transparent 0%, rgba(212,175,55,0.02) 100%);
+    padding: 18px 28px;
+    background: linear-gradient(180deg, transparent 0%, rgba(212,175,55,0.03) 100%);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ===== LUXURY UPLOAD ZONE ===== */
+.ap-upload-zone {
+    position: relative;
+    border: 2px dashed rgba(212,175,55,0.22);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, rgba(212,175,55,0.03) 0%, #030303 50%, rgba(212,175,55,0.02) 100%);
+    min-height: 200px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+.ap-upload-zone:hover {
+    border-color: rgba(212,175,55,0.45);
+    background: linear-gradient(145deg, rgba(212,175,55,0.06) 0%, rgba(3,3,3,0.95) 50%, rgba(212,175,55,0.04) 100%);
+    box-shadow: 0 0 40px rgba(212,175,55,0.06), inset 0 0 30px rgba(212,175,55,0.03);
+}
+.ap-upload-zone.ap-upload-dragover {
+    border-color: var(--gold);
+    border-style: solid;
+    background: linear-gradient(145deg, rgba(212,175,55,0.10) 0%, rgba(3,3,3,0.90) 50%, rgba(212,175,55,0.08) 100%);
+    box-shadow: 0 0 60px rgba(212,175,55,0.12), inset 0 0 40px rgba(212,175,55,0.06);
+    transform: scale(1.01);
+}
+.ap-upload-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+.ap-upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    gap: 6px;
+}
+.ap-upload-icon-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid rgba(212,175,55,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: 8px;
+    position: relative;
+    animation: uploadRingPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(212,175,55,0.2));
+}
+.ap-upload-icon-ring::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(212,175,55,0.1);
+    animation: uploadRingExpand 3s ease-in-out infinite;
+}
+@keyframes uploadRingPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.15); }
+    50% { box-shadow: 0 0 20px 4px rgba(212,175,55,0.1); }
+}
+@keyframes uploadRingExpand {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.15); opacity: 0; }
+}
+.ap-upload-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+}
+.ap-upload-or {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 2px 0;
+}
+.ap-upload-browse-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 24px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.08));
+    border: 1px solid rgba(212,175,55,0.35);
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+    text-transform: uppercase;
+}
+.ap-upload-zone:hover .ap-upload-browse-btn {
+    background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.12));
+    border-color: rgba(212,175,55,0.55);
+    box-shadow: 0 4px 16px rgba(212,175,55,0.15);
+}
+.ap-upload-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+}
+
+/* Upload Preview */
+.ap-upload-preview {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    max-height: 320px;
+    overflow: hidden;
+}
+.ap-upload-preview img {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    max-height: 320px;
+    object-fit: cover;
+    display: block;
+}
+.ap-upload-preview-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+.ap-upload-preview:hover .ap-upload-preview-overlay {
+    opacity: 1;
+}
+.ap-upload-preview-overlay i {
+    font-size: 1.8rem;
+    color: var(--gold);
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.5));
+}
+.ap-upload-preview-overlay span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* File Info Bar */
+.ap-upload-file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    margin-top: 10px;
+    border-radius: var(--radius-sm);
+    background: rgba(212,175,55,0.06);
+    border: 1px solid rgba(212,175,55,0.12);
+    font-size: 0.82rem;
+}
+.ap-upload-file-info i {
+    color: var(--gold);
+    font-size: 1.1rem;
+}
+.ap-upload-file-info span {
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ap-upload-file-info small {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* ===== LUXURY FIELD GROUPS ===== */
+.ap-field-group {
+    margin-bottom: 20px;
 }
 
 /* Luxury Form Labels */
@@ -2130,59 +2365,90 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     box-shadow: 0 0 6px rgba(212,175,55,0.4);
 }
 
+/* Input with icon */
+.ap-input-wrap {
+    position: relative;
+}
+.ap-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 0.9rem;
+    opacity: 0.5;
+    transition: var(--transition);
+    z-index: 1;
+    pointer-events: none;
+}
+.ap-input-with-icon {
+    padding-left: 40px !important;
+}
+.ap-input-wrap:focus-within .ap-input-icon {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(212,175,55,0.4));
+}
+
 /* Luxury Inputs */
 .ap-input-luxury {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid rgba(255,255,255,0.08);
+    padding: 13px 16px;
+    border: 1px solid rgba(212,175,55,0.12);
     border-radius: var(--radius-md);
-    background: #000000;
+    background: rgba(5,5,5,0.8);
     color: var(--text-primary);
     font-size: 0.9rem;
+    font-family: var(--font-body);
     outline: none;
     transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
 }
 .ap-input-luxury::placeholder { color: var(--text-muted); }
 .ap-input-luxury:focus {
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
-    background: #000000;
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 6px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.06);
+    background: rgba(5,5,5,0.95);
 }
 
 /* Luxury Textarea */
 .ap-textarea-luxury {
+    width: 100%;
     min-height: 100px;
     resize: vertical;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(212,175,55,0.12);
     border-radius: var(--radius-md);
-    background: #000000;
+    background: rgba(5,5,5,0.8);
     color: var(--text-primary);
-    padding: 12px 16px;
+    padding: 13px 16px;
     font-size: 0.9rem;
+    font-family: var(--font-body);
     outline: none;
     transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
 }
 .ap-textarea-luxury::placeholder { color: var(--text-muted); }
 .ap-textarea-luxury:focus {
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
-    background: #000000;
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 6px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.06);
+    background: rgba(5,5,5,0.95);
 }
 
 /* Luxury Select */
+.ap-select-wrap {
+    position: relative;
+}
 .ap-select-luxury {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid rgba(255,255,255,0.08);
+    padding: 13px 16px;
+    border: 1px solid rgba(212,175,55,0.12);
     border-radius: var(--radius-md);
-    background: #000000;
+    background: rgba(5,5,5,0.8);
     color: var(--text-primary);
     font-size: 0.9rem;
+    font-family: var(--font-body);
     outline: none;
     transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
     appearance: none;
     -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d4af37' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
@@ -2193,20 +2459,20 @@ textarea.form-control { min-height: 100px; resize: vertical; }
 }
 .ap-select-luxury:focus {
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 4px rgba(0,0,0,0.4);
-    background: #000000;
+    box-shadow: 0 0 0 3px var(--gold-glow), inset 0 2px 6px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,55,0.06);
+    background-color: rgba(5,5,5,0.95);
 }
 .ap-select-luxury option {
     background: var(--black-card);
     color: var(--text-primary);
 }
 
-/* Luxury File Upload */
+/* Luxury File Upload (legacy — keep for backwards compat) */
 .ap-file-upload-luxury {
     position: relative;
     border: 2px dashed rgba(212,175,55,0.25);
     border-radius: var(--radius-md);
-    background: #000000;
+    background: #030303;
     padding: 20px;
     text-align: center;
     transition: var(--transition);
@@ -2259,7 +2525,10 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     transition: var(--transition);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(212,175,55,0.25);
+    box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 .ap-btn-luxury-gold::before {
     content: '';
@@ -2274,13 +2543,13 @@ textarea.form-control { min-height: 100px; resize: vertical; }
 .ap-btn-luxury-gold:hover::before { left: 100%; }
 .ap-btn-luxury-gold:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(212,175,55,0.4);
+    box-shadow: 0 8px 36px rgba(212,175,55,0.45);
     color: var(--black);
 }
 .ap-btn-luxury-outline {
     background: transparent;
-    color: var(--gold);
-    border: 1.5px solid rgba(212,175,55,0.4);
+    color: var(--text-secondary);
+    border: 1.5px solid rgba(255,255,255,0.12);
     border-radius: 100px;
     font-weight: 600;
     padding: 12px 28px;
@@ -2288,20 +2557,22 @@ textarea.form-control { min-height: 100px; resize: vertical; }
     letter-spacing: 0.3px;
     cursor: pointer;
     transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 .ap-btn-luxury-outline:hover {
-    background: var(--gold-gradient);
-    color: var(--black);
-    border-color: transparent;
+    background: rgba(255,255,255,0.04);
+    color: var(--gold);
+    border-color: rgba(212,175,55,0.35);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(212,175,55,0.25);
 }
 
 /* Form Divider */
 .ap-form-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
-    margin: 20px 0;
+    margin: 24px 0;
     border: none;
 }
 

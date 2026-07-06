@@ -1024,15 +1024,15 @@ def artist_portfolio_add(request):
     if service_id and service_id.isdigit():
         service = Service.objects.filter(id=int(service_id)).first()
     try:
-        Portfolio.objects.create(
+        portfolio = Portfolio.objects.create(
             artist=artist,
             title=title,
             description=description,
             service=service,
             image=image,
         )
-    except Exception:
-        messages.error(request, 'Gagal menyimpan gambar. Coba lagi atau hubungi kami.')
+    except Exception as e:
+        messages.error(request, 'Gagal menyimpan gambar: ' + str(e))
         return redirect('artist_portfolio')
     messages.success(request, 'Karya berhasil ditambahkan ke portofolio!')
     return redirect('artist_portfolio')

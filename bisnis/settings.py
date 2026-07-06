@@ -279,6 +279,10 @@ if USE_SUPABASE_STORAGE:
         AWS_S3_ENDPOINT_URL = f'https://{SUPABASE_PROJECT_REF}.storage.supabase.co/storage/v1/s3'
         AWS_S3_REGION_NAME = config('SUPABASE_REGION', default='ap-southeast-2')
         AWS_S3_SIGNATURE_VERSION = 's3v4'
+        # Skip SSL verify di development (DEBUG=True) karena bisa terjadi
+        # masalah clock mismatch dengan certificate Supabase.
+        # Di production (DEBUG=False) SSL verify tetap aktif untuk keamanan.
+        AWS_S3_VERIFY = not DEBUG
         AWS_S3_ADDRESSING_STYLE = 'path'
         AWS_DEFAULT_ACL = 'public-read'
         AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}

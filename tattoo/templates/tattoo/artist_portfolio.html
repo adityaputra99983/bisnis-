@@ -47,22 +47,21 @@
 {% endif %}
 
 <div class="modal fade" id="addPortfolioModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="ap-modal-luxury">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="ap-modal-title-wrap">
-                        <div class="ap-modal-title-icon"><i class="bi bi-gem"></i></div>
-                        <div>
-                            <h5 class="modal-title">Tambah Karya Baru</h5>
-                            <p class="ap-modal-subtitle">Showcase karya terbaik kamu</p>
-                        </div>
+    <div class="modal-dialog modal-dialog-centered ap-modal-luxury">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="ap-modal-title-wrap">
+                    <div class="ap-modal-title-icon"><i class="bi bi-gem"></i></div>
+                    <div>
+                        <h5 class="modal-title">Tambah Karya Baru</h5>
+                        <p class="ap-modal-subtitle">Showcase karya terbaik kamu</p>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
-                    {% csrf_token %}
-                    <div class="modal-body">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" action="{% url 'artist_portfolio_add' %}">
+                {% csrf_token %}
+                <div class="modal-body">
                         <!-- Image Upload Area — Top Priority -->
                         <div class="ap-upload-zone" id="portfolioDropZone">
                             <input type="file" name="image" accept="image/*" required id="portfolioImageInput" class="ap-upload-input">
@@ -95,7 +94,7 @@
                         <div class="ap-field-group">
                             <label class="ap-label-luxury">Judul Karya</label>
                             <div class="ap-input-wrap">
-                                <i class="bi bi-fonts ap-input-icon"></i>
+                                <i class="bi bi-type ap-input-icon"></i>
                                 <input type="text" name="title" class="ap-input-luxury ap-input-with-icon" required placeholder="Dragon Tattoo Full Back" maxlength="120">
                             </div>
                         </div>
@@ -103,7 +102,7 @@
                         <!-- Description -->
                         <div class="ap-field-group">
                             <label class="ap-label-luxury">Deskripsi Karya</label>
-                            <textarea name="description" class="ap-textarea-luxury" rows="3" placeholder="Ceritakan inspirasi, teknik, dan detail karya ini…"></textarea>
+                            <textarea name="description" class="ap-textarea-luxury" rows="3" placeholder="Ceritakan inspirasi, teknik, dan detail karya"></textarea>
                         </div>
 
                         <!-- Service Category -->

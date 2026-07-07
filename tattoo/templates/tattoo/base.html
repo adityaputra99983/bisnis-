@@ -327,9 +327,10 @@
                 var collapse = bootstrap.Collapse.getInstance(navbarCollapse);
                 if (collapse) collapse.hide();
             });
-            /* Auto-close nav on link click (mobile) */
+            /* Auto-close nav on link click (mobile) — exclude dropdown toggles */
             navbarCollapse.querySelectorAll('.nav-link, .dropdown-item').forEach(function(link) {
                 link.addEventListener('click', function() {
+                    if (link.classList.contains('dropdown-toggle')) return;
                     var collapse = bootstrap.Collapse.getInstance(navbarCollapse);
                     if (collapse && navbarToggler.offsetParent !== null) {
                         collapse.hide();

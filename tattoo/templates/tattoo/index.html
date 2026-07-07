@@ -11,19 +11,11 @@
             Discover Verified<br>
             <span class="text-gold">Tattoo Artists in Bali</span>
         </h1>
-        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;">
-            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
-                <i class="bi bi-patch-check-fill"></i> 200+ Artists
-            </span>
-            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
-                <i class="bi bi-building"></i> 50+ Studios
-            </span>
-            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
-                <i class="bi bi-shield-check"></i> Verified
-            </span>
-            <span style="font-size:0.75rem;padding:4px 12px;border-radius:100px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(212,175,55,0.2);display:inline-flex;align-items:center;gap:4px;">
-                <i class="bi bi-house-heart"></i> Home Service
-            </span>
+        <div class="hero-badges-row">
+            <span class="hero-badge-pill"><i class="bi bi-patch-check-fill"></i> 200+ Artists</span>
+            <span class="hero-badge-pill"><i class="bi bi-building"></i> 50+ Studios</span>
+            <span class="hero-badge-pill"><i class="bi bi-shield-check"></i> Verified</span>
+            <span class="hero-badge-pill"><i class="bi bi-house-heart"></i> Home Service</span>
         </div>
         <p class="hero-subtitle" data-t="hero_subtitle">
             Find the best tattoo artists in Bali — from Seminyak to Canggu and Ubud. Browse verified studios
@@ -193,7 +185,7 @@
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'50' }}">
                     <a href="{% url 'artist_detail' item.artist.id %}" class="text-decoration-none">
                         <div class="luxury-service-card">
-                            <div class="lc-img-wrap" style="height: 180px;">
+                            <div class="lc-img-wrap studio-card-img-wrap">
                                 {% if item.artist.photo.name %}
                                     <img src="{{ item.artist.photo.url }}" alt="{{ item.artist.name }}" class="lc-img">
                                 {% else %}

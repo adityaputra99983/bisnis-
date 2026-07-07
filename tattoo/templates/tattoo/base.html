@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=23.0">
+    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=24.0">
     {% block head_extra %}{% endblock %}
 </head>
 
@@ -76,10 +76,10 @@
                 {% block navbar_navigation %}
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}" data-t="home">Home</a>
+                        <a class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}" href="{% url 'home' %}" data-t="home">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-t="services">
+                        <a class="nav-link dropdown-toggle{% if request.resolver_match.url_name == 'service_list' or request.resolver_match.url_name == 'service_detail' %} active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" data-t="services">
                             Explore
                         </a>
                         <ul class="dropdown-menu">
@@ -91,7 +91,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'artist_list' %}" data-t="artists">Artists</a>
+                        <a class="nav-link{% if request.resolver_match.url_name == 'artist_list' or request.resolver_match.url_name == 'artist_detail' %} active{% endif %}" href="{% url 'artist_list' %}" data-t="artists">Artists</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-t="info">
@@ -248,7 +248,7 @@
 
     <footer class="footer-section">
         <div class="container">
-            <div class="row g-5">
+            <div class="row responsive-g-5">
                 <div class="col-lg-4">
                     <h5><i class="bi bi-droplet"></i> BALI INK HUB</h5>
                     <p style="line-height: 1.8;" data-t="footer_desc">
@@ -298,9 +298,47 @@
         </div>
     </footer>
 
+    <div class="navbar-backdrop" id="navbarBackdrop"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="{% static 'tattoo/js/main.js' %}?v=7.0"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        /* Set scrollbar width CSS variable for body scroll lock */
+        var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollbarWidth > 0) {
+            document.documentElement.style.setProperty('--scrollbar-width', scrollbarWidth + 'px');
+        }
+
+        var navbarToggler = document.querySelector('.navbar-toggler');
+        var navbarCollapse = document.getElementById('navbarNav');
+        var backdrop = document.getElementById('navbarBackdrop');
+        if (navbarToggler && navbarCollapse && backdrop) {
+            navbarCollapse.addEventListener('show.bs.collapse', function() {
+                backdrop.classList.add('is-visible');
+                document.body.classList.add('navbar-open');
+            });
+            navbarCollapse.addEventListener('hide.bs.collapse', function() {
+                backdrop.classList.remove('is-visible');
+                document.body.classList.remove('navbar-open');
+            });
+            backdrop.addEventListener('click', function() {
+                var collapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (collapse) collapse.hide();
+            });
+            /* Auto-close nav on link click (mobile) */
+            navbarCollapse.querySelectorAll('.nav-link, .dropdown-item').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    var collapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                    if (collapse && navbarToggler.offsetParent !== null) {
+                        collapse.hide();
+                    }
+                });
+            });
+        }
+    });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 

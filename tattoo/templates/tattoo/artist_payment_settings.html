@@ -311,7 +311,7 @@
                         {% for ew_key, ew_label, ew_logo in ewallet_options %}
                         <div class="ap-bank-row">
                             <div class="ap-bank-row-logo">
-                                <img src="{% static ew_logo }}" alt="{{ ew_label }}">
+                                <img src="{% static ew_logo %}" alt="{{ ew_label }}">
                             </div>
                             <div class="ap-bank-row-fields">
                                 <input type="tel" name="ewallet_{{ ew_key }}" class="ap-input"

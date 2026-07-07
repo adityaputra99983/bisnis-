@@ -355,7 +355,7 @@
                     {% if review %}
                         <h5 class="brs-title"><i class="bi bi-star-fill text-gold"></i> <span data-t="your_review">Ulasan Kamu</span></h5>
                         <div class="review-card mt-3">
-                            <div class="text-gold mb-2" style="font-size: 1.3rem; letter-spacing: 4px;">
+                            <div class="text-gold mb-2 star-rating-display">
                                 {% for i in "12345"|make_list %}
                                     {% if forloop.counter <= review.rating %}
                                         <i class="bi bi-star-fill"></i>

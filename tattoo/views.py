@@ -632,6 +632,34 @@ def chat_online_status(request, booking_id):
 
 
 @login_required
+def artist_unread_chats_api(request):
+    try:
+        artist = _get_artist_or_404(request.user)
+        booking_ids = Booking.objects.filter(artist=artist).values_list('id', flat=True)
+        unread_msgs = ChatMessage.objects.filter(
+            booking_id__in=booking_ids
+        ).exclude(sender=request.user).filter(is_read=False).order_by('-created_at')
+
+        chats = []
+        seen = set()
+        for msg in unread_msgs.select_related('booking', 'booking__user', 'booking__service'):
+            bid = msg.booking_id
+            if bid not in seen:
+                seen.add(bid)
+                chats.append({
+                    'booking_id': bid,
+                    'customer_name': msg.booking.user.username,
+                    'service_name': msg.booking.service.name if msg.booking.service else '',
+                    'last_message': msg.message[:80],
+                    'time': msg.created_at.strftime('%H:%M'),
+                })
+
+        return JsonResponse({'chats': chats, 'total': len(unread_msgs)})
+    except Exception:
+        return JsonResponse({'chats': [], 'total': 0})
+
+
+@login_required
 def payment_initiate(request, booking_id):
     booking = get_object_or_404(
         Booking.objects.select_related('artist__payment_settings'),
@@ -939,6 +967,30 @@ def artist_dashboard(request):
         'user', 'booking'
     ).order_by('-created_at')[:5]
 
+    unread_chats = []
+    total_unread = 0
+    try:
+        booking_ids = bookings_qs.values_list('id', flat=True)
+        unread_msgs = ChatMessage.objects.filter(
+            booking_id__in=booking_ids
+        ).exclude(sender=request.user).filter(is_read=False).order_by('-created_at')
+
+        seen_bookings = set()
+        for msg in unread_msgs.select_related('booking', 'booking__user', 'booking__service'):
+            bid = msg.booking_id
+            if bid not in seen_bookings:
+                seen_bookings.add(bid)
+                unread_chats.append({
+                    'booking_id': bid,
+                    'customer_name': msg.booking.user.username,
+                    'service_name': msg.booking.service.name if msg.booking.service else '',
+                    'last_message': msg.message[:80],
+                    'created_at': msg.created_at,
+                })
+            total_unread += 1
+    except Exception:
+        pass
+
     context = {
         'artist': artist,
         'total_bookings': total_bookings,
@@ -950,6 +1002,8 @@ def artist_dashboard(request):
         'total_revenue': total_revenue,
         'recent_bookings': recent_bookings,
         'latest_reviews': latest_reviews,
+        'unread_chats': unread_chats,
+        'total_unread_chats': total_unread,
     }
     return render(request, 'tattoo/artist_dashboard.html', context)
 

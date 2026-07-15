@@ -35,6 +35,9 @@ def navbar_data(request):
     artist_obj = None
     nav_artist_pending_count = 0
     nav_chat_unread = 0
+    nav_chat_first_id = None
+    nav_artist_chat_unread = 0
+    nav_artist_chat_first_id = None
 
     if request.user.is_authenticated and not skip_all:
         user_id = request.user.id
@@ -85,19 +88,45 @@ def navbar_data(request):
                 'artist_pending': nav_artist_pending_count,
             }, 600)
 
+        try:
+            if artist_obj is None:
+                artist_obj = request.user.artist
+            if artist_obj:
+                artist_booking_ids = Booking.objects.filter(
+                    artist=artist_obj
+                ).values_list('id', flat=True)
+                artist_unread_qs = ChatMessage.objects.filter(
+                    booking_id__in=artist_booking_ids
+                ).exclude(sender=request.user).filter(is_read=False)
+                nav_artist_chat_unread = artist_unread_qs.count()
+                if nav_artist_chat_unread > 0:
+                    first_artist_msg = artist_unread_qs.order_by('-created_at').first()
+                    nav_artist_chat_first_id = first_artist_msg.booking_id if first_artist_msg else None
+        except Exception:
+            pass
+
         chat_cache_key = f'nav_chat_unread_{user_id}'
         nav_chat_unread = cache.get(chat_cache_key)
+        nav_chat_first_id = cache.get(f'nav_chat_first_{user_id}')
         if nav_chat_unread is None:
             try:
                 user_booking_ids = Booking.objects.filter(
                     Q(user=request.user) | Q(artist__user=request.user)
                 ).values_list('id', flat=True)
-                nav_chat_unread = ChatMessage.objects.filter(
+                unread_qs = ChatMessage.objects.filter(
                     booking_id__in=user_booking_ids
-                ).exclude(sender=request.user).filter(is_read=False).count()
+                ).exclude(sender=request.user).filter(is_read=False)
+                nav_chat_unread = unread_qs.count()
+                if nav_chat_unread > 0:
+                    first_msg = unread_qs.order_by('-created_at').first()
+                    nav_chat_first_id = first_msg.booking_id if first_msg else None
+                else:
+                    nav_chat_first_id = None
             except Exception:
                 nav_chat_unread = 0
+                nav_chat_first_id = None
             cache.set(chat_cache_key, nav_chat_unread, 30)
+            cache.set(f'nav_chat_first_{user_id}', nav_chat_first_id, 30)
 
     return {
         'nav_categories': categories,
@@ -109,4 +138,7 @@ def navbar_data(request):
         'nav_artist_obj': artist_obj,
         'nav_artist_pending_count': nav_artist_pending_count,
         'nav_chat_unread': nav_chat_unread,
+        'nav_chat_first_id': nav_chat_first_id,
+        'nav_artist_chat_unread': nav_artist_chat_unread,
+        'nav_artist_chat_first_id': nav_artist_chat_first_id,
     }

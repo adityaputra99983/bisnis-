@@ -89,7 +89,48 @@
 
 <div class="row g-4">
     <div class="col-lg-7">
-        <div class="ap-card">
+        <div class="ap-card" id="chatNotifCard" style="{% if not unread_chats %}display:none;{% endif %}">
+            <div class="ap-card-head" style="border-bottom:1px solid rgba(239,68,68,0.15);">
+                <h5 style="display:flex;align-items:center;gap:8px;">
+                    <span style="position:relative;display:inline-flex;">
+                        <i class="bi bi-chat-dots-fill" style="color:#ef4444;font-size:1.1rem;"></i>
+                        <span id="chatBadge" style="position:absolute;top:-6px;right:-8px;background:#ef4444;color:#fff;border-radius:50%;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;padding:0 4px;">{{ total_unread_chats }}</span>
+                    </span>
+                    Pesan Belum Dibaca
+                </h5>
+            </div>
+            <div class="ap-card-body p-0" id="chatNotifList">
+                {% for chat in unread_chats %}
+                <a href="{% url 'artist_booking_chat' chat.booking_id %}" class="ap-row-link" style="border-left:3px solid #ef4444;">
+                    <div class="ap-row-left">
+                        <div class="ap-row-title" style="display:flex;align-items:center;gap:8px;">
+                            <span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">{{ chat.customer_name|first|upper }}</span>
+                            <div>
+                                <div style="font-weight:600;color:rgba(255,255,255,0.9);">{{ chat.customer_name }}</div>
+                                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">{{ chat.service_name|truncatechars:25 }}</div>
+                            </div>
+                        </div>
+                        <div class="ap-row-meta">
+                            <span style="color:rgba(255,255,255,0.6);font-style:italic;">{{ chat.last_message }}</span>
+                            <span><i class="bi bi-clock"></i> {{ chat.created_at|date:"H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="ap-row-right">
+                        <span style="background:#ef4444;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;">
+                            <i class="bi bi-chat-left-text-fill"></i>
+                        </span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="ap-empty" id="chatNotifEmpty">
+                    <i class="bi bi-check-circle" style="color:#22c55e;"></i>
+                    <p>Semua pesan sudah dibaca</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="ap-card mt-4">
             <div class="ap-card-head">
                 <h5>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;">
@@ -195,4 +236,66 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+    var chatCard = document.getElementById('chatNotifCard');
+    var chatList = document.getElementById('chatNotifList');
+    var chatBadge = document.getElementById('chatBadge');
+    if (!chatCard || !chatList) return;
+
+    var prevTotal = {{ total_unread_chats|default:"0" }};
+
+    function playNotif() {
+        try {
+            var s = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Jk4yGfnR1gYiOjIeBfH2Dh4mKiIV/fX2Dh4mJiIR/fX2Dh4mJh4N+fH2Dh4mKh4N+fH2DhomKh4N+fH2Dh4mKh4N+fA==');
+            s.volume = 0.3;
+            s.play().catch(function(){});
+        } catch(e) {}
+    }
+
+    function pollChats() {
+        fetch('/api/artist/unread-chats/', {credentials: 'same-origin'})
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+            if (data.total > prevTotal) playNotif();
+            prevTotal = data.total;
+
+            if (data.total > 0) {
+                chatCard.style.display = '';
+                chatBadge.textContent = data.total;
+                var html = '';
+                data.chats.forEach(function(c) {
+                    html += '<a href="/artist/bookings/' + c.booking_id + '/chat/" class="ap-row-link" style="border-left:3px solid #ef4444;">'
+                        + '<div class="ap-row-left">'
+                        + '<div class="ap-row-title" style="display:flex;align-items:center;gap:8px;">'
+                        + '<span style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">' + c.customer_name.charAt(0).toUpperCase() + '</span>'
+                        + '<div><div style="font-weight:600;color:rgba(255,255,255,0.9);">' + escapeHtml(c.customer_name) + '</div>'
+                        + '<div style="font-size:0.75rem;color:rgba(255,255,255,0.4);">' + escapeHtml(c.service_name) + '</div></div>'
+                        + '</div>'
+                        + '<div class="ap-row-meta">'
+                        + '<span style="color:rgba(255,255,255,0.6);font-style:italic;">' + escapeHtml(c.last_message) + '</span>'
+                        + '<span><i class="bi bi-clock"></i> ' + c.time + '</span>'
+                        + '</div></div>'
+                        + '<div class="ap-row-right">'
+                        + '<span style="background:#ef4444;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;">'
+                        + '<i class="bi bi-chat-left-text-fill"></i></span>'
+                        + '</div></a>';
+                });
+                chatList.innerHTML = html;
+            } else {
+                chatCard.style.display = 'none';
+            }
+        })
+        .catch(function(){});
+    }
+
+    function escapeHtml(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    setInterval(pollChats, 5000);
+    document.addEventListener('visibilitychange', function(){ if (!document.hidden) pollChats(); });
+})();
+</script>
 {% endblock %}

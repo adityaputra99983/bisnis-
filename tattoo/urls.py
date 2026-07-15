@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/chat/<int:booking_id>/messages/', views.chat_messages_api, name='chat_messages_api'),
     path('api/chat/<int:booking_id>/ping/', views.chat_online_ping, name='chat_online_ping'),
     path('api/chat/<int:booking_id>/online/', views.chat_online_status, name='chat_online_status'),
+    path('api/artist/unread-chats/', views.artist_unread_chats_api, name='artist_unread_chats_api'),
     # Artist dashboard / bisnis
     path('artist/dashboard/', views.artist_dashboard, name='artist_dashboard'),
     path('artist/bookings/', views.artist_booking_list, name='artist_booking_list'),

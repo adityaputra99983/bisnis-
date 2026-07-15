@@ -47,10 +47,10 @@
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{% url 'artist_booking_list' %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_booking_list' %}active{% endif %}">
+                <a href="{% if nav_artist_chat_first_id %}{% url 'artist_booking_chat' nav_artist_chat_first_id %}{% else %}{% url 'artist_booking_list' %}{% endif %}" class="ap-nav-item {% if request.resolver_match.url_name == 'artist_booking_list' %}active{% endif %}">
                     <i class="bi bi-journal-text"></i>
                     <span>Pesanan Masuk</span>
-                    {% if nav_artist_pending_count %}<span class="ap-nav-badge">{{ nav_artist_pending_count }}</span>{% endif %}
+                    {% if nav_artist_chat_unread %}<span class="ap-nav-badge" style="background:#ef4444;">{{ nav_artist_chat_unread }}</span>{% elif nav_artist_pending_count %}<span class="ap-nav-badge">{{ nav_artist_pending_count }}</span>{% endif %}
                 </a>
                 <a href="{% url 'artist_portfolio' %}" class="ap-nav-item {% if 'portfolio' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-images"></i>

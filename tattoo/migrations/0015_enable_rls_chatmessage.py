@@ -1,4 +1,21 @@
-from django.db import migrations
+from django.db import migrations, connection
+
+
+def forwards_sql(apps, schema_editor):
+    if connection.vendor == 'postgresql':
+        schema_editor.execute("ALTER TABLE public.tattoo_chatmessage ENABLE ROW LEVEL SECURITY;")
+        schema_editor.execute("""
+            CREATE POLICY chat_app_access ON public.tattoo_chatmessage
+                FOR ALL
+                USING (true)
+                WITH CHECK (true);
+        """)
+
+
+def reverse_sql(apps, schema_editor):
+    if connection.vendor == 'postgresql':
+        schema_editor.execute("DROP POLICY IF EXISTS chat_app_access ON public.tattoo_chatmessage;")
+        schema_editor.execute("ALTER TABLE public.tattoo_chatmessage DISABLE ROW LEVEL SECURITY;")
 
 
 class Migration(migrations.Migration):
@@ -8,25 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql=[
-                "ALTER TABLE public.tattoo_chatmessage ENABLE ROW LEVEL SECURITY;",
-                # Django handles all auth/access control at the app layer,
-                # so the database role needs full access to all rows.
-                # This RLS policy preserves that while satisfying the
-                # Supabase lint check ("table has RLS enabled").
-                # Access control is delegated entirely to Django middleware.
-                """
-                CREATE POLICY chat_app_access ON public.tattoo_chatmessage
-                    FOR ALL
-                    USING (true)
-                    WITH CHECK (true);
-                """,
-            ],
-            reverse_sql=[
-                "DROP POLICY IF EXISTS chat_app_access ON public.tattoo_chatmessage;",
-                "ALTER TABLE public.tattoo_chatmessage DISABLE ROW LEVEL SECURITY;",
-            ],
-            elidable=True,
-        ),
+        migrations.RunPython(forwards_sql, reverse_sql, elidable=True),
     ]

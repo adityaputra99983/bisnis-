@@ -1,6 +1,6 @@
 from django.db.models import Q, Count
 from django.core.cache import cache
-from .models import ServiceCategory, Booking
+from .models import ServiceCategory, Booking, ChatMessage
 
 
 _SKIP_PATHS = frozenset([
@@ -34,6 +34,7 @@ def navbar_data(request):
 
     artist_obj = None
     nav_artist_pending_count = 0
+    nav_chat_unread = 0
 
     if request.user.is_authenticated and not skip_all:
         user_id = request.user.id
@@ -84,6 +85,20 @@ def navbar_data(request):
                 'artist_pending': nav_artist_pending_count,
             }, 600)
 
+        chat_cache_key = f'nav_chat_unread_{user_id}'
+        nav_chat_unread = cache.get(chat_cache_key)
+        if nav_chat_unread is None:
+            try:
+                user_booking_ids = Booking.objects.filter(
+                    Q(user=request.user) | Q(artist__user=request.user)
+                ).values_list('id', flat=True)
+                nav_chat_unread = ChatMessage.objects.filter(
+                    booking_id__in=user_booking_ids
+                ).exclude(sender=request.user).filter(is_read=False).count()
+            except Exception:
+                nav_chat_unread = 0
+            cache.set(chat_cache_key, nav_chat_unread, 30)
+
     return {
         'nav_categories': categories,
         'nav_user_bookings_count': user_bookings_count,
@@ -93,4 +108,5 @@ def navbar_data(request):
         'nav_has_new_activity': has_new_activity,
         'nav_artist_obj': artist_obj,
         'nav_artist_pending_count': nav_artist_pending_count,
+        'nav_chat_unread': nav_chat_unread,
     }

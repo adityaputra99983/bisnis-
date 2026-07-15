@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=24.0">
+    <link rel="stylesheet" href="{% static 'tattoo/css/style.css' %}?v=26.0">
     {% block head_extra %}{% endblock %}
 </head>
 
@@ -139,6 +139,15 @@
                                 </div>
                                 <a href="{% url 'booking_list' %}" class="nav-orders-viewall" data-t="view_all">Lihat Semua</a>
                             </div>
+                            {% if nav_chat_unread %}
+                            <div style="padding:8px 16px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                                <a href="{% url 'booking_list' %}" style="display:flex;align-items:center;gap:8px;color:#d4af37;text-decoration:none;font-size:0.85rem;font-weight:500;">
+                                    <i class="bi bi-chat-dots-fill" style="font-size:1rem;"></i>
+                                    <span>{{ nav_chat_unread }} pesan belum dibaca</span>
+                                    <span style="margin-left:auto;background:#d4af37;color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;">{{ nav_chat_unread }}</span>
+                                </a>
+                            </div>
+                            {% endif %}
                             <div class="nav-orders-stats">
                                 <div class="nav-orders-stat stat-active">
                                     <span class="nos-num">{{ nav_user_active_count }}</span>

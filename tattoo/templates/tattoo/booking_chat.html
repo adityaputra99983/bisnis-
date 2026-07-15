@@ -1,7 +1,7 @@
 {% extends 'tattoo/base.html' %}
 {% load static %}
 
-{% block title %}Chat - {{ booking.artist.nickname }} - Bali Ink Hub{% endblock %}
+{% block title %}Chat - {{ other_name }} - Bali Ink Hub{% endblock %}
 
 {% block head_extra %}
 <style>
@@ -193,6 +193,55 @@
     transform: none;
     box-shadow: none;
 }
+/* Online indicator */
+.chat-online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #555;
+    display: inline-block;
+    margin-right: 4px;
+    transition: background 0.3s;
+}
+.chat-online-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34,197,94,0.5);
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+    50% { box-shadow: 0 0 16px rgba(34,197,94,0.8); }
+}
+.chat-status-text {
+    font-size: 0.75rem;
+    color: #555;
+    transition: color 0.3s;
+}
+.chat-status-text.online {
+    color: #22c55e;
+}
+/* New message notification banner */
+.chat-new-msg-banner {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: #000;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 10;
+    animation: slideUp 0.3s ease-out;
+    box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+    display: none;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 /* scrollbar styling */
 .chat-messages::-webkit-scrollbar { width: 4px; }
 .chat-messages::-webkit-scrollbar-track { background: transparent; }
@@ -227,14 +276,18 @@
                     </div>
                     <div>
                         <h5>{{ other_name }}</h5>
-                        <small><i class="bi bi-bag-check" style="margin-right:4px;"></i>{{ booking.service.name }} &middot; {{ booking.booking_date|date:"d M Y" }}</small>
+                        <small>
+                            <span class="chat-online-dot" id="onlineDot"></span>
+                            <span class="chat-status-text" id="onlineText">Offline</span>
+                            &middot; <i class="bi bi-bag-check" style="margin-right:2px;"></i>{{ booking.service.name }} &middot; {{ booking.booking_date|date:"d M Y" }}
+                        </small>
                     </div>
                 </div>
             </div>
 
             <div class="chat-messages" id="chatMessages">
                 {% for msg in chat_messages %}
-                <div class="chat-msg {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                <div class="chat-msg {% if msg.sender == request.user %}sent{% else %}received{% endif %}" data-msg-id="{{ msg.id }}">
                     {% if msg.sender != request.user %}
                     <div class="msg-sender">{{ msg.sender.username }}</div>
                     {% endif %}
@@ -242,11 +295,15 @@
                     <time>{{ msg.created_at|date:"H:i" }}</time>
                 </div>
                 {% empty %}
-                <div class="chat-empty">
+                <div class="chat-empty" id="chatEmpty">
                     <i class="bi bi-chat-dots"></i>
                     <p>Belum ada pesan. Kirim pesan pertama kamu!</p>
                 </div>
                 {% endfor %}
+            </div>
+
+            <div class="chat-new-msg-banner" id="newMsgBanner" onclick="scrollToBottom()">
+                <i class="bi bi-arrow-down"></i> Pesan baru
             </div>
 
             <form method="POST" class="chat-form" onsubmit="return validateChatForm(this)">
@@ -261,14 +318,170 @@
 
 {% block extra_js %}
 <script>
+var CHAT_BOOKING_ID = {{ booking.id }};
+var CURRENT_USER_ID = {{ request.user.id }};
+var CSRF_TOKEN = '{{ csrf_token }}';
+var lastMsgId = 0;
+var pollInterval = null;
+var onlineInterval = null;
+var isAtBottom = true;
+var chatContainer = null;
+
+function getCsrf() {
+    var el = document.querySelector('[name=csrfmiddlewaretoken]');
+    return el ? el.value : CSRF_TOKEN;
+}
+
+function scrollToBottom() {
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        isAtBottom = true;
+        document.getElementById('newMsgBanner').style.display = 'none';
+    }
+}
+
 function validateChatForm(form) {
     var input = form.querySelector('textarea');
     if (!input.value.trim()) return false;
     return true;
 }
+
+function createMsgEl(msg) {
+    var div = document.createElement('div');
+    div.className = 'chat-msg ' + (msg.is_mine ? 'sent' : 'received');
+    div.setAttribute('data-msg-id', msg.id);
+    var html = '';
+    if (!msg.is_mine) {
+        html += '<div class="msg-sender">' + escapeHtml(msg.sender_name) + '</div>';
+    }
+    html += '<div>' + escapeHtml(msg.message).replace(/\n/g, '<br>') + '</div>';
+    html += '<time>' + msg.created_at + '</time>';
+    div.innerHTML = html;
+    return div;
+}
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function pollMessages() {
+    fetch('/api/chat/' + CHAT_BOOKING_ID + '/messages/?last_id=' + lastMsgId, {
+        credentials: 'same-origin'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.messages && data.messages.length > 0) {
+            var empty = document.getElementById('chatEmpty');
+            if (empty) empty.remove();
+
+            data.messages.forEach(function(msg) {
+                lastMsgId = Math.max(lastMsgId, msg.id);
+                var el = createMsgEl(msg);
+                chatContainer.appendChild(el);
+
+                if (!msg.is_mine) {
+                    playNotifSound();
+                    if (isAtBottom) {
+                        scrollToBottom();
+                    } else {
+                        document.getElementById('newMsgBanner').style.display = 'block';
+                    }
+                    if (Notification && Notification.permission === 'granted') {
+                        new Notification('{{ other_name }}', {
+                            body: msg.message.substring(0, 100),
+                            icon: "{% static 'tattoo/img/bali_ink_logo.png' %}",
+                            tag: 'chat-' + CHAT_BOOKING_ID
+                        });
+                    }
+                }
+            });
+
+            if (isAtBottom) scrollToBottom();
+        }
+    })
+    .catch(function() {});
+}
+
+function pingOnline() {
+    fetch('/api/chat/' + CHAT_BOOKING_ID + '/ping/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'X-CSRFToken': getCsrf()}
+    }).catch(function() {});
+}
+
+function checkOnline() {
+    fetch('/api/chat/' + CHAT_BOOKING_ID + '/online/', {
+        credentials: 'same-origin'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var dot = document.getElementById('onlineDot');
+        var txt = document.getElementById('onlineText');
+        if (data.online) {
+            dot.classList.add('online');
+            txt.textContent = 'Online';
+            txt.classList.add('online');
+        } else {
+            dot.classList.remove('online');
+            txt.textContent = 'Offline';
+            txt.classList.remove('online');
+        }
+    })
+    .catch(function() {});
+}
+
+var notifSound = null;
+function playNotifSound() {
+    try {
+        if (!notifSound) {
+            notifSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Jk4yGfnR1gYiOjIeBfHt/hIqLiIR/fH2ChomKiIV/fX2Dh4mKiIV/fX2Dh4mJiIR/fX2Dh4mJiIR/fX2Dh4mJh4N+fH2DhomKh4N+fH2DhomKh4N+fH2DhomKh4N+fH2DhomKh4N+fH2D');
+        }
+        notifSound.currentTime = 0;
+        notifSound.volume = 0.3;
+        notifSound.play().catch(function() {});
+    } catch(e) {}
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    var container = document.getElementById('chatMessages');
-    if (container) container.scrollTop = container.scrollHeight;
+    chatContainer = document.getElementById('chatMessages');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        chatContainer.addEventListener('scroll', function() {
+            var threshold = 60;
+            isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < threshold;
+        });
+    }
+
+    var msgs = chatContainer.querySelectorAll('.chat-msg');
+    msgs.forEach(function(m) {
+        var id = parseInt(m.getAttribute('data-msg-id'));
+        if (id > lastMsgId) lastMsgId = id;
+    });
+
+    if (Notification && Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
+    pollMessages();
+    pingOnline();
+    checkOnline();
+
+    pollInterval = setInterval(pollMessages, 4000);
+    onlineInterval = setInterval(function() {
+        pingOnline();
+        checkOnline();
+    }, 10000);
+});
+
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        pollMessages();
+        pingOnline();
+    }
 });
 </script>
 {% endblock %}

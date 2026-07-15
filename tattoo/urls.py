@@ -18,6 +18,10 @@ urlpatterns = [
     path('payment/<int:booking_id>/confirm/', views.payment_confirm, name='payment_confirm'),
     path('payment/<int:booking_id>/verify/', views.payment_verify, name='payment_verify'),
     path('bookings/<int:booking_id>/chat/', views.booking_chat, name='booking_chat'),
+    path('api/chat/unread/', views.chat_unread_count, name='chat_unread_count'),
+    path('api/chat/<int:booking_id>/messages/', views.chat_messages_api, name='chat_messages_api'),
+    path('api/chat/<int:booking_id>/ping/', views.chat_online_ping, name='chat_online_ping'),
+    path('api/chat/<int:booking_id>/online/', views.chat_online_status, name='chat_online_status'),
     # Artist dashboard / bisnis
     path('artist/dashboard/', views.artist_dashboard, name='artist_dashboard'),
     path('artist/bookings/', views.artist_booking_list, name='artist_booking_list'),

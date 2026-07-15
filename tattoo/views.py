@@ -11,6 +11,7 @@ from django.db.models import Avg, Count, Q, Prefetch, Sum
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError
 from django.utils import timezone
@@ -91,11 +92,18 @@ def home(request):
             cache.set('home_stats', stats, 600)
         except _DBErr:
             stats = {}
+    try:
+        testimonials = Review.objects.filter(
+            rating__gte=4
+        ).select_related('user', 'booking', 'booking__artist').order_by('-created_at')[:20]
+    except _DBErr:
+        testimonials = []
     return render(request, 'tattoo/index.html', {
         'categories': categories,
         'services_popular': services_popular,
         'artists_with_rating': artists_with_rating,
         'stats': stats,
+        'testimonials': testimonials,
     })
 
 
@@ -471,6 +479,7 @@ def booking_detail(request, booking_id):
         'booking': booking,
         'review': review,
         'review_form': review_form,
+        'chat_unread': ChatMessage.objects.filter(booking=booking).exclude(sender=request.user).filter(is_read=False).count(),
     })
 
 
@@ -491,10 +500,14 @@ def booking_chat(request, booking_id):
                 sender=request.user,
                 message=msg_text,
             )
+            cache.delete(f'nav_chat_unread_{booking.user_id}')
+            if booking.artist and booking.artist.user:
+                cache.delete(f'nav_chat_unread_{booking.artist.user_id}')
         return redirect('booking_chat', booking_id=booking.id)
 
     messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
     messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+    cache.delete(f'nav_chat_unread_{request.user.id}')
 
     return render(request, 'tattoo/booking_chat.html', {
         'booking': booking,
@@ -522,10 +535,13 @@ def artist_booking_chat(request, booking_id):
                 sender=request.user,
                 message=msg_text,
             )
+            cache.delete(f'nav_chat_unread_{booking.user_id}')
+            cache.delete(f'nav_chat_unread_{request.user.id}')
         return redirect('artist_booking_chat', booking_id=booking.id)
 
     messages_qs = ChatMessage.objects.filter(booking=booking).select_related('sender')
     messages_qs.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
+    cache.delete(f'nav_chat_unread_{request.user.id}')
 
     return render(request, 'tattoo/booking_chat.html', {
         'booking': booking,
@@ -533,6 +549,86 @@ def artist_booking_chat(request, booking_id):
         'chat_messages': messages_qs,
         'is_artist_view': True,
     })
+
+
+@login_required
+def chat_unread_count(request):
+    try:
+        user_bookings = Booking.objects.filter(
+            Q(user=request.user) | Q(artist__user=request.user)
+        ).values_list('id', flat=True)
+        unread = ChatMessage.objects.filter(
+            booking_id__in=user_bookings
+        ).exclude(sender=request.user).filter(is_read=False).count()
+        return JsonResponse({'unread': unread})
+    except Exception:
+        return JsonResponse({'unread': 0})
+
+
+@login_required
+def chat_messages_api(request, booking_id):
+    try:
+        booking = get_object_or_404(
+            Booking.objects.select_related('artist', 'user'),
+            Q(id=booking_id) & (Q(user=request.user) | Q(artist__user=request.user))
+        )
+        last_id = int(request.GET.get('last_id', 0))
+        msgs = ChatMessage.objects.filter(
+            booking=booking, id__gt=last_id
+        ).select_related('sender').order_by('created_at')
+
+        data = []
+        for m in msgs:
+            data.append({
+                'id': m.id,
+                'sender_id': m.sender_id,
+                'sender_name': m.sender.username,
+                'message': m.message,
+                'created_at': m.created_at.strftime('%H:%M'),
+                'is_mine': m.sender_id == request.user.id,
+            })
+
+        if last_id == 0:
+            ChatMessage.objects.filter(
+                booking=booking
+            ).exclude(sender=request.user).filter(is_read=False).update(is_read=True)
+
+        return JsonResponse({'messages': data, 'booking_id': booking_id})
+    except Exception:
+        return JsonResponse({'messages': [], 'booking_id': booking_id})
+
+
+@login_required
+def chat_online_ping(request, booking_id):
+    if request.method == 'POST':
+        try:
+            cache_key = f'chat_online_{booking_id}_{request.user.id}'
+            cache.set(cache_key, True, 15)
+        except Exception:
+            pass
+    return JsonResponse({'ok': True})
+
+
+@login_required
+def chat_online_status(request, booking_id):
+    try:
+        booking = get_object_or_404(
+            Booking,
+            Q(id=booking_id) & (Q(user=request.user) | Q(artist__user=request.user))
+        )
+        if booking.user_id == request.user.id:
+            other_user = booking.artist.user if booking.artist else None
+        else:
+            other_user = booking.user
+
+        online = False
+        if other_user:
+            other_key = f'chat_online_{booking_id}_{other_user.id}'
+            online = cache.get(other_key) is not None
+
+        return JsonResponse({'online': online})
+    except Exception:
+        return JsonResponse({'online': False})
 
 
 @login_required
@@ -907,6 +1003,7 @@ def artist_booking_detail(request, booking_id):
         'artist': artist,
         'booking': booking,
         'review': review,
+        'chat_unread': ChatMessage.objects.filter(booking=booking).exclude(sender=request.user).filter(is_read=False).count(),
     }
     return render(request, 'tattoo/artist_booking_detail.html', context)
 

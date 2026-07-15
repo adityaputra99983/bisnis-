@@ -6261,11 +6261,17 @@ section { position: relative; }
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+    .marquee-track {
+        animation-duration: 45s !important;
+        animation-iteration-count: infinite !important;
+    }
     .loading-screen { display: none !important; }
     html { scroll-behavior: auto; }
     [data-aos] { opacity: 1 !important; transform: none !important; }
     .hero-stat-number { animation: none !important; }
 }
+
+/* ===== TESTIMONIAL MARQUEE (moved to inline <style> in index.html) ===== */
 
 /* ===== PRINT STYLES ===== */
 @media print {
@@ -6273,7 +6279,8 @@ section { position: relative; }
     .loading-screen, .navbar, .footer-section, .ap-sidebar,
     .ap-sidebar-toggle, .booking-sidebar, .bsum-cta,
     .lc-actions, .hero-cta, .booking-next-action,
-    .btn, .btn-gold, .btn-outline-gold {
+    .btn, .btn-gold, .btn-outline-gold,
+    .testimonial-marquee-section {
         display: none !important;
     }
     body {

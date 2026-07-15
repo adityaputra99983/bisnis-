@@ -32,8 +32,9 @@
                             <div>
                                 <strong class="ap-field-strong">{{ booking.user.username }}</strong>
                                 <span class="ap-field-email">{{ booking.user.email }}</span>
-                                <a href="{% url 'artist_booking_chat' booking.id %}" class="ap-link-luxury d-inline-flex align-items-center gap-1 mt-1" style="font-size:0.85rem;">
+                                <a href="{% url 'artist_booking_chat' booking.id %}" class="ap-link-luxury d-inline-flex align-items-center gap-1 mt-1" style="font-size:0.85rem;position:relative;">
                                     <i class="bi bi-chat-dots-fill text-gold"></i> Chat Customer
+                                    {% if chat_unread %}<span style="background:#ef4444;color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;margin-left:4px;">{{ chat_unread }}</span>{% endif %}
                                 </a>
                             </div>
                         </div>

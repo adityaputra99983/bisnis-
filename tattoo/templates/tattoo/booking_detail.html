@@ -233,8 +233,9 @@
                                 <a href="{% url 'artist_detail' booking.artist.id %}" class="btn btn-outline-gold btn-sm">
                                     <i class="bi bi-eye"></i> <span data-t="view_full_profile">Lihat Profil</span>
                                 </a>
-                                <a href="{% url 'booking_chat' booking.id %}" class="btn btn-gold btn-sm">
+                                <a href="{% url 'booking_chat' booking.id %}" class="btn btn-gold btn-sm" style="position:relative;">
                                     <i class="bi bi-chat-dots-fill"></i> Chat Artist
+                                    {% if chat_unread %}<span style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;border:2px solid #0d0d0d;">{{ chat_unread }}</span>{% endif %}
                                 </a>
                             </div>
                         </div>

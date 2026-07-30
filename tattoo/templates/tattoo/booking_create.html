@@ -13,6 +13,7 @@
 {% block title %}Booking Tattoo - Bali Ink Hub{% endblock %}
 
 {% block head_extra %}
+<script src="{% static 'tattoo/js/image-compressor.js' %}"></script>
 <style>
   #loading-screen{display:none!important}
   .navbar{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -456,4 +457,33 @@
 
 <script id="booking-form-data" type="application/json">{{ booking_json|safe }}</script>
 <script src="{% static 'tattoo/js/booking.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('booking-form');
+    var fileInput = document.getElementById('id_design_reference');
+    if (form && fileInput) {
+        var isCompressing = false;
+        form.addEventListener('submit', function(e) {
+            if (isCompressing) return;
+            if (!fileInput.files || fileInput.files.length === 0) return;
+            var file = fileInput.files[0];
+            if (file.size <= ImageCompressor.MAX_SIZE_BEFORE_COMPRESS || !file.type.startsWith('image/')) return;
+            e.preventDefault();
+            isCompressing = true;
+            var btn = form.querySelector('[type="submit"]');
+            if (btn) btn.disabled = true;
+            ImageCompressor.compress(file).then(function(compressed) {
+                if (compressed !== file) {
+                    var dt = new DataTransfer();
+                    dt.items.add(compressed);
+                    fileInput.files = dt.files;
+                }
+                isCompressing = false;
+                if (btn) btn.disabled = false;
+                form.submit();
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -4,6 +4,10 @@
 {% block title %}Portofolio - Artist Panel{% endblock %}
 {% block page_title %}Portofolio{% endblock %}
 
+{% block head_extra %}
+<script src="{% static 'tattoo/js/image-compressor.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <p class="text-muted mb-0">Kelola karya terbaik kamu untuk menarik customer</p>
@@ -193,6 +197,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    ImageCompressor.setupForm(
+        document.querySelector('#addPortfolioModal form'),
+        fileInput,
+        function(compressed) {
+            fileName.textContent = compressed.name;
+            fileSize.textContent = '(' + (compressed.size / (1024 * 1024)).toFixed(1) + ' MB)';
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(compressed);
+        }
+    );
 });
 </script>
 {% endblock %}

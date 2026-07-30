@@ -4,6 +4,10 @@
 
 {% block title %}Pilih Metode Pembayaran - Bali Ink Hub{% endblock %}
 
+{% block head_extra %}
+<script src="{% static 'tattoo/js/image-compressor.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <section class="section-padding pay-section-page">
     <div class="container">
@@ -889,8 +893,11 @@
 
     // Konfirmasi sebelum submit
     var confirmForm = document.querySelector('.pay-confirm-form');
+    var proofInput = document.getElementById('payProofFile');
     if (confirmForm) {
+        var isCompressingProof = false;
         confirmForm.addEventListener('submit', function(e) {
+            if (isCompressingProof) return;
             e.preventDefault();
             var btn = confirmForm.querySelector('button');
             var t = (window.GLOBAL_CONFIG && window.GLOBAL_CONFIG.translations) || {};
@@ -908,11 +915,32 @@
                 msg = dict['pay_confirm_msg'] || 'Konfirmasi bahwa kamu sudah melakukan pembayaran?';
             }
 
-            if (confirm(msg)) {
-                btn.classList.add('is-loading');
-                btn.disabled = true;
+            if (!confirm(msg)) return;
+
+            btn.classList.add('is-loading');
+            btn.disabled = true;
+
+            var doSubmit = function() {
+                isCompressingProof = false;
                 confirmForm.submit();
+            };
+
+            if (proofInput && proofInput.files && proofInput.files.length > 0) {
+                var file = proofInput.files[0];
+                if (file.size > ImageCompressor.MAX_SIZE_BEFORE_COMPRESS && file.type.startsWith('image/')) {
+                    isCompressingProof = true;
+                    ImageCompressor.compress(file).then(function(compressed) {
+                        if (compressed !== file) {
+                            var dt = new DataTransfer();
+                            dt.items.add(compressed);
+                            proofInput.files = dt.files;
+                        }
+                        doSubmit();
+                    });
+                    return;
+                }
             }
+            doSubmit();
         });
     }
 
